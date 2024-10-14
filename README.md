@@ -1,0 +1,20 @@
+# Ayin C++ Template Library
+
+## Quick Start
+
+### Building
+
+```bash
+sh build.sh
+sh build.sh Release
+```
+
+## Contributing
+
+## Authors
+
+- [@NoEvaa](https://github.com/NoEvaa)
+
+## License
+
+

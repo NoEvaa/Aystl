@@ -20,12 +20,15 @@
 #include <utility>
 
 namespace iin {
+template <std::integral T, T... Is>
+using int_seq = std::integer_sequence<T, Is...>;
+
 namespace detail {
 template <typename T>
 struct is_int_seq : std::true_type {};
 
 template <std::integral T, T... Is>
-struct is_int_seq<std::integer_sequence<T, Is...>> : std::true_type {};
+struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
 }
 
 template <typename T>
@@ -34,9 +37,8 @@ concept IntSeqType = detail::is_int_seq<T>::value;
 namespace detail {
 template <std::integral T, T... Is, std::integral T2, T... Is2>
 constexpr auto _concat_two_int_seqs_impl(
-    std::integer_sequence<T, Is...>,
-    std::integer_sequence<T2, Is2...>) {
-    return std::integer_sequence<T, Is..., Is2...>();
+    int_seq<T, Is...>, int_seq<T2, Is2...>) {
+    return int_seq<T, Is..., Is2...>();
 };
 
 template <IntSeqType T1, IntSeqType T2>
@@ -59,5 +61,8 @@ struct concat_int_seqs<T1, T2, Ts...> {
 };
 
 template <IntSeqType... Ts>
-struct int_seqs {};
+struct int_multi_seqs {
+    template <template <IntSeqType...> class Tmpl>
+    using wrapped = Tmpl<Ts...>;
+};
 }

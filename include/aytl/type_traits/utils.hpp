@@ -38,7 +38,9 @@ template <
     template <typename...> typename Tmpl2,
     typename... Args>
 struct is_spec_of<Tmpl1<Args...>, Tmpl2,
-    std::enable_if_t<std::is_same_v<Tmpl1<Args...>, Tmpl2<Args...>>>> : std::true_type {};
+    std::enable_if_t<std::is_same_v<
+        Tmpl1<Args...>,
+        Tmpl2<Args...>>>> : std::true_type {};
 
 template <typename T, template <typename...> typename Tmpl, typename = void>
 inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;

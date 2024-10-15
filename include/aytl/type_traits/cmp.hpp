@@ -16,6 +16,7 @@
 #pragma once
 
 #include <type_traits>
+
 namespace iin {
 enum class CmpOp {
     kEQ = 0,
@@ -27,33 +28,35 @@ enum class CmpOp {
 };
 
 template <CmpOp _op, auto _left, auto _right>
-struct cval_cmp : std::false_type {};
+struct ct_cmp : std::false_type {};
 
 template <auto _left, auto _right>
 requires (_left == _right)
-struct cval_cmp<CmpOp::kEQ, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kEQ, _left, _right> : std::true_type {};
 
 template <auto _left, auto _right>
 requires (_left != _right)
-struct cval_cmp<CmpOp::kNE, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kNE, _left, _right> : std::true_type {};
 
 template <auto _left, auto _right>
 requires (_left < _right)
-struct cval_cmp<CmpOp::kLT, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kLT, _left, _right> : std::true_type {};
 
 template <auto _left, auto _right>
 requires (_left <= _right)
-struct cval_cmp<CmpOp::kLE, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kLE, _left, _right> : std::true_type {};
 
 template <auto _left, auto _right>
 requires (_left > _right)
-struct cval_cmp<CmpOp::kGT, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kGT, _left, _right> : std::true_type {};
 
 template <auto _left, auto _right>
 requires (_left >= _right)
-struct cval_cmp<CmpOp::kGE, _left, _right> : std::true_type {};
+struct ct_cmp<CmpOp::kGE, _left, _right> : std::true_type {};
 
 template <CmpOp _op, auto _left, auto _right>
-concept CvalCmp = cval_cmp<_op, _left, _right>::value;
+constexpr bool ct_cmp_t = ct_cmp<_op, _left, _right>::value;
 
+template <CmpOp _op, auto _left, auto _right>
+concept CtCmp = ct_cmp_t<_op, _left, _right>;
 }

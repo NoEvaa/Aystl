@@ -19,6 +19,8 @@
 #include <concepts>
 #include <utility>
 
+#include "aytl/type_traits/cmp.hpp"
+
 namespace iin {
 template <std::integral T, T... Is>
 using int_seq = std::integer_sequence<T, Is...>;
@@ -45,7 +47,6 @@ template <IntSeqType T1, IntSeqType T2>
 struct concat_two_int_seqs {
     using type = decltype(_concat_two_int_seqs_impl(T1{}, T2{}));
 };
-}
 
 template <IntSeqType T, IntSeqType... Ts>
 struct concat_int_seqs {
@@ -55,10 +56,31 @@ struct concat_int_seqs {
 template <IntSeqType T1, IntSeqType T2, IntSeqType... Ts>
 struct concat_int_seqs<T1, T2, Ts...> {
     using type = typename concat_int_seqs<
-        typename detail::concat_two_int_seqs<T1, T2>::type,
+        typename concat_two_int_seqs<T1, T2>::type,
         Ts...
     >::type;
 };
+
+template <std::integral T, T _start, T _stop, T _step, T... Is>
+struct monotone_int_seq {
+    using type = std::integer_sequence<T, Is...>;
+};
+
+template <std::integral T, T _start, T _stop, T _step, T... Is>
+requires (
+    (CtCmp<CmpOp::kLT, 0, _step> && CtCmp<CmpOp::kLT, _start, _stop>) ||
+    (CtCmp<CmpOp::kLT, _step, 0> && CtCmp<CmpOp::kLT, _stop, _start>))
+struct monotone_int_seq<T, _start, _stop, _step, Is...> {
+    using type = typename monotone_int_seq<T,
+        _start + _step, _stop, _step, Is..., _start>::type;
+};
+}
+
+template <IntSeqType... Ts>
+using concat_int_seqs_t = typename detail::concat_int_seqs<Ts...>::type;
+
+template <std::integral T, T... Is>
+using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;
 
 template <IntSeqType... Ts>
 struct int_multi_seqs {

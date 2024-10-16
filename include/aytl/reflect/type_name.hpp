@@ -23,6 +23,12 @@ constexpr std::string_view getTypeName() {
     constexpr auto sample = detail::_getFuncSig<int>();
     constexpr auto entity = detail::_getFuncSig<T>();
 
-    return entity;
+    constexpr std::size_t lpos = sample.find("int");
+    static_assert(lpos + 3 <= sample.size());
+    constexpr std::size_t rpos = sample.size() - lpos - 3;
+    static_assert(lpos + rpos <= entity.size());
+    constexpr std::size_t cnt = entity.size() - lpos - rpos;
+
+    return entity.substr(lpos, cnt);
 }
 }

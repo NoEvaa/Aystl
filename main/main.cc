@@ -1,7 +1,7 @@
 #include <iostream>
 #include <utility>
 #include "aytl/type_traits.h"
-#include "aytl/reflect/utils.hpp"
+#include "aytl/reflect/type_name.hpp"
 
 
 using namespace iin;
@@ -14,23 +14,15 @@ void abcc(std::integer_sequence<T, Is...>)
     (..., (std::cout << Is << std::endl));
 }
 
-template <typename T>
-constexpr std::string_view getTypeName() {
-    constexpr auto sample = detail::_getFuncSig<int>();
-    constexpr auto entity = detail::_getFuncSig<T>();
-    std::cout << sample << std::endl;
-    std::cout << entity << std::endl;
-
-    return entity;
-}
-
 int main()
 {
-    getTypeName<double>();
+    std::cout << getTypeName<double>() << std::endl;
+    std::cout << getTypeName<int_multi_seqs<>>() << std::endl;
+    std::cout << getTypeName<std::shared_ptr<int>>() << std::endl;
+    std::cout << getTypeName<std::int64_t*>() << std::endl;
 
     using p1 = wrap_sptr_t<int>;
     using p2 = wrap_sptr_t<p1>;
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::cout << typeid(p1).name() << std::endl;
     std::cout << typeid(p2).name() << std::endl;
 

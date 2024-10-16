@@ -1,9 +1,7 @@
 #include <iostream>
-#include <string_view>
 #include <utility>
 #include "aytl/type_traits.h"
 #include "aytl/reflect/type_name.hpp"
-#include "aytl/reflect/enum_name.hpp"
 
 
 using namespace iin;
@@ -16,14 +14,26 @@ void abcc(std::integer_sequence<T, Is...>)
     (..., (std::cout << Is << std::endl));
 }
 
+template <auto _enum>
+requires std::is_enum_v<decltype(_enum)>
+constexpr std::string_view getEnumName() {
+    constexpr auto sample = detail::_getFuncSig<48.69>();
+    constexpr auto entity = detail::_getFuncSig<_enum>();
+
+    std::cout << sample << std::endl;
+    std::cout << entity << std::endl;
+    constexpr std::size_t lpos = sample.find("48.69");
+    static_assert(lpos + 3 <= sample.size());
+    constexpr std::size_t rpos = sample.size() - lpos - 3;
+    static_assert(lpos + rpos <= entity.size());
+    constexpr std::size_t cnt = entity.size() - lpos - rpos;
+
+    return entity.substr(lpos, cnt);
+}
+
 int main()
 {
     std::cout << getEnumName<CmpOp::kEQ>() << std::endl;
-    std::cout << getEnumName<CmpOp(0)>() << std::endl;
-    std::cout << getEnumName<CmpOp(-1)>() << std::endl;
-    std::cout << is_enum_declared_v<CmpOp(-1)> << std::endl;
-    std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
-
     std::cout << getTypeName<double>() << std::endl;
     std::cout << getTypeName<int_multi_seqs<>>() << std::endl;
     std::cout << getTypeName<std::shared_ptr<int>>() << std::endl;

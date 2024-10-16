@@ -16,8 +16,21 @@ void abcc(std::integer_sequence<T, Is...>)
     (..., (std::cout << Is << std::endl));
 }
 
+template <auto _func>
+std::string_view getFuncName() {
+    constexpr auto sample = detail::_getFuncSig<0>();
+    constexpr auto entity = detail::_getFuncSig<_func>();
+
+    std::cout << sample << std::endl;
+    std::cout << entity << std::endl;
+    return entity;
+
+}
+
 int main()
 {
+    getFuncName<getEnumName<CmpOp::kEQ>>();
+
     std::cout << getEnumName<CmpOp::kEQ>() << std::endl;
     std::cout << getEnumName<CmpOp(0)>() << std::endl;
     std::cout << getEnumName<CmpOp(-1)>() << std::endl;

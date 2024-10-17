@@ -46,6 +46,9 @@ template <typename T, template <typename...> typename Tmpl, typename = void>
 inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
 
 namespace detail {
+template <typename T>
+constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
+
 template <template <typename...> class Tmpl, typename... Args>
 struct wrap_tmpl {
     using type = Tmpl<Args...>;
@@ -55,9 +58,38 @@ template <template <typename...> class Tmpl, typename... TmplArgs, typename... A
 struct wrap_tmpl<Tmpl, Tmpl<TmplArgs...>, Args...> {
     using type = Tmpl<TmplArgs...>;
 };
+
+template <typename T, typename... Args>
+struct replace_tmpl_args {
+    using type = T;
+};
+
+template <template <typename...> class Tmpl,
+    typename... TmplArgs, typename... Args>
+requires is_type_v<Tmpl<Args...>>
+struct replace_tmpl_args<Tmpl<TmplArgs...>, Args...> {
+    using type = Tmpl<Args...>;
+};
+
+template <typename T, template <typename...> class Tmpl>
+struct replace_tmpl_wrapper {
+    using type = T;
+};
+
+template <template <typename...> class Tmpl1,
+    template <typename...> class Tmpl2, typename... Args>
+requires is_type_v<Tmpl2<Args...>>
+struct replace_tmpl_wrapper<Tmpl1<Args...>, Tmpl2> {
+    using type = Tmpl2<Args...>;
+};
 }
 
 template <template <typename...> class Tmpl, typename... Args>
 using wrap_tmpl_t = typename detail::wrap_tmpl<Tmpl, Args...>::type;
 
+template <typename T, typename... Args>
+using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type;
+
+template <typename T, template <typename...> class Tmpl>
+using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
 }

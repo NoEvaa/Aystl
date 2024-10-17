@@ -16,6 +16,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 #include "aytl/type_traits/utils.hpp"
 
@@ -42,6 +43,10 @@ struct remove_smart_ptr<std::unique_ptr<T>> {
 
 template <typename T>
 using remove_smart_ptr_t = remove_smart_ptr<T>;
+
+template <typename T>
+using remove_any_ptr_t = std::remove_pointer_t<
+    remove_smart_ptr_t<std::remove_pointer_t<T>>>;
 
 template <typename T>
 using wrap_sptr_t = wrap_tmpl_t<std::shared_ptr, T>;

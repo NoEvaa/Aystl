@@ -19,7 +19,7 @@
 #include <concepts>
 #include <utility>
 
-#include "aytl/type_traits/cmp.hpp"
+#include "aystl/type_traits/cmp.hpp"
 
 namespace iin {
 template <std::integral T, T... Is>

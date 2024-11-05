@@ -15,8 +15,8 @@
  */
 #pragma once
 
-#include "aytl/type_traits/utils.hpp"
-#include "aytl/type_traits/memory.hpp"
-#include "aytl/type_traits/optional.hpp"
-#include "aytl/type_traits/int_seq.hpp"
+#include "aystl/type_traits/utils.hpp"
+#include "aystl/type_traits/memory.hpp"
+#include "aystl/type_traits/optional.hpp"
+#include "aystl/type_traits/int_seq.hpp"
 

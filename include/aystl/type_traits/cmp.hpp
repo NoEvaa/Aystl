@@ -55,8 +55,8 @@ requires (_left >= _right)
 struct ct_cmp<CmpOp::kGE, _left, _right> : std::true_type {};
 
 template <CmpOp _op, auto _left, auto _right>
-constexpr bool ct_cmp_t = ct_cmp<_op, _left, _right>::value;
+constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
 
 template <CmpOp _op, auto _left, auto _right>
-concept CtCmp = ct_cmp_t<_op, _left, _right>;
+concept CtCmp = ct_cmp_v<_op, _left, _right>;
 }

@@ -13,7 +13,6 @@ foreach(utest_path IN LISTS subdirs)
     # Test files
     file(GLOB_RECURSE utest_test_files
         CONFIGURE_DEPENDS
-        #"${utest_dir}/*.h"
         "${utest_dir}/*.test.cc"
     )
 

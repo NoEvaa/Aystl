@@ -64,8 +64,7 @@ struct replace_tmpl_args {
     using type = T;
 };
 
-template <template <typename...> class Tmpl,
-    typename... TmplArgs, typename... Args>
+template <template <typename...> class Tmpl, typename... TmplArgs, typename... Args>
 requires is_type_v<Tmpl<Args...>>
 struct replace_tmpl_args<Tmpl<TmplArgs...>, Args...> {
     using type = Tmpl<Args...>;

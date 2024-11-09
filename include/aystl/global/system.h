@@ -15,12 +15,3 @@
  */
 #pragma once
 
-#include <optional>
-
-#include "aystl/type_traits/utils.hpp"
-
-namespace iin {
-template <typename T>
-using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
-}
-

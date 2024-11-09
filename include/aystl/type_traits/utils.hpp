@@ -91,4 +91,11 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
+
+template <typename... Args>
+struct wrapped_impl {
+    template <template <typename...> class Tmpl>
+    using wrapped = Tmpl<Args...>;
+};
 }
+

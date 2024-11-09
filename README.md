@@ -1,4 +1,4 @@
-# Ayin C++ Template Library
+# Ayin Standard Template Library
 
 ## Quick Start
 

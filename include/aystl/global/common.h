@@ -15,12 +15,13 @@
  */
 #pragma once
 
-#include <optional>
+#define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
+#define AY_STR(s)      AY_STR_IMPL(s)
+#define AY_EXTNED(...) AY_EXTEND_IMPL(__VA_ARGS__)
+#define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
 
-#include "aystl/type_traits/utils.hpp"
-
-namespace iin {
-template <typename T>
-using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
-}
+#define AY_CAT_IMPL(a, b)   a##b
+#define AY_STR_IMPL(a)      #a
+#define AY_EXTEND_IMPL(...) __VA_ARGS__
+#define AY_EMPTY_IMPL(...)
 

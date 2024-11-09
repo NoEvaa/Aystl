@@ -20,6 +20,7 @@
 #include <utility>
 
 #include "aystl/type_traits/cmp.hpp"
+#include "aystl/type_traits/utils.hpp"
 
 namespace iin {
 template <std::integral T, T... Is>
@@ -83,8 +84,6 @@ template <std::integral T, T... Is>
 using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;
 
 template <IntSeqType... Ts>
-struct int_multi_seqs {
-    template <template <IntSeqType...> class Tmpl>
-    using wrapped = Tmpl<Ts...>;
-};
+struct int_multi_seqs : wrapped_impl<Ts...> {};
 }
+

@@ -45,14 +45,10 @@ template <typename T>
 using remove_smart_ptr_t = remove_smart_ptr<T>;
 
 template <typename T>
-using remove_any_ptr_t = std::remove_pointer_t<
-    remove_smart_ptr_t<std::remove_pointer_t<T>>>;
-
-template <typename T>
 using wrap_sptr_t = wrap_tmpl_t<std::shared_ptr, T>;
 template <typename T>
 using wrap_wptr_t = wrap_tmpl_t<std::weak_ptr, T>;
 template <typename T>
 using wrap_uptr_t = wrap_tmpl_t<std::unique_ptr, T>;
-
 }
+

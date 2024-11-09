@@ -60,3 +60,4 @@ constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
 template <CmpOp _op, auto _left, auto _right>
 concept CtCmp = ct_cmp_v<_op, _left, _right>;
 }
+

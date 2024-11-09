@@ -46,7 +46,8 @@ constexpr auto _concat_two_int_seqs_impl(
 
 template <IntSeqType T1, IntSeqType T2>
 struct concat_two_int_seqs {
-    using type = decltype(_concat_two_int_seqs_impl(T1{}, T2{}));
+    using type = decltype(_concat_two_int_seqs_impl(
+        std::declval<T1>(), std::declval<T2>()));
 };
 
 template <IntSeqType T, IntSeqType... Ts>
@@ -82,6 +83,9 @@ using concat_int_seqs_t = typename detail::concat_int_seqs<Ts...>::type;
 
 template <std::integral T, T... Is>
 using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;
+
+template <int _start, int _stop, int _step = 1>
+using ct_range_t = monotone_int_seq_t<int, _start, _stop, _step>;
 
 template <IntSeqType... Ts>
 struct int_multi_seqs : wrapped_impl<Ts...> {};

@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "aystl/global/system.h"
 #include "aystl/global/common.h"
 #include "aystl/global/member_func.h"
 

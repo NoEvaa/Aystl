@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 #pragma once
+/**
+ * The compiler, must be one of: `AY_CC_x`
+ * 
+ * The `x` can be:
+ *     MSVC  - Microsoft Visual C/C++
+ *     GNU   - GNU C++
+ *     CLANG - C++ front-end for the LLVM compiler
+ *     NVCC  - NVIDIA CUDA C++ compiler for GPU
+ */
 
-#include "aystl/global/system.h"
-#include "aystl/global/compiler.h"
-
-#define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
-#define AY_STR(s)      AY_STR_IMPL(s)
-#define AY_EXTNED(...) AY_EXTEND_IMPL(__VA_ARGS__)
-#define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
-
-#define AY_CAT_IMPL(a, b)   a##b
-#define AY_STR_IMPL(a)      #a
-#define AY_EXTEND_IMPL(...) __VA_ARGS__
-#define AY_EMPTY_IMPL(...)
-
-#if defined(AY_CC_MSVC)
-#define AY_FUNCSIG __FUNCSIG__
-#else
-#define AY_FUNCSIG __PRETTY_FUNCTION__
+#if defined(_MSC_VER)
+#    define AY_CC_MSVC 1
 #endif
 
+#if defined(__GNUC__)
+#    define AY_CC_GCC 1
+#endif
 
+#if defined(__clang__)
+#    define AY_CC_CLANG 1
+#endif
+
+#if defined(__CUDACC__)
+#    define AY_CC_NVCC 1
+#endif
 

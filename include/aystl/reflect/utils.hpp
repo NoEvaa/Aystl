@@ -17,22 +17,18 @@
 
 #include <string_view>
 
-#ifdef _MSC_VER
-#define __AY_FUNCSIG__ __FUNCSIG__
-#else
-#define __AY_FUNCSIG__ __PRETTY_FUNCTION__
-#endif
+#include "aystl/global/common.h"
 
 namespace iin {
 namespace detail {
 template <typename T>
 constexpr std::string_view _getFuncSig() {
-    return __AY_FUNCSIG__;
+    return AY_FUNCSIG;
 }
 
 template <auto _v>
 constexpr std::string_view _getFuncSig() {
-    return __AY_FUNCSIG__;
+    return AY_FUNCSIG;
 }
 }
 }

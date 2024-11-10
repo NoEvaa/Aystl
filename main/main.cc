@@ -52,11 +52,6 @@ int main()
     std::cout << getTypeName<std::shared_ptr<int>>() << std::endl;
     std::cout << getTypeName<std::int64_t*>() << std::endl;
 
-    std::cout << ct_cmp<CmpOp::kEQ, 1, 1>::value << std::endl;
-    std::cout << ct_cmp<CmpOp::kEQ, 1, 2>::value << std::endl;
-    std::cout << ct_cmp<CmpOp::kLT, 1, 2>::value << std::endl;
-    std::cout << ct_cmp<CmpOp::kLT, 1, 1>::value << std::endl;
-    
     return 0;
 }
 

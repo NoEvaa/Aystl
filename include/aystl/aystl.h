@@ -18,4 +18,5 @@
 #include "aystl/config.h"
 #include "aystl/global.h"
 #include "aystl/type_traits.h"
+#include "aystl/math.h"
 

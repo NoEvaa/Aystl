@@ -17,16 +17,9 @@
 
 #include <type_traits>
 
-namespace iin {
-enum class CmpOp {
-    kEQ = 0,
-    kNE,
-    kLT,
-    kLE,
-    kGT,
-    kGE
-};
+#include "aystl/global/common.h"
 
+namespace iin {
 template <CmpOp _op, auto _left, auto _right>
 struct ct_cmp : std::false_type {};
 

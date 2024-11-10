@@ -15,16 +15,26 @@
  */
 #pragma once
 
-#include <string_view>
+#include <type_traits>
 
-#include "aystl/global/common.h"
+#include "aystl/type_traits/enum.hpp"
 
 namespace iin {
-namespace detail {
-template <typename T>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
+template <EnumType Ty, typename RetTy = Ty>
+constexpr RetTy ayEnumAnd(Ty a, Ty b) {
+    using _type = std::underlying_type_t<Ty>;
+    return static_cast<RetTy>(static_cast<_type>(a) & static_cast<_type>(b));
+}
 
-template <auto _v>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
+template <EnumType Ty, typename RetTy = Ty>
+constexpr RetTy ayEnumOr(Ty a, Ty b) {
+    using _type = std::underlying_type_t<Ty>;
+    return static_cast<RetTy>(static_cast<_type>(a) | static_cast<_type>(b));
+}
+
+template <EnumType Ty>
+constexpr bool ayEnumFuzzyMatch(Ty _test, Ty _target) {
+    return ayEnumAnd(_test, _target) == _target;
 }
 }
+

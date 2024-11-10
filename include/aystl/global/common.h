@@ -34,5 +34,14 @@
 #define AY_FUNCSIG __PRETTY_FUNCTION__
 #endif
 
-
+namespace iin {
+enum class CmpOp {
+    kEQ = 0, // equal to
+    kNE,     // not equal
+    kLT,     // less than
+    kLE,     // less or equal
+    kGT,     // greater than
+    kGE      // greater or equal
+};
+}
 

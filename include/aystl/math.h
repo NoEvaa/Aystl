@@ -15,16 +15,6 @@
  */
 #pragma once
 
-#include <string_view>
+#include "aystl/math/common.hpp"
+#include "aystl/math/limits.hpp"
 
-#include "aystl/global/common.h"
-
-namespace iin {
-namespace detail {
-template <typename T>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
-
-template <auto _v>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
-}
-}

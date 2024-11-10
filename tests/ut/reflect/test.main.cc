@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#define AYTESTM_CONFIG_MAIN
+#include "testlib.h"
 
-#include <string_view>
-
-#include "aystl/global/common.h"
-
-namespace iin {
-namespace detail {
-template <typename T>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
-
-template <auto _v>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
-}
-}

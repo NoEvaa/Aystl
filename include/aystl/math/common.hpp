@@ -15,24 +15,15 @@
  */
 #pragma once
 
-#include "aystl/global/system.h"
-#include "aystl/global/compiler.h"
-
-#define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
-#define AY_STR(s)      AY_STR_IMPL(s)
-#define AY_EXTNED(...) AY_EXTEND_IMPL(__VA_ARGS__)
-#define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
-
-#define AY_CAT_IMPL(a, b) a##b
-#define AY_STR_IMPL(a) #a
-#define AY_EXTEND_IMPL(...) __VA_ARGS__
-#define AY_EMPTY_IMPL(...)
-
-#if defined(AY_CC_MSVC)
-#define AY_FUNCSIG __FUNCSIG__
-#else
-#define AY_FUNCSIG __PRETTY_FUNCTION__
-#endif
-
-
+namespace iin {
+constexpr decltype(auto) ayAbs(auto const & v) {
+    return v < 0 ? -v : v;
+}
+constexpr decltype(auto) ayMax(auto const & a, auto const & b) {
+    return a < b ? b : a;
+}
+constexpr decltype(auto) ayMin(auto const & a, auto const & b) {
+    return a > b ? b : a;
+}
+}
 

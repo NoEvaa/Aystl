@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <iostream>
+#include <limits>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -7,6 +9,7 @@
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/type_traits/int_seq.hpp"
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/math/limits.hpp"
 
 
 using namespace iin;
@@ -37,6 +40,13 @@ std::string_view getFuncName() {
 
 int main()
 {
+    std::cout << num_limits<int>::vMax() << std::endl;
+    std::cout << num_limits<int>::vMin() << std::endl;
+    std::cout << num_limits<int>::vInf() << std::endl;
+    std::cout << num_limits<int>::vNan() << std::endl;
+    std::cout << std::uint32_t(-1) << std::endl;
+    std::cout << std::numeric_limits<std::uint32_t>::min() << std::endl;
+
     dde().hha();
 
     getFuncName<getEnumName<CmpOp::kEQ>>();

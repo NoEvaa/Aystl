@@ -16,6 +16,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <cmath>
 #include <limits>
 #include <concepts>
 
@@ -54,6 +55,22 @@ public:
     static constexpr bool isMax(_type v) noexcept { return v == vMax(); }
     static constexpr bool isMin(_type v) noexcept { return v == vMin(); }
     static constexpr bool isNan(_type v) noexcept { return v == vNan(); }
+    static constexpr bool isInf(_type v) noexcept { return std::abs(v) == vInf(); }
+};
+
+template <std::floating_point _Ty>
+class num_limits<_Ty> : public std::numeric_limits<_Ty> {
+    using _type = _Ty;
+    using _base = std::numeric_limits<_type>;
+public:
+    static constexpr _type vMax() noexcept { return (_base::max)(); }
+    static constexpr _type vMin() noexcept { return (_base::min)(); }
+    static constexpr _type vInf() noexcept { return (_base::infinity)(); }
+    static constexpr _type vNan() noexcept { return (std::nan)(""); }
+
+    static constexpr bool isMax(_type v) noexcept { return v == vMax(); }
+    static constexpr bool isMin(_type v) noexcept { return v == vMin(); }
+    static constexpr bool isNan(_type v) noexcept { return std::isnan(v); }
     static constexpr bool isInf(_type v) noexcept { return std::abs(v) == vInf(); }
 };
 }

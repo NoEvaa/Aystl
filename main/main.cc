@@ -38,10 +38,11 @@ std::string_view getFuncName() {
 
 int main()
 {
-    std::cout << num_limits<int>::vMax() << std::endl;
-    std::cout << num_limits<int>::vMin() << std::endl;
-    std::cout << num_limits<int>::vInf() << std::endl;
-    std::cout << num_limits<int>::vNan() << std::endl;
+    using dde = num_limits<double>;
+    auto ii = dde::vInf();
+    std::cout << dde::isInf(-ii) << std::endl;
+    std::cout << std::hex << num_limits<double>::vInf() << std::endl;
+    std::cout << std::hex << num_limits<double>::vNan() << std::endl;
     std::cout << std::uint32_t(-1) << std::endl;
     std::cout << std::numeric_limits<std::uint32_t>::min() << std::endl;
 

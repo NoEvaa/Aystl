@@ -16,14 +16,6 @@
 #pragma once
 
 namespace iin {
-constexpr decltype(auto) ayAbs(auto const & v) {
-    return v < 0 ? -v : v;
-}
-constexpr decltype(auto) ayMax(auto const & a, auto const & b) {
-    return a < b ? b : a;
-}
-constexpr decltype(auto) ayMin(auto const & a, auto const & b) {
-    return a > b ? b : a;
-}
+
 }
 

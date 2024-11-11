@@ -17,4 +17,6 @@
 
 #include "aystl/math/common.hpp"
 #include "aystl/math/limits.hpp"
+#include "aystl/math/enum_utils.hpp"
+#include "aystl/math/bit_utils.hpp"
 

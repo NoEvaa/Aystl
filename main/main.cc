@@ -4,7 +4,9 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include "aystl/math/bit_utils.hpp"
 #include "aystl/type_traits.h"
+#include "aystl/math.h"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/type_traits/int_seq.hpp"
@@ -22,10 +24,6 @@ void abcc(std::integer_sequence<T, Is...>)
 {
     (..., (std::cout << Is << std::endl));
 }
-
-struct dde{
-void hha() const volatile && noexcept{}
-};
 
 template <auto _func>
 std::string_view getFuncName() {
@@ -46,8 +44,6 @@ int main()
     std::cout << num_limits<int>::vNan() << std::endl;
     std::cout << std::uint32_t(-1) << std::endl;
     std::cout << std::numeric_limits<std::uint32_t>::min() << std::endl;
-
-    dde().hha();
 
     getFuncName<getEnumName<CmpOp::kEQ>>();
 

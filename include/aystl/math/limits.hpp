@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <cstdlib>
 #include <limits>
 #include <concepts>
 
@@ -37,7 +38,7 @@ public:
     static constexpr bool isMax(_type v) noexcept { return v == vMax(); }
     static constexpr bool isMin(_type v) noexcept { return v == vMin(); }
     static constexpr bool isNan(_type v) noexcept { return v == vNan(); }
-    static constexpr bool isInf(_type v) noexcept { return ayAbs(v) == vInf(); }
+    static constexpr bool isInf(_type v) noexcept { return std::abs(v) == vInf(); }
 };
 
 template <std::unsigned_integral _Ty>
@@ -53,7 +54,7 @@ public:
     static constexpr bool isMax(_type v) noexcept { return v == vMax(); }
     static constexpr bool isMin(_type v) noexcept { return v == vMin(); }
     static constexpr bool isNan(_type v) noexcept { return v == vNan(); }
-    static constexpr bool isInf(_type v) noexcept { return ayAbs(v) == vInf(); }
+    static constexpr bool isInf(_type v) noexcept { return std::abs(v) == vInf(); }
 };
 }
 

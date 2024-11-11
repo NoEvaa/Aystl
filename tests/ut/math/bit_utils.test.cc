@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/math/bit_utils.hpp"
 
-#include <concepts>
-#include <cstddef>
+using namespace iin;
 
-namespace iin {
-namespace detail {
-constexpr bool _isPow2(auto x) {
-    return !(x & (x - 1));
-}
-}
-template <std::unsigned_integral Ty, std::size_t _len>
-constexpr Ty ayBitCycle(Ty _bits) {
-    static_assert(detail::_isPow2(_len));
-    constexpr std::size_t _s = sizeof(Ty) * 8;
-    static_assert(_s >= _len);
-    if constexpr (_s == _len) {
-        return _bits;
-    } else {
-        return ayBitCycle<Ty, _len << 1>(_bits | (_bits << _len));
-    }
-}
+TEST_CASE("bit cycle") {
+    CHECK(ayBitCycle<std::uint8_t, 1>(0b0) == 0);
+    CHECK(ayBitCycle<std::uint8_t, 1>(0b1) == 0xff);
+    CHECK(ayBitCycle<std::uint8_t, 2>(0b01) == 0x55);
+    CHECK(ayBitCycle<std::uint8_t, 2>(0b10) == 0xaa);
+    CHECK(ayBitCycle<std::uint8_t, 4>(0b0000) == 0);
+    CHECK(ayBitCycle<std::uint8_t, 4>(0b0110) == 0x66);
+    CHECK(ayBitCycle<std::uint16_t, 4>(0b0110) == 0x6666);
 }
 

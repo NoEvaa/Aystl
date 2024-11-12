@@ -22,9 +22,9 @@
 namespace iin {
 namespace detail {
 template <typename T>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
+constexpr std::string_view _getFuncSig() noexcept { return AY_FUNCSIG; }
 
 template <auto _v>
-constexpr std::string_view _getFuncSig() { return AY_FUNCSIG; }
+constexpr std::string_view _getFuncSig() noexcept { return AY_FUNCSIG; }
 }
 }

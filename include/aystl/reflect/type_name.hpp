@@ -19,7 +19,7 @@
 
 namespace iin {
 template <typename T>
-constexpr std::string_view getTypeName() {
+constexpr std::string_view getTypeName() noexcept {
     constexpr auto sample = detail::_getFuncSig<int>();
     constexpr auto entity = detail::_getFuncSig<T>();
 

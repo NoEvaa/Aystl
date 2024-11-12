@@ -20,12 +20,12 @@
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
 #define AY_STR(s)      AY_STR_IMPL(s)
-#define AY_EXTNED(...) AY_EXTEND_IMPL(__VA_ARGS__)
+#define AY_EXPAND(...) AY_EXPAND_IMPL(__VA_ARGS__)
 #define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
 
 #define AY_CAT_IMPL(a, b) a##b
 #define AY_STR_IMPL(a) #a
-#define AY_EXTEND_IMPL(...) __VA_ARGS__
+#define AY_EXPAND_IMPL(...) __VA_ARGS__
 #define AY_EMPTY_IMPL(...)
 
 #if defined(AY_CC_MSVC)

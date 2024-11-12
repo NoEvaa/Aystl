@@ -21,19 +21,19 @@
 
 namespace iin {
 template <EnumType Ty, typename RetTy = Ty>
-constexpr RetTy ayEnumAnd(Ty a, Ty b) {
+constexpr RetTy ayEnumAnd(Ty a, Ty b) noexcept {
     using _type = std::underlying_type_t<Ty>;
     return static_cast<RetTy>(static_cast<_type>(a) & static_cast<_type>(b));
 }
 
 template <EnumType Ty, typename RetTy = Ty>
-constexpr RetTy ayEnumOr(Ty a, Ty b) {
+constexpr RetTy ayEnumOr(Ty a, Ty b) noexcept {
     using _type = std::underlying_type_t<Ty>;
     return static_cast<RetTy>(static_cast<_type>(a) | static_cast<_type>(b));
 }
 
 template <EnumType Ty>
-constexpr bool ayEnumFuzzyMatch(Ty _test, Ty _target) {
+constexpr bool ayEnumFuzzyMatch(Ty _test, Ty _target) noexcept {
     return ayEnumAnd(_test, _target) == _target;
 }
 }

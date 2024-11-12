@@ -40,7 +40,7 @@ concept IntSeqType = detail::is_int_seq<T>::value;
 namespace detail {
 template <std::integral T, T... Is, std::integral T2, T2... Is2>
 constexpr auto _concat_two_int_seqs_impl(
-    int_seq<T, Is...>, int_seq<T2, Is2...>) {
+    int_seq<T, Is...>, int_seq<T2, Is2...>) noexcept {
     return int_seq<T, Is..., Is2...>{};
 };
 

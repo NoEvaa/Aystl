@@ -22,7 +22,7 @@
 namespace iin {
 template <auto _enum>
 requires std::is_enum_v<decltype(_enum)>
-constexpr std::string_view getEnumName() {
+constexpr std::string_view getEnumName() noexcept {
     constexpr auto sample = detail::_getFuncSig<0>();
     constexpr auto entity = detail::_getFuncSig<_enum>();
 
@@ -35,7 +35,7 @@ constexpr std::string_view getEnumName() {
     return entity.substr(lpos, cnt);
 }
 
-constexpr bool isDeclaredEnum(std::string_view enum_name) {
+constexpr bool isDeclaredEnum(std::string_view enum_name) noexcept {
     return (enum_name.find('(') == std::string_view::npos);
 }
 

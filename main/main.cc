@@ -38,14 +38,6 @@ std::string_view getFuncName() {
 
 int main()
 {
-    using dde = num_limits<double>;
-    auto ii = dde::vInf();
-    std::cout << dde::isInf(-ii) << std::endl;
-    std::cout << std::hex << num_limits<double>::vInf() << std::endl;
-    std::cout << std::hex << num_limits<double>::vNan() << std::endl;
-    std::cout << std::uint32_t(-1) << std::endl;
-    std::cout << std::numeric_limits<std::uint32_t>::min() << std::endl;
-
     getFuncName<getEnumName<CmpOp::kEQ>>();
 
     std::cout << getEnumName<CmpOp::kEQ>() << std::endl;

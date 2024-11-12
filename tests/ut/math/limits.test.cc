@@ -29,7 +29,33 @@ TEST_CASE("num limits signed int") {
 
     CHECK(int8_limits::vMax() < int8_limits::vInf());
     CHECK(int8_limits::vMin() > -int8_limits::vInf());
+    CHECK(int8_limits::vNan() != int8_limits::vInf());
 }
 
-TEST_CASE("num limits unsigned int") {}
+TEST_CASE("num limits unsigned int") {
+    using uint8_limits = num_limits<std::uint8_t>;
+
+    CHECK(uint8_limits::isMax(uint8_limits::vMax()));
+    CHECK(uint8_limits::isMin(uint8_limits::vMin()));
+    CHECK(uint8_limits::isInf(uint8_limits::vInf()));
+    CHECK(uint8_limits::isNan(uint8_limits::vNan()));
+
+    CHECK(uint8_limits::vMax() < uint8_limits::vInf());
+    CHECK(uint8_limits::vMin() == 0);
+    CHECK(uint8_limits::vNan() != uint8_limits::vInf());
+}
+
+TEST_CASE("num limits double") {
+    using double_limits = num_limits<double>;
+
+    CHECK(double_limits::isMax(double_limits::vMax()));
+    CHECK(double_limits::isMin(double_limits::vMin()));
+    CHECK(double_limits::isInf(double_limits::vInf()));
+    CHECK(double_limits::isInf(-double_limits::vInf()));
+    CHECK(double_limits::isNan(double_limits::vNan()));
+
+    CHECK(double_limits::vMax() < double_limits::vInf());
+    CHECK(double_limits::vMin() > -double_limits::vInf());
+    CHECK(double_limits::vNan() != double_limits::vInf());
+}
 

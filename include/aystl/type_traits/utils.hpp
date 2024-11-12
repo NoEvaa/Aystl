@@ -18,6 +18,19 @@
 #include <type_traits>
 
 namespace iin {
+template <typename... Ts>
+struct overload : Ts... {
+    using Ts::operator()...;
+};
+
+template <typename... Ts>
+overload(Ts...) -> overload<Ts...>;
+
+template <auto _v>
+struct value_t {
+    static constexpr auto value = _v;
+};
+
 template <class... Args>
 using is_any_of = std::disjunction<Args...>;
 

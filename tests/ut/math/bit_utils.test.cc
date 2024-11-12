@@ -25,6 +25,7 @@ TEST_CASE("bit cycle") {
     CHECK(ayBitCycle<std::uint8_t, 2>(0b10) == 0xaa);
     CHECK(ayBitCycle<std::uint8_t, 4>(0b0000) == 0);
     CHECK(ayBitCycle<std::uint8_t, 4>(0b0110) == 0x66);
-    CHECK(ayBitCycle<std::uint16_t, 4>(0b0110) == 0x6666);
+    CHECK(ayBitCycle<std::uint16_t, 4>(0x6) == 0x6666);
+    CHECK(ayBitCycle<std::uint32_t, 8>(0x1a) == 0x1a1a1a1a);
 }
 

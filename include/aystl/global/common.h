@@ -28,6 +28,8 @@
 #define AY_EXPAND_IMPL(...) __VA_ARGS__
 #define AY_EMPTY_IMPL(...)
 
+#define AY_UNUSED(...) static_cast<void>(__VA_ARGS__)
+
 #if defined(AY_CC_MSVC)
 #define AY_FUNCSIG __FUNCSIG__
 #else

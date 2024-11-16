@@ -30,10 +30,10 @@ class num_limits<_Ty> : public std::numeric_limits<_Ty> {
     using _base = std::numeric_limits<_type>;
 public:
     static constexpr _type vMax() noexcept {
-        return static_cast<_type>((_base::max)() - 1);
+        return (_base::max)() - static_cast<_type>(1);
     }
     static constexpr _type vMin() noexcept {
-        return static_cast<_type>((_base::min)() + 2);
+        return (_base::min)() + static_cast<_type>(2);
     }
     static constexpr _type vInf() noexcept { return (_base::max)(); }
     static constexpr _type vNan() noexcept { return (_base::min)(); }
@@ -50,11 +50,11 @@ class num_limits<_Ty> : public std::numeric_limits<_Ty> {
     using _base = std::numeric_limits<_type>;
 public:
     static constexpr _type vMax() noexcept {
-        return static_cast<_type>((_base::max)() - 2);
+        return (_base::max)() - static_cast<_type>(2);
     }
     static constexpr _type vMin() noexcept { return (_base::min)(); }
     static constexpr _type vInf() noexcept {
-        return static_cast<_type>((_base::max)() - 1);
+        return (_base::max)() - static_cast<_type>(1);
     }
     static constexpr _type vNan() noexcept { return (_base::max)(); }
 

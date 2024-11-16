@@ -21,6 +21,11 @@ namespace iin {
 struct null_t;
 struct empty_t {};
 
+struct any_t {
+    template <typename U>
+    constexpr operator U();
+};
+
 template <typename T>
 struct type_t {
     using type = T;

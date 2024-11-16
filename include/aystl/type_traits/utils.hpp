@@ -18,6 +18,19 @@
 #include <type_traits>
 
 namespace iin {
+struct null_t;
+struct empty_t {};
+
+template <typename T>
+struct type_t {
+    using type = T;
+};
+
+template <auto _v>
+struct value_t {
+    static constexpr auto value = _v;
+};
+
 template <typename... Ts>
 struct overload : Ts... {
     using Ts::operator()...;
@@ -25,11 +38,6 @@ struct overload : Ts... {
 
 template <typename... Ts>
 overload(Ts...) -> overload<Ts...>;
-
-template <auto _v>
-struct value_t {
-    static constexpr auto value = _v;
-};
 
 template <class... Args>
 using is_any_of = std::disjunction<Args...>;
@@ -63,37 +71,25 @@ template <typename T>
 constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
 
 template <template <typename...> class Tmpl, typename... Args>
-struct wrap_tmpl {
-    using type = Tmpl<Args...>;
-};
+struct wrap_tmpl : type_t<Tmpl<Args...>> {};
 
 template <template <typename...> class Tmpl, typename... TmplArgs, typename... Args>
-struct wrap_tmpl<Tmpl, Tmpl<TmplArgs...>, Args...> {
-    using type = Tmpl<TmplArgs...>;
-};
+struct wrap_tmpl<Tmpl, Tmpl<TmplArgs...>, Args...> : type_t<Tmpl<TmplArgs...>> {};
 
 template <typename T, typename... Args>
-struct replace_tmpl_args {
-    using type = T;
-};
+struct replace_tmpl_args : type_t<T> {};
 
 template <template <typename...> class Tmpl, typename... TmplArgs, typename... Args>
 requires is_type_v<Tmpl<Args...>>
-struct replace_tmpl_args<Tmpl<TmplArgs...>, Args...> {
-    using type = Tmpl<Args...>;
-};
+struct replace_tmpl_args<Tmpl<TmplArgs...>, Args...> : type_t<Tmpl<Args...>> {};
 
 template <typename T, template <typename...> class Tmpl>
-struct replace_tmpl_wrapper {
-    using type = T;
-};
+struct replace_tmpl_wrapper : type_t<T> {};
 
 template <template <typename...> class Tmpl1,
     template <typename...> class Tmpl2, typename... Args>
 requires is_type_v<Tmpl2<Args...>>
-struct replace_tmpl_wrapper<Tmpl1<Args...>, Tmpl2> {
-    using type = Tmpl2<Args...>;
-};
+struct replace_tmpl_wrapper<Tmpl1<Args...>, Tmpl2> : type_t<Tmpl2<Args...>> {};
 }
 
 template <template <typename...> class Tmpl, typename... Args>

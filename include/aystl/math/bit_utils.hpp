@@ -32,7 +32,8 @@ constexpr Ty ayBitCycle(Ty _bits) noexcept {
     if constexpr (_s == _len) {
         return _bits;
     } else {
-        return ayBitCycle<Ty, _len << 1>(_bits | (_bits << _len));
+        return ayBitCycle<Ty, static_cast<Ty>(_len << 1)>(
+            static_cast<Ty>(_bits | (_bits << _len)));
     }
 }
 }

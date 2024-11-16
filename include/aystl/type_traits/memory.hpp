@@ -22,24 +22,16 @@
 
 namespace iin {
 template <typename T>
-struct remove_smart_ptr {
-    using type = T;
-};
+struct remove_smart_ptr : type_t<T> {};
 
 template <typename T>
-struct remove_smart_ptr<std::shared_ptr<T>> {
-    using type = T;
-};
+struct remove_smart_ptr<std::shared_ptr<T>> : type_t<T> {};
 
 template <typename T>
-struct remove_smart_ptr<std::weak_ptr<T>> {
-    using type = T;
-};
+struct remove_smart_ptr<std::weak_ptr<T>> : type_t<T> {};
 
 template <typename T>
-struct remove_smart_ptr<std::unique_ptr<T>> {
-    using type = T;
-};
+struct remove_smart_ptr<std::unique_ptr<T>> : type_t<T> {};
 
 template <typename T>
 using remove_smart_ptr_t = remove_smart_ptr<T>;

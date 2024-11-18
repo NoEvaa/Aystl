@@ -25,6 +25,10 @@ TEST_CASE("ct_str: hello world") {
     CHECK(!test_str_1::value.empty());
     CHECK(std::string_view(test_str_1::value) == std::string_view{"hello world"});
     CHECK(test_str_1::value == ct_str_t<"hello world">::value);
+    using test_cs_1 = char_seq_t<test_str_1::value>::type;
+    CHECK(test_cs_1::size() == 11);
+    CHECK(std::is_same_v<test_cs_1, char_seq<char,
+          'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 }
 
 TEST_CASE("ct_str: empty") {
@@ -34,6 +38,7 @@ TEST_CASE("ct_str: empty") {
     CHECK(test_str_1::value.empty());
     CHECK(std::string_view(test_str_1::value) == std::string_view{""});
     CHECK(test_str_1::value == test_str_1::value);
+    CHECK(char_seq_t<test_str_1::value>::type::size() == 0);
 }
 
 TEST_CASE("ct_str: +") {

@@ -27,19 +27,15 @@ template <typename CharT, std::size_t N>
 struct ct_str_base {
     std::array<CharT, N> value{};
 
-    consteval ct_str_base() noexcept = default;
-    consteval ct_str_base(char const * p_s, std::size_t sz)  noexcept {
-        for (std::size_t i = 0; i < sz; ++i) {
-            value[i] = p_s[i];
+    consteval ct_str_base() = default;
+    consteval ct_str_base(CharT const (&s)[N]) noexcept {
+        for (std::size_t i = 0; i < N; ++i) {
+            value[i] = s[i];
         }
     }
-    consteval ct_str_base(CharT const (&s)[N]) noexcept
-        : ct_str_base(s, N) {}
-    consteval ct_str_base(std::string_view s) noexcept
-        : ct_str_base(s.data(), s.size()) {}
 
     static constexpr std::size_t size() noexcept {
-        return N - static_cast<std::size_t>(1);
+        return N - 1U;
     }
     static constexpr std::size_t capacity() noexcept {
         return N;
@@ -48,8 +44,9 @@ struct ct_str_base {
         return size() == 0;
     }
 
-    constexpr operator std::string_view() const noexcept {
-        return std::string_view{ value.cbegin(), size() };
+    template<class _Traits>
+    constexpr operator std::basic_string_view<CharT, _Traits>() const noexcept {
+        return std::basic_string_view<CharT, _Traits>{ value.data(), size() };
     }
 
     template <std::size_t M>
@@ -72,7 +69,13 @@ struct ct_str_base {
 };
 }
 template <std::size_t N>
-using ct_str = detail::ct_str_base<char, N>;
+struct ct_str : detail::ct_str_base<char, N> {
+    using _base = detail::ct_str_base<char, N>;
+    consteval ct_str() = default;
+    consteval ct_str(char const (&s)[N]) noexcept
+        : detail::ct_str_base<char, N>(s) {}
+
+};
 
 template <ct_str _s>
 struct ct_str_t : value_t<_s> {};

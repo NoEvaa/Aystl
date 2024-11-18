@@ -19,6 +19,19 @@
 using namespace iin;
 
 TEST_CASE("ct_str") {
-    //using xxx = ct_str_t<"hello world">;
+    using test_str_1 = ct_str_t<"hello world">;
+    CHECK(test_str_1::value.size() == 11);
+    CHECK(test_str_1::value.capacity() == 12);
+    CHECK(!test_str_1::value.empty());
+    CHECK(std::string_view(test_str_1::value) == std::string_view{"hello world"});
+    CHECK(test_str_1::value == ct_str_t<"hello world">::value);
+}
+
+TEST_CASE("ct_str: empty") {
+    using test_str_1 = ct_str_t<"">;
+    CHECK(test_str_1::value.size() == 11);
+    CHECK(test_str_1::value.capacity() == 12);
+    CHECK(!test_str_1::value.empty());
+    CHECK(std::string_view(test_str_1::value) == std::string_view{"hello world"});
 }
 

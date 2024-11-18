@@ -29,9 +29,9 @@ TEST_CASE("ct_str: hello world") {
 
 TEST_CASE("ct_str: empty") {
     using test_str_1 = ct_str_t<"">;
-    CHECK(test_str_1::value.size() == 11);
-    CHECK(test_str_1::value.capacity() == 12);
-    CHECK(!test_str_1::value.empty());
+    CHECK(test_str_1::value.size() == 0);
+    CHECK(test_str_1::value.capacity() == 1);
+    CHECK(test_str_1::value.empty());
     CHECK(std::string_view(test_str_1::value) == std::string_view{""});
     CHECK(test_str_1::value == test_str_1::value);
 }

@@ -15,7 +15,7 @@
  */
 #include "testlib.h"
 #include <type_traits>
-#include "aystl/type_traits/int_seq.hpp"
+#include "aystl/utility/int_seq.hpp"
 
 using namespace iin;
 

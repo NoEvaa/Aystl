@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include "aystl/type_traits/utils.hpp"
-#include "aystl/type_traits/enum.hpp"
-#include "aystl/type_traits/memory.hpp"
-#include "aystl/type_traits/optional.hpp"
+#define AYTESTM_CONFIG_MAIN
+#include "testlib.h"
 

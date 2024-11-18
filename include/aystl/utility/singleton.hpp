@@ -15,8 +15,16 @@
  */
 #pragma once
 
-#include "aystl/type_traits/utils.hpp"
-#include "aystl/type_traits/enum.hpp"
-#include "aystl/type_traits/memory.hpp"
-#include "aystl/type_traits/optional.hpp"
+namespace iin {
+template <typename T>
+class Singleton : private T {
+    Singleton() {}
+    ~Singleton() {}
+public:
+    static T & instance() {
+        static Singleton<T> s_ins;
+        return s_ins;
+    }
+};
+}
 

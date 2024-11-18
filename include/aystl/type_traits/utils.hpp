@@ -21,6 +21,11 @@ namespace iin {
 struct null_t;
 struct empty_t {};
 
+struct any_t {
+    template <typename U>
+    constexpr operator U();
+};
+
 template <typename T>
 struct type_t {
     using type = T;
@@ -29,6 +34,18 @@ struct type_t {
 template <auto _v>
 struct value_t {
     static constexpr auto value = _v;
+};
+
+template <typename... Ts>
+struct type_list {
+    template <template <typename...> class Tmpl>
+    using wrapped = Tmpl<Ts...>;
+};
+
+template <auto... Vs>
+struct value_list {
+    template <template <auto...> class Tmpl>
+    using wrapped = Tmpl<Vs...>;
 };
 
 template <typename... Ts>
@@ -100,11 +117,5 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
-
-template <typename... Args>
-struct wrapped_impl {
-    template <template <typename...> class Tmpl>
-    using wrapped = Tmpl<Args...>;
-};
 }
 

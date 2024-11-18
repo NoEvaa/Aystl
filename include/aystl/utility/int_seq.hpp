@@ -26,6 +26,9 @@ namespace iin {
 template <std::integral T, T... Is>
 using int_seq = std::integer_sequence<T, Is...>;
 
+template <std::size_t... Is>
+using index_seq = int_seq<std::size_t, Is...>;
+
 namespace detail {
 template <typename T>
 struct is_int_seq : std::false_type {};
@@ -88,6 +91,6 @@ template <int _start, int _stop, int _step = 1>
 using ct_range_t = monotone_int_seq_t<int, _start, _stop, _step>;
 
 template <IntSeqType... Ts>
-struct int_multi_seqs : wrapped_impl<Ts...> {};
+struct int_multi_seqs : type_list<Ts...> {};
 }
 

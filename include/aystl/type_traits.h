@@ -19,5 +19,4 @@
 #include "aystl/type_traits/enum.hpp"
 #include "aystl/type_traits/memory.hpp"
 #include "aystl/type_traits/optional.hpp"
-#include "aystl/type_traits/int_seq.hpp"
 

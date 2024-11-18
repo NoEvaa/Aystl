@@ -22,9 +22,18 @@
 #include "aystl/type_traits/utils.hpp"
 
 namespace iin {
+template<typename CharT, CharT... Cs>
+struct char_seq
+{
+    using value_type = CharT;
+    static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
+};
+
 template <typename CharT, std::size_t N>
 struct ct_str {
-    std::array<CharT, N> value{};
+    using value_type = CharT;
+
+    std::array<value_type, N> value{};
 
     consteval ct_str() = default;
     consteval ct_str(CharT const (&s)[N]) noexcept {

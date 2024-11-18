@@ -37,6 +37,18 @@ struct value_t {
 };
 
 template <typename... Ts>
+struct type_list {
+    template <template <typename...> class Tmpl>
+    using wrapped = Tmpl<Ts...>;
+};
+
+template <auto... Vs>
+struct value_list {
+    template <template <auto...> class Tmpl>
+    using wrapped = Tmpl<Vs...>;
+};
+
+template <typename... Ts>
 struct overload : Ts... {
     using Ts::operator()...;
 };
@@ -105,11 +117,5 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
-
-template <typename... Args>
-struct wrapped_impl {
-    template <template <typename...> class Tmpl>
-    using wrapped = Tmpl<Args...>;
-};
 }
 

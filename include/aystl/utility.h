@@ -18,5 +18,6 @@
 #include "aystl/utility/singleton.hpp"
 #include "aystl/utility/type_list.hpp"
 #include "aystl/utility/value_list.hpp"
+#include "aystl/utility/int_seq.hpp"
 #include "aystl/utility/ct_string.hpp"
 

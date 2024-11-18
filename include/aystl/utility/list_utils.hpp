@@ -16,7 +16,5 @@
 #pragma once
 
 namespace iin {
-template <auto... Vs>
-struct value_list {};
 }
 

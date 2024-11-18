@@ -22,13 +22,12 @@
 #include "aystl/type_traits/utils.hpp"
 
 namespace iin {
-namespace detail {
 template <typename CharT, std::size_t N>
-struct ct_str_base {
+struct ct_str {
     std::array<CharT, N> value{};
 
-    consteval ct_str_base() = default;
-    consteval ct_str_base(CharT const (&s)[N]) noexcept {
+    consteval ct_str() = default;
+    consteval ct_str(CharT const (&s)[N]) noexcept {
         for (std::size_t i = 0; i < N; ++i) {
             value[i] = s[i];
         }
@@ -45,37 +44,30 @@ struct ct_str_base {
     }
 
     template<class _Traits>
-    constexpr operator std::basic_string_view<CharT, _Traits>() const noexcept {
+    constexpr explicit operator std::basic_string_view<CharT, _Traits>() const noexcept {
         return std::basic_string_view<CharT, _Traits>{ value.data(), size() };
     }
-
-    template <std::size_t M>
-    constexpr bool operator==(ct_str_base<CharT, M> const & rhs) noexcept {
-        return static_cast<std::string_view>(*this)
-            == static_cast<std::string_view>(rhs);
-    }
-
-    template <std::size_t M>
-    constexpr auto operator+(ct_str_base<CharT, M> const & rhs) noexcept {
-        ct_str_base<CharT, N + M - 1> ret{};
-        for (std::size_t i = 0; i < size(); ++i) {
-            ret.value[i] = value[i];
-        }
-        for (std::size_t i = 0; i < rhs.capacity(); ++i) {
-            ret.value[i + N - 1] = rhs.value[i];
-        }
-        return ret;
-    }
 };
+
+template <typename CharT, std::size_t N, std::size_t M>
+constexpr bool operator==(ct_str<CharT, N> const & lhs,
+    ct_str<CharT, M> const & rhs) noexcept {
+    return static_cast<std::string_view>(lhs)
+        == static_cast<std::string_view>(rhs);
 }
-template <std::size_t N>
-struct ct_str : detail::ct_str_base<char, N> {
-    using _base = detail::ct_str_base<char, N>;
-    consteval ct_str() = default;
-    consteval ct_str(char const (&s)[N]) noexcept
-        : detail::ct_str_base<char, N>(s) {}
 
-};
+template <typename CharT, std::size_t N, std::size_t M>
+consteval auto operator+(ct_str<CharT, N> const & lhs,
+    ct_str<CharT, M> const & rhs) noexcept -> ct_str<CharT, N + M - 1> {
+    ct_str<CharT, N + M - 1> ret{};
+    for (std::size_t i = 0; i < lhs.size(); ++i) {
+        ret.value[i] = lhs.value[i];
+    }
+    for (std::size_t i = 0; i < rhs.capacity(); ++i) {
+        ret.value[i + N - 1] = rhs.value[i];
+    }
+    return ret;
+}
 
 template <ct_str _s>
 struct ct_str_t : value_t<_s> {};

@@ -18,7 +18,7 @@
 
 using namespace iin;
 
-TEST_CASE("ct_str") {
+TEST_CASE("ct_str: hello world") {
     using test_str_1 = ct_str_t<"hello world">;
     CHECK(test_str_1::value.size() == 11);
     CHECK(test_str_1::value.capacity() == 12);
@@ -32,6 +32,14 @@ TEST_CASE("ct_str: empty") {
     CHECK(test_str_1::value.size() == 11);
     CHECK(test_str_1::value.capacity() == 12);
     CHECK(!test_str_1::value.empty());
-    CHECK(std::string_view(test_str_1::value) == std::string_view{"hello world"});
+    CHECK(std::string_view(test_str_1::value) == std::string_view{""});
+    CHECK(test_str_1::value == test_str_1::value);
+}
+
+TEST_CASE("ct_str: +") {
+    using test_str_1 = ct_str_t<"abcdef">;
+    using test_str_2 = ct_str_t<"123456">;
+    using test_str_12 = ct_str_t<"abcdef123456">;
+    CHECK(test_str_1::value + test_str_2::value == test_str_12::value);
 }
 

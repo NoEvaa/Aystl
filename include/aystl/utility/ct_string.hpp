@@ -24,22 +24,6 @@
 #include "aystl/utility/int_seq.hpp"
 
 namespace iin {
-template<typename CharT, CharT... Cs>
-struct char_seq_t
-{
-    using value_type = CharT;
-    static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
-};
-
-namespace detail {
-template <typename T>
-struct is_char_seq : std::false_type {};
-template<typename CharT, CharT... Cs>
-struct is_char_seq<char_seq_t<CharT, Cs...>> : std::true_type {};
-}
-template <typename T>
-concept CharSeqType = detail::is_char_seq<T>::value;
-
 template <typename CharT, std::size_t N>
 struct ct_str_t {
     using value_type = CharT;
@@ -94,19 +78,33 @@ consteval auto operator+(ct_str_t<CharT, N> const & lhs,
     return ret;
 }
 
+template<typename CharT, CharT... Cs>
+struct char_seq
+{
+    using value_type = CharT;
+    static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
+};
+
+namespace detail {
+template <typename T>
+struct is_char_seq : std::false_type {};
+template<typename CharT, CharT... Cs>
+struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
+}
+template <typename T>
+concept CharSeqType = detail::is_char_seq<T>::value;
+
 namespace detail{
-template <ct_str _s>
+template <ct_str_t _s>
 consteval auto ct_str_to_char_seq() noexcept {
     using _type     = decltype(_s);
     using char_type = typename _type::value_type;
     return [&]<auto... Is>(index_seq<Is...>) {
-        return char_seq_t<char_type, std::get<Is>(_s.value)...>{};
+        return char_seq<char_type, std::get<Is>(_s.value)...>{};
     }(std::make_index_sequence<_s.size()>{});
 }
 }
-template <auto _v>
-struct char_seq : type_t<char_seq_t<char>> {};
-template <ct_str _s>
-struct char_seq<_s> : type_t<decltype(detail::ct_str_to_char_seq<_s>())> {};
+template <ct_str_t _s>
+using char_seq_t = typename type_t<decltype(detail::ct_str_to_char_seq<_s>())>::type;
 }
 

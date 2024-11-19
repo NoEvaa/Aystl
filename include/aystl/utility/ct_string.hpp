@@ -25,7 +25,7 @@
 
 namespace iin {
 template<typename CharT, CharT... Cs>
-struct char_seq
+struct char_seq_t
 {
     using value_type = CharT;
     static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
@@ -34,21 +34,20 @@ struct char_seq
 namespace detail {
 template <typename T>
 struct is_char_seq : std::false_type {};
-
 template<typename CharT, CharT... Cs>
-struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
+struct is_char_seq<char_seq_t<CharT, Cs...>> : std::true_type {};
 }
 template <typename T>
 concept CharSeqType = detail::is_char_seq<T>::value;
 
 template <typename CharT, std::size_t N>
-struct ct_str {
+struct ct_str_t {
     using value_type = CharT;
 
     std::array<value_type, N> value{};
 
-    consteval ct_str() = default;
-    consteval ct_str(CharT const (&s)[N]) noexcept {
+    consteval ct_str_t() = default;
+    consteval ct_str_t(CharT const (&s)[N]) noexcept {
         for (std::size_t i = 0; i < N; ++i) {
             value[i] = s[i];
         }
@@ -70,20 +69,22 @@ struct ct_str {
     }
 };
 
-template <ct_str _s>
-struct ct_str_t : value_t<_s> {};
+template <ct_str_t _s>
+struct ct_str : value_t<_s> {};
+template <ct_str_t _s>
+constexpr auto ct_str_v = ct_str<_s>::value;
 
 template <typename CharT, std::size_t N, std::size_t M>
-constexpr bool operator==(ct_str<CharT, N> const & lhs,
-    ct_str<CharT, M> const & rhs) noexcept {
+constexpr bool operator==(ct_str_t<CharT, N> const & lhs,
+    ct_str_t<CharT, M> const & rhs) noexcept {
     return static_cast<std::string_view>(lhs)
         == static_cast<std::string_view>(rhs);
 }
 
 template <typename CharT, std::size_t N, std::size_t M>
-consteval auto operator+(ct_str<CharT, N> const & lhs,
-    ct_str<CharT, M> const & rhs) noexcept -> ct_str<CharT, N + M - 1> {
-    ct_str<CharT, N + M - 1> ret{};
+consteval auto operator+(ct_str_t<CharT, N> const & lhs,
+    ct_str_t<CharT, M> const & rhs) noexcept -> ct_str_t<CharT, N + M - 1> {
+    ct_str_t<CharT, N + M - 1> ret{};
     for (std::size_t i = 0; i < lhs.size(); ++i) {
         ret.value[i] = lhs.value[i];
     }
@@ -99,14 +100,13 @@ consteval auto ct_str_to_char_seq() noexcept {
     using _type     = decltype(_s);
     using char_type = typename _type::value_type;
     return [&]<auto... Is>(index_seq<Is...>) {
-        return char_seq<char_type, std::get<Is>(_s.value)...>{};
+        return char_seq_t<char_type, std::get<Is>(_s.value)...>{};
     }(std::make_index_sequence<_s.size()>{});
 }
 }
-
 template <auto _v>
-struct char_seq_t;
+struct char_seq : type_t<char_seq_t<char>> {};
 template <ct_str _s>
-struct char_seq_t<_s> : type_t<decltype(detail::ct_str_to_char_seq<_s>())> {};
+struct char_seq<_s> : type_t<decltype(detail::ct_str_to_char_seq<_s>())> {};
 }
 

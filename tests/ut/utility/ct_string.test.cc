@@ -18,28 +18,37 @@
 
 using namespace iin;
 
-TEST_CASE("ct_str: hello world") {
-    using test_str_1 = ct_str_t<"hello world">;
+using test_str_1 = ct_str_t<"hello world">;
+using test_str_2 = ct_str_t<"">;
+using test_str_3 = ct_str_t<"abcdef">;
+using test_str_4 = ct_str_t<"123456">;
+using test_str_34 = ct_str_t<"abcdef123456">;
+
+TEST_CASE("ct_str_t: basic") {
     CHECK(test_str_1::value.size() == 11);
     CHECK(test_str_1::value.capacity() == 12);
     CHECK(!test_str_1::value.empty());
     CHECK(std::string_view(test_str_1::value) == std::string_view{"hello world"});
-    CHECK(test_str_1::value == ct_str_t<"hello world">::value);
+    CHECK(test_str_1::value == ct_str_v<"hello world">);
+
+    CHECK(test_str_2::value.size() == 0);
+    CHECK(test_str_2::value.capacity() == 1);
+    CHECK(test_str_2::value.empty());
+    CHECK(std::string_view(test_str_2::value) == std::string_view{""});
+    CHECK(test_str_2::value == test_str_2::value);
 }
 
-TEST_CASE("ct_str: empty") {
-    using test_str_1 = ct_str_t<"">;
-    CHECK(test_str_1::value.size() == 0);
-    CHECK(test_str_1::value.capacity() == 1);
-    CHECK(test_str_1::value.empty());
-    CHECK(std::string_view(test_str_1::value) == std::string_view{""});
-    CHECK(test_str_1::value == test_str_1::value);
+TEST_CASE("ct_str_t: +") {
+    CHECK(test_str_3::value + test_str_4::value == test_str_34::value);
 }
 
-TEST_CASE("ct_str: +") {
-    using test_str_1 = ct_str_t<"abcdef">;
-    using test_str_2 = ct_str_t<"123456">;
-    using test_str_12 = ct_str_t<"abcdef123456">;
-    CHECK(test_str_1::value + test_str_2::value == test_str_12::value);
+TEST_CASE("char_seq: basic") {
+    using test_cs_1 = char_seq_t<test_str_1::value>;
+    CHECK(detail::is_char_seq<test_cs_1>::value);
+    CHECK(test_cs_1::size() == 11);
+    CHECK(std::is_same_v<test_cs_1, char_seq<char,
+          'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
+
+    CHECK(char_seq_t<test_str_2::value>::size() == 0);
 }
 

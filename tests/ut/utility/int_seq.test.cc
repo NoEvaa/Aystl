@@ -54,16 +54,16 @@ TEST_CASE("monotone int seq") {
     CHECK(std::is_same_v<monotone_int_seq_t<int, -1, 1, -1>, int_seq<int>>);
 }
 
-TEST_CASE("int multi seqs") {
-    using test_mseqs_t1 = int_multi_seqs<test_seq_1, test_seq_2>;
+TEST_CASE("int seq list") {
+    using test_mseqs_t1 = int_seq_list<test_seq_1, test_seq_2>;
     using test_seq_t1 = test_mseqs_t1::template wrapped<concat_int_seqs_t>;
     CHECK(std::is_same_v<test_seq_t1, test_seq_1_2>);
 
-    using test_mseqs_t2 = int_multi_seqs<test_seq_0, test_seq_3>;
+    using test_mseqs_t2 = int_seq_list<test_seq_0, test_seq_3>;
     using test_seq_t2 = test_mseqs_t2::template wrapped<concat_int_seqs_t>;
     CHECK(std::is_same_v<test_seq_t2, test_seq_2>);
 
-    using test_mseqs_t3 = int_multi_seqs<
+    using test_mseqs_t3 = int_seq_list<
         monotone_int_seq_t<int, -3, 1, 1>,
         monotone_int_seq_t<int, 1, 5, 1>,
         monotone_int_seq_t<int, 5, 8, 1>

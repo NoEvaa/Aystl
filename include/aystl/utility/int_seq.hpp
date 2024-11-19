@@ -36,7 +36,6 @@ struct is_int_seq : std::false_type {};
 template <std::integral T, T... Is>
 struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
 }
-
 template <typename T>
 concept IntSeqType = detail::is_int_seq<T>::value;
 
@@ -91,6 +90,6 @@ template <int _start, int _stop, int _step = 1>
 using ct_range_t = monotone_int_seq_t<int, _start, _stop, _step>;
 
 template <IntSeqType... Ts>
-struct int_multi_seqs : type_list<Ts...> {};
+struct int_seq_list : type_list<Ts...> {};
 }
 

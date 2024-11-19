@@ -9,8 +9,8 @@
 #include "aystl/math.h"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
-#include "aystl/type_traits/int_seq.hpp"
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/utility.h"
 #include "aystl/math/limits.hpp"
 
 
@@ -47,7 +47,7 @@ int main()
     std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
 
     std::cout << getTypeName<double>() << std::endl;
-    std::cout << getTypeName<int_multi_seqs<>>() << std::endl;
+    std::cout << getTypeName<int_seq_list<>>() << std::endl;
     std::cout << getTypeName<std::shared_ptr<int>>() << std::endl;
     std::cout << getTypeName<std::int64_t*>() << std::endl;
 

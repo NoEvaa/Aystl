@@ -20,21 +20,24 @@
 namespace iin {
 struct null_t;
 struct empty_t {};
-
 struct any_t {
     template <typename U>
     constexpr operator U();
 };
 
 template <typename T>
-struct type_t {
-    using type = T;
-};
-
+struct type_t { using type = T; };
 template <auto _v>
-struct value_t {
-    static constexpr auto value = _v;
-};
+struct value_t { static constexpr auto value = _v; };
+
+template <typename T>
+struct take_off { using thing = T; };
+template <>
+struct take_off<empty_t> { using thing = void; };
+template <typename T>
+struct take_off<type_t<T>> { using thing = T; };
+template <auto _v>
+struct take_off<value_t<_v>> { static constexpr auto thing = _v; };
 
 template <typename... Ts>
 struct type_list {

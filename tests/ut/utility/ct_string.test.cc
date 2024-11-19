@@ -18,11 +18,11 @@
 
 using namespace iin;
 
-using test_str_1 = ct_str<"hello world">;
-using test_str_2 = ct_str<"">;
-using test_str_3 = ct_str<"abcdef">;
-using test_str_4 = ct_str<"123456">;
-using test_str_34 = ct_str<"abcdef123456">;
+using test_str_1 = ct_str_t<"hello world">;
+using test_str_2 = ct_str_t<"">;
+using test_str_3 = ct_str_t<"abcdef">;
+using test_str_4 = ct_str_t<"123456">;
+using test_str_34 = ct_str_t<"abcdef123456">;
 
 TEST_CASE("ct_str_t: basic") {
     CHECK(test_str_1::value.size() == 11);

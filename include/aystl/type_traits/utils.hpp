@@ -75,21 +75,6 @@ using is_all_of = std::conjunction<Args...>;
 template <class... Args>
 inline constexpr bool is_all_of_v = is_all_of<Args...>::value;
 
-template <typename T, template <typename...> typename Tmpl, typename = void>
-struct is_spec_of : std::false_type {};
-
-template <
-    template <typename...> typename Tmpl1,
-    template <typename...> typename Tmpl2,
-    typename... Args>
-struct is_spec_of<Tmpl1<Args...>, Tmpl2,
-    std::enable_if_t<std::is_same_v<
-        Tmpl1<Args...>,
-        Tmpl2<Args...>>>> : std::true_type {};
-
-template <typename T, template <typename...> typename Tmpl, typename = void>
-inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
-
 namespace detail {
 template <typename T>
 constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;

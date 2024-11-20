@@ -33,6 +33,7 @@ TEST_CASE("is all of") {
     CHECK(!is_all_of_v<std::false_type, std::false_type>);
 }
 
+namespace{
 template <typename T, typename T2 = int>
 struct TestTmpl {};
 template <typename... Args>
@@ -43,22 +44,6 @@ template <typename T, typename T2 = int>
 struct TestTmplB {};
 template <int _>
 struct TestTmplC {};
-
-TEST_CASE("is spec of") {
-    CHECK(is_spec_of_v<TestTmpl<int>, TestTmpl>);
-    CHECK(is_spec_of_v<TestTmpl<int>, Tmpl1>);
-    CHECK(!is_spec_of_v<TestTmpl<int>, Tmpl2>);
-
-    CHECK(is_spec_of_v<Tmpl1<int>, TestTmpl>);
-    CHECK(is_spec_of_v<Tmpl1<int>, Tmpl1>);
-    CHECK(!is_spec_of_v<Tmpl1<int>, Tmpl2>);
-
-    CHECK(is_spec_of_v<Tmpl2<int>, TestTmpl>);
-    CHECK(is_spec_of_v<Tmpl2<int>, Tmpl1>);
-    CHECK(!is_spec_of_v<Tmpl2<int>, Tmpl2>);
-
-    CHECK(!is_spec_of_v<int, TestTmpl>);
-    CHECK(!is_spec_of_v<Tmpl1<int>, TestTmplB>);
 }
 
 TEST_CASE("wrap tmpl") {

@@ -19,7 +19,7 @@
 #include <concepts>
 #include <utility>
 
-#include "aystl/type_traits/cmp.hpp"
+#include "aystl/type_traits/compare.hpp"
 #include "aystl/type_traits/utils.hpp"
 
 namespace iin {

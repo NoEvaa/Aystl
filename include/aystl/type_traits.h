@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include "aystl/type_traits/compare.hpp"
+#include "aystl/type_traits/is_specialization_of.hpp"
 #include "aystl/type_traits/utils.hpp"
 #include "aystl/type_traits/enum.hpp"
 #include "aystl/type_traits/memory.hpp"

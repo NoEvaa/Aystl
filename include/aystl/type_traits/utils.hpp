@@ -32,8 +32,6 @@ struct value_t { static constexpr auto value = _v; };
 
 template <typename T>
 struct take_off { using thing = T; };
-template <>
-struct take_off<empty_t> { using thing = void; };
 template <typename T>
 struct take_off<type_t<T>> { using thing = T; };
 template <auto _v>
@@ -49,7 +47,13 @@ template <auto... Vs>
 struct value_list {
     template <template <auto...> class Tmpl>
     using wrapped = Tmpl<Vs...>;
+
+    template <template <typename...> class Tmpl>
+    using type_wrapped = Tmpl<value_t<Vs>...>;
 };
+
+template <auto... Vs>
+using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
 
 template <typename... Ts>
 struct overload : Ts... {

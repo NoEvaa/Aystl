@@ -24,7 +24,7 @@ using test_str_3 = ct_str_t<"abcdef">;
 using test_str_4 = ct_str_t<"123456">;
 using test_str_34 = ct_str_t<"abcdef123456">;
 
-TEST_CASE("ct_str_t: basic") {
+TEST_CASE("ct_str: basic") {
     CHECK(test_str_1::value.size() == 11);
     CHECK(test_str_1::value.capacity() == 12);
     CHECK(!test_str_1::value.empty());
@@ -38,7 +38,7 @@ TEST_CASE("ct_str_t: basic") {
     CHECK(test_str_2::value == test_str_2::value);
 }
 
-TEST_CASE("ct_str_t: +") {
+TEST_CASE("ct_str: +") {
     CHECK(test_str_3::value + test_str_4::value == test_str_34::value);
 }
 
@@ -50,5 +50,16 @@ TEST_CASE("char_seq: basic") {
           'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
     CHECK(char_seq_t<test_str_2::value>::size() == 0);
+}
+
+TEST_CASE("ct_str_substr_v") {
+    CHECK(ct_str_substr_v<test_str_1::value, 0, 0> == ct_str_v<"">);
+    CHECK(ct_str_substr_v<test_str_1::value, 2, 0> == ct_str_v<"">);
+    CHECK(ct_str_substr_v<test_str_1::value, 100, 1> == ct_str_v<"">);
+    CHECK(ct_str_substr_v<test_str_1::value, 0, 1> == ct_str_v<"h">);
+    CHECK(ct_str_substr_v<test_str_1::value, 1, 2> == ct_str_v<"el">);
+    CHECK(ct_str_substr_v<test_str_1::value, 9, 100> == ct_str_v<"ld">);
+    CHECK(ct_str_substr_v<test_str_1::value, 10, 0> == ct_str_v<"">);
+    CHECK(ct_str_substr_v<test_str_1::value, 10, 1> == ct_str_v<"d">);
 }
 

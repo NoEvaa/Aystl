@@ -27,7 +27,6 @@ namespace iin {
 template <typename CharT, std::size_t N>
 struct ct_str {
     using value_type = CharT;
-
     std::array<value_type, N> value{};
 
     consteval ct_str() = default;
@@ -36,16 +35,18 @@ struct ct_str {
             value[i] = s[i];
         }
     }
+    consteval explicit ct_str(char const * p_s, std::size_t sz) noexcept {
+        for (std::size_t i = 0; i < sz; ++i) {
+            value[i] = p_s[i];
+        }
+        value[sz] = '\0';
+    }
+    consteval explicit ct_str(std::string_view const & s) noexcept
+        : ct_str(s.data(), s.size()) {}
 
-    static constexpr std::size_t size() noexcept {
-        return N - 1U;
-    }
-    static constexpr std::size_t capacity() noexcept {
-        return N;
-    }
-    static constexpr std::size_t empty() noexcept {
-        return size() == 0;
-    }
+    static constexpr std::size_t size() noexcept { return N - 1U; }
+    static constexpr std::size_t capacity() noexcept { return N; }
+    static constexpr std::size_t empty() noexcept { return size() == 0; }
 
     template<class _Traits>
     constexpr explicit operator std::basic_string_view<CharT, _Traits>() const noexcept {
@@ -106,5 +107,21 @@ consteval auto ct_str_to_char_seq() noexcept {
 }
 template <ct_str _s>
 using char_seq_t = typename type_t<decltype(detail::ct_str_to_char_seq<_s>())>::type;
+
+namespace detail {
+template <ct_str _s, std::size_t _pos, std::size_t _len>
+consteval auto _substr() {
+    using char_type = decltype(_s)::value_type;
+    if constexpr (_len == 0 || _pos > _s.size()) {
+        return ct_str<char_type, 1>("");
+    } else if constexpr (_pos + _len > _s.size()) {
+        return _substr<_s, _pos, _s.size() - _pos>();
+    } else {
+        return ct_str<char_type, _len + 1>(std::string_view(_s).substr(_pos, _len));
+    }
+}
+}
+template <ct_str _s, std::size_t _pos, std::size_t _len>
+constexpr auto ct_str_substr_v = detail::_substr<_s, _pos, _len>();
 }
 

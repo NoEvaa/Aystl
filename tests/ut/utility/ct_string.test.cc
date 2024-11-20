@@ -61,5 +61,6 @@ TEST_CASE("ct_str_substr_v") {
     CHECK(ct_str_substr_v<test_str_1::value, 9, 100> == ct_str_v<"ld">);
     CHECK(ct_str_substr_v<test_str_1::value, 10, 0> == ct_str_v<"">);
     CHECK(ct_str_substr_v<test_str_1::value, 10, 1> == ct_str_v<"d">);
+    CHECK(ct_str_substr_v<"abcde", 1, 3> == ct_str_v<"bcd">);
 }
 

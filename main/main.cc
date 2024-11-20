@@ -12,6 +12,7 @@
 #include "aystl/type_traits/utils.hpp"
 #include "aystl/utility.h"
 #include "aystl/math/limits.hpp"
+#include "aystl/utility/function.hpp"
 
 
 using namespace iin;
@@ -38,6 +39,19 @@ std::string_view getFuncName() {
 
 int main()
 {
+    auto xxx = []<typename T, T i>(int a, int b, int c){
+        std::cout << getTypeName<T>() << std::endl;
+        std::cout << i << a << b << c << std::endl;
+    };
+    //invokeTmplFunc<int, value_t<1>>(xxx, 1, 2, 3);
+
+    auto xxx2 = []<typename T>(int a, int b, int c){
+        std::cout << getTypeName<T>() << std::endl;
+        std::cout << a << b << c << std::endl;
+    };
+    invokeTmplFunc<int>(xxx2, 1, 2, 3);
+
+
     getFuncName<getEnumName<CmpOp::kEQ>>();
 
     std::cout << getEnumName<CmpOp::kEQ>() << std::endl;

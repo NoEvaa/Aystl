@@ -15,8 +15,18 @@
  */
 #pragma once
 
-#include "aystl/utility/singleton.hpp"
-#include "aystl/utility/int_seq.hpp"
-#include "aystl/utility/ct_string.hpp"
-#include "aystl/utility/function.hpp"
+#include "aystl/type_traits/utils.hpp"
+
+namespace iin {
+template <typename... Ts>
+decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
+    using ret_type = decltype(_fn.template operator()<take_off<Ts>...>(args...));
+    if constexpr (std::is_void_v<ret_type>) {
+        _fn.template operator()<typename take_off<Ts>::thing...>(args...);
+        return;
+    } else {
+        return _fn.template operator()<typename take_off<Ts>::thing...>(args...);
+    }
+}
+}
 

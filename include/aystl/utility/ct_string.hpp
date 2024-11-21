@@ -27,6 +27,7 @@ namespace iin {
 template <typename CharT, std::size_t N>
 struct ct_str {
     using value_type = CharT;
+
     std::array<value_type, N> value{};
 
     consteval ct_str() = default;
@@ -47,6 +48,13 @@ struct ct_str {
     static constexpr std::size_t size() noexcept { return N - 1U; }
     static constexpr std::size_t capacity() noexcept { return N; }
     static constexpr std::size_t empty() noexcept { return size() == 0; }
+
+    constexpr value_type const * data() const noexcept { return value.data(); }
+
+    constexpr auto begin() noexcept { return value.begin(); }
+    constexpr auto begin() const noexcept { return value.begin(); }
+    constexpr auto end() noexcept { return value.end(); }
+    constexpr auto end() const noexcept { return value.end(); }
 
     template<class _Traits>
     constexpr explicit operator std::basic_string_view<CharT, _Traits>() const noexcept {
@@ -84,6 +92,7 @@ struct char_seq
 {
     using value_type = CharT;
     using type       = value_list<Cs...>;
+
     static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
 };
 

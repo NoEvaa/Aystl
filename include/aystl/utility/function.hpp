@@ -18,6 +18,7 @@
 #include "aystl/type_traits/utils.hpp"
 
 namespace iin {
+/*
 template <typename... Ts>
 decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
     using ret_type = decltype(_fn.template operator()<take_off<Ts>::thing...>(args...));
@@ -28,5 +29,6 @@ decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
         return _fn.template operator()<take_off<Ts>::thing...>(args...);
     }
 }
+*/
 }
 

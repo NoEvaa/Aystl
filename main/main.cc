@@ -42,7 +42,7 @@ int main()
     auto xxx = []<int i>(int a, int b, int c){
         std::cout << i << a << b << c << std::endl;
     };
-    invokeTmplFunc<value_t<1>>(xxx, 1, 2, 3);
+    //invokeTmplFunc<value_t<1>>(xxx, 1, 2, 3);
 
     auto xxx2 = []<typename T>(int a, int b, int c){
         std::cout << getTypeName<T>() << std::endl;

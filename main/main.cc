@@ -39,18 +39,16 @@ std::string_view getFuncName() {
 
 int main()
 {
-    auto xxx = []<typename T, T i>(int a, int b, int c){
-        std::cout << getTypeName<T>() << std::endl;
+    auto xxx = []<int i>(int a, int b, int c){
         std::cout << i << a << b << c << std::endl;
     };
-    //invokeTmplFunc<int, value_t<1>>(xxx, 1, 2, 3);
+    invokeTmplFunc<value_t<1>>(xxx, 1, 2, 3);
 
     auto xxx2 = []<typename T>(int a, int b, int c){
         std::cout << getTypeName<T>() << std::endl;
         std::cout << a << b << c << std::endl;
     };
-    invokeTmplFunc<int>(xxx2, 1, 2, 3);
-
+    //invokeTmplFunc<int>(xxx2, 1, 2, 3);
 
     getFuncName<getEnumName<CmpOp::kEQ>>();
 

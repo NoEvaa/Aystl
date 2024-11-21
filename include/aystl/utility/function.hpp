@@ -20,12 +20,12 @@
 namespace iin {
 template <typename... Ts>
 decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
-    using ret_type = decltype(_fn.template operator()<take_off<Ts>...>(args...));
+    using ret_type = decltype(_fn.template operator()<take_off<Ts>::thing...>(args...));
     if constexpr (std::is_void_v<ret_type>) {
-        _fn.template operator()<typename take_off<Ts>::thing...>(args...);
+        _fn.template operator()<take_off<Ts>::thing...>(args...);
         return;
     } else {
-        return _fn.template operator()<typename take_off<Ts>::thing...>(args...);
+        return _fn.template operator()<take_off<Ts>::thing...>(args...);
     }
 }
 }

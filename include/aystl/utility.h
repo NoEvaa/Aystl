@@ -18,4 +18,5 @@
 #include "aystl/utility/singleton.hpp"
 #include "aystl/utility/int_seq.hpp"
 #include "aystl/utility/ct_string.hpp"
+#include "aystl/utility/function.hpp"
 

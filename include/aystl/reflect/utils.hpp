@@ -18,13 +18,28 @@
 #include <string_view>
 
 #include "aystl/global/common.h"
+#include "aystl/utility/ct_string.hpp"
 
 namespace iin {
 namespace detail {
 template <typename T>
-constexpr std::string_view _getFuncSig() noexcept { return AY_FUNCSIG; }
+consteval auto _getFuncSig() noexcept { return ct_str_v<AY_FUNCSIG>; }
+
+constexpr std::size_t _getFuncSigTypePrefixLen() noexcept {
+    return std::string_view(_getFuncSig<void>()).find("void");
+}
+constexpr std::size_t _getFuncSigTypeSuffixLen() noexcept {
+    return _getFuncSig<void>().size() - _getFuncSigTypePrefixLen() - 4U;
+}
 
 template <auto _v>
-constexpr std::string_view _getFuncSig() noexcept { return AY_FUNCSIG; }
+consteval auto _getFuncSig() noexcept { return ct_str_v<AY_FUNCSIG>; }
+
+constexpr std::size_t _getFuncSigValuePrefixLen() noexcept {
+    return std::string_view(_getFuncSig<0>()).find("0");
+}
+constexpr std::size_t _getFuncSigValueSuffixLen() noexcept {
+    return _getFuncSig<0>().size() - _getFuncSigValuePrefixLen() - 1U;
+}
 }
 }

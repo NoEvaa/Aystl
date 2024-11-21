@@ -15,10 +15,20 @@
  */
 #pragma once
 
-#include "aystl/type_traits/compare.hpp"
-#include "aystl/type_traits/is_specialization_of.hpp"
 #include "aystl/type_traits/utils.hpp"
-#include "aystl/type_traits/enum.hpp"
-#include "aystl/type_traits/memory.hpp"
-#include "aystl/type_traits/optional.hpp"
+
+namespace iin {
+/*
+template <typename... Ts>
+decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
+    using ret_type = decltype(_fn.template operator()<take_off<Ts>::magic...>(args...));
+    if constexpr (std::is_void_v<ret_type>) {
+        _fn.template operator()<take_off<Ts>::magic...>(args...);
+        return;
+    } else {
+        return _fn.template operator()<take_off<Ts>::magic...>(args...);
+    }
+}
+*/
+}
 

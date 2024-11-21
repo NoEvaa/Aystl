@@ -31,13 +31,11 @@ template <auto _v>
 struct value_t { static constexpr auto value = _v; };
 
 template <typename T>
-struct take_off { using thing = T; };
-template <>
-struct take_off<empty_t> { using thing = void; };
+struct take_off { using magic = T; };
 template <typename T>
-struct take_off<type_t<T>> { using thing = T; };
+struct take_off<type_t<T>> { using magic = T; };
 template <auto _v>
-struct take_off<value_t<_v>> { static constexpr auto thing = _v; };
+struct take_off<value_t<_v>> { static constexpr auto magic = _v; };
 
 template <typename... Ts>
 struct type_list {
@@ -49,7 +47,13 @@ template <auto... Vs>
 struct value_list {
     template <template <auto...> class Tmpl>
     using wrapped = Tmpl<Vs...>;
+
+    template <template <typename...> class Tmpl>
+    using type_wrapped = Tmpl<value_t<Vs>...>;
 };
+
+template <auto... Vs>
+using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
 
 template <typename... Ts>
 struct overload : Ts... {
@@ -70,21 +74,6 @@ using is_all_of = std::conjunction<Args...>;
 
 template <class... Args>
 inline constexpr bool is_all_of_v = is_all_of<Args...>::value;
-
-template <typename T, template <typename...> typename Tmpl, typename = void>
-struct is_spec_of : std::false_type {};
-
-template <
-    template <typename...> typename Tmpl1,
-    template <typename...> typename Tmpl2,
-    typename... Args>
-struct is_spec_of<Tmpl1<Args...>, Tmpl2,
-    std::enable_if_t<std::is_same_v<
-        Tmpl1<Args...>,
-        Tmpl2<Args...>>>> : std::true_type {};
-
-template <typename T, template <typename...> typename Tmpl, typename = void>
-inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
 
 namespace detail {
 template <typename T>

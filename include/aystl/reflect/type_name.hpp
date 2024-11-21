@@ -16,19 +16,16 @@
 #pragma once
 
 #include "aystl/reflect/utils.hpp"
+#include "aystl/utility/ct_string.hpp"
 
 namespace iin {
 template <typename T>
-constexpr std::string_view getTypeName() noexcept {
-    constexpr auto sample = detail::_getFuncSig<int>();
-    constexpr auto entity = detail::_getFuncSig<T>();
-
-    constexpr std::size_t lpos = sample.find("int");
-    static_assert(lpos + 3 <= sample.size());
-    constexpr std::size_t rpos = sample.size() - lpos - 3;
+constexpr auto getTypeName() noexcept {
+    constexpr auto entity      = detail::_getFuncSig<T>();
+    constexpr std::size_t lpos = detail::_getFuncSigTypePrefixLen();
+    constexpr std::size_t rpos = detail::_getFuncSigTypeSuffixLen();
     static_assert(lpos + rpos <= entity.size());
     constexpr std::size_t cnt = entity.size() - lpos - rpos;
-
-    return entity.substr(lpos, cnt);
+    return ct_str_substr_v<entity, lpos, cnt>;
 }
 }

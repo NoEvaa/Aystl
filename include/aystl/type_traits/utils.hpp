@@ -31,11 +31,11 @@ template <auto _v>
 struct value_t { static constexpr auto value = _v; };
 
 template <typename T>
-struct take_off { using thing = T; };
+struct take_off { using magic = T; };
 template <typename T>
-struct take_off<type_t<T>> { using thing = T; };
+struct take_off<type_t<T>> { using magic = T; };
 template <auto _v>
-struct take_off<value_t<_v>> { static constexpr auto thing = _v; };
+struct take_off<value_t<_v>> { static constexpr auto magic = _v; };
 
 template <typename... Ts>
 struct type_list {

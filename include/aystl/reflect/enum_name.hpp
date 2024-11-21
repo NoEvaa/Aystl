@@ -22,17 +22,13 @@
 namespace iin {
 template <auto _enum>
 requires std::is_enum_v<decltype(_enum)>
-constexpr std::string_view getEnumName() noexcept {
-    constexpr auto sample = detail::_getFuncSig<0>();
-    constexpr auto entity = detail::_getFuncSig<_enum>();
-
-    constexpr std::size_t lpos = sample.find('0');
-    static_assert(lpos + 1 <= sample.size());
-    constexpr std::size_t rpos = sample.size() - lpos - 1;
+constexpr auto getEnumName() noexcept {
+    constexpr auto entity      = detail::_getFuncSig<_enum>();
+    constexpr std::size_t lpos = detail::_getFuncSigValuePrefixLen();
+    constexpr std::size_t rpos = detail::_getFuncSigValueSuffixLen();
     static_assert(lpos + rpos <= entity.size());
     constexpr std::size_t cnt = entity.size() - lpos - rpos;
-
-    return entity.substr(lpos, cnt);
+    return ct_str_substr_v<entity, lpos, cnt>;
 }
 
 constexpr bool isDeclaredEnum(std::string_view enum_name) noexcept {
@@ -41,5 +37,5 @@ constexpr bool isDeclaredEnum(std::string_view enum_name) noexcept {
 
 template <auto _enum>
 requires std::is_enum_v<decltype(_enum)>
-constexpr bool is_enum_declared_v = isDeclaredEnum(getEnumName<_enum>());
+constexpr bool is_enum_declared_v = isDeclaredEnum(std::string_view(getEnumName<_enum>()));
 }

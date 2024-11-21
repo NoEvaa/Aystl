@@ -20,6 +20,11 @@ using namespace iin::detail;
 
 // 4567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 
+template <typename T, std::size_t N>
+std::ostream & operator<<(std::ostream & ost, ct_str<T, N> const & s) {
+    return (ost << std::string_view(s));
+}
+
 template <typename T, T... Is>
 void abcc(std::integer_sequence<T, Is...>)
 {
@@ -27,7 +32,7 @@ void abcc(std::integer_sequence<T, Is...>)
 }
 
 template <auto _func>
-std::string_view getFuncName() {
+constexpr auto getFuncName() {
     constexpr auto sample = detail::_getFuncSig<0>();
     constexpr auto entity = detail::_getFuncSig<_func>();
 
@@ -59,8 +64,8 @@ int main()
     std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
 
     std::cout << getTypeName<double>() << std::endl;
-    std::cout << getTypeName<int_seq_list<>>() << std::endl;
-    std::cout << getTypeName<std::shared_ptr<int>>() << std::endl;
+    std::cout << getTypeName<int_seq_list<> const &>() << std::endl;
+    std::cout << getTypeName<std::shared_ptr<int const>>() << std::endl;
     std::cout << getTypeName<std::int64_t*>() << std::endl;
 
     return 0;

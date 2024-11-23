@@ -42,6 +42,11 @@ constexpr auto getFuncName() {
 
 }
 
+enum class ABC {
+    k11 = 1,
+    k1 = 1,
+};
+
 int main()
 {
     auto xxx = []<int i>(int a, int b, int c){
@@ -56,6 +61,10 @@ int main()
     //invokeTmplFunc<int>(xxx2, 1, 2, 3);
 
     getFuncName<getEnumName<CmpOp::kEQ>>();
+
+    std::cout << getEnumName<ABC::k1>() << std::endl;
+    std::cout << getEnumName<ABC::k11>() << std::endl;
+    std::cout << getEnumName<ABC(1)>() << std::endl;
 
     std::cout << getEnumName<CmpOp::kEQ>() << std::endl;
     std::cout << getEnumName<CmpOp(0)>() << std::endl;

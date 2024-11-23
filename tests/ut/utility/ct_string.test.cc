@@ -47,7 +47,7 @@ template <ct_str> struct TestOp { int operator()() { return 0; } };
 template <> struct TestOp<"1"> { int operator()() { return 1; } };
 template <> struct TestOp<"3"> { int operator()() { return 3; } };
 }
-TEST_CASE("template specialization") {
+TEST_CASE("ct_str: template specialization") {
     CHECK(TestOp<"aaa">()() == 0);
     CHECK(TestOp<"1">()() == 1);
     CHECK(TestOp<"3">()() == 3);

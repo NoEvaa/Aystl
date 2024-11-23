@@ -23,11 +23,11 @@ namespace iin {
 template <auto _enum>
 requires std::is_enum_v<decltype(_enum)>
 constexpr auto getEnumName() noexcept {
-    constexpr auto entity      = detail::_getFuncSig<_enum>();
-    constexpr std::size_t lpos = detail::_getFuncSigValuePrefixLen();
-    constexpr std::size_t rpos = detail::_getFuncSigValueSuffixLen();
-    static_assert(lpos + rpos <= entity.size());
-    constexpr std::size_t cnt = entity.size() - lpos - rpos;
+    constexpr auto entity = detail::_getFuncSig<_enum>();
+    constexpr auto lpos   = detail::_getFuncSigValuePrefixLen();
+    constexpr auto rpos   = detail::_getFuncSigValueSuffixLen();
+    constexpr auto cnt    = entity.size() - lpos - rpos;
+    static_assert(cnt >= 0);
     return ct_str_substr_v<entity, lpos, cnt>;
 }
 

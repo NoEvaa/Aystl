@@ -19,6 +19,29 @@
 
 using namespace iin;
 
+TEST_CASE("type") {
+    CHECK(std::is_same_v<decltype(int(any_t{})), int>);
+
+    CHECK(std::is_same_v<type_t<int>::type, int>);
+    CHECK(value_t<6>::value == 6);
+
+    CHECK(std::is_same_v<take_off<int>::magic, int>);
+    CHECK(std::is_same_v<take_off<type_t<int>>::magic, int>);
+    CHECK(take_off<value_t<6>>::magic == 6);
+}
+
+TEST_CASE("type list") {}
+
+TEST_CASE("overload") {
+    struct TO1 { int operator()(int) { return 1; } };
+    struct TO2 { int operator()(double) { return 2; } };
+    struct TO3 { int operator()(bool) { return 3; } };
+    auto test_op = overload(TO1{}, TO2{}, TO3{});
+    CHECK(test_op(0) == 1);
+    CHECK(test_op(0.) == 2);
+    CHECK(test_op(true) == 3);
+}
+
 TEST_CASE("is any of") {
     CHECK(is_any_of_v<std::true_type, std::true_type>);
     CHECK(is_any_of_v<std::true_type, std::false_type>);

@@ -17,14 +17,19 @@
 
 namespace iin {
 template <typename T>
-class Singleton : private T {
+struct Singleton {
+private:
     Singleton() {}
     ~Singleton() {}
 public:
     static T & instance() {
-        static Singleton<T> s_ins;
+        static T s_ins;
         return s_ins;
     }
+};
+
+template <typename T>
+struct SingletonBfMain {
 };
 }
 

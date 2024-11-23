@@ -42,12 +42,26 @@ TEST_CASE("ct_str: +") {
     CHECK(test_str_3::value + test_str_4::value == test_str_34::value);
 }
 
+namespace {
+template <ct_str> struct TestOp { int operator()() { return 0; } };
+template <> struct TestOp<"1"> { int operator()() { return 1; } };
+template <> struct TestOp<"3"> { int operator()() { return 3; } };
+}
+TEST_CASE("template specialization") {
+    CHECK(TestOp<"aaa">()() == 0);
+    CHECK(TestOp<"1">()() == 1);
+    CHECK(TestOp<"3">()() == 3);
+}
+
 TEST_CASE("char_seq: basic") {
     using test_cs_1 = char_seq_t<test_str_1::value>;
     CHECK(detail::is_char_seq<test_cs_1>::value);
     CHECK(test_cs_1::size() == 11);
     CHECK(std::is_same_v<test_cs_1, char_seq<char,
           'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
+
+    CHECK(std::is_same_v<test_cs_1::type,
+          value_list<'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
     CHECK(char_seq_t<test_str_2::value>::size() == 0);
 }

@@ -19,8 +19,8 @@ namespace iin {
 template <typename T>
 struct Singleton {
 private:
-    Singleton() {}
-    ~Singleton() {}
+    Singleton() = default;
+    ~Singleton() = default;
 public:
     static T & instance() {
         static T s_ins;
@@ -28,8 +28,31 @@ public:
     }
 };
 
+/**
+ * Its instance will be created before main() begins.
+ * 
+ * Refer to: boost/container/detail/singleton.hpp
+ */
 template <typename T>
-struct SingletonBfMain {
+struct PreMainSingleton {
+private:
+    PreMainSingleton() = default;
+    ~PreMainSingleton() = default;
+
+    struct instance_creator {
+        instance_creator() { PreMainSingleton<T>::instance(); }
+        void doNothing() const {}
+    };
+    static instance_creator s_create_instance;
+public:
+    static T & instance() {
+        static T s_ins;
+        s_create_instance.doNothing();
+        return s_ins;
+    }
 };
+template <typename T>
+typename PreMainSingleton<T>::instance_creator
+PreMainSingleton<T>::s_create_instance;
 }
 

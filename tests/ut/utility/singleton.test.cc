@@ -18,7 +18,17 @@
 
 using namespace iin;
 
-TEST_CASE("singleton") {
+namespace {
+static int i_test_pms1 = 0;
+}
 
+TEST_CASE("PreMainSingleton") {
+    CHECK(i_test_pms1 == 1);
+    struct test_1 {
+        test_1() {
+            i_test_pms1 = 1;
+        }
+    };
+    PreMainSingleton<test_1>::instance();
 }
 

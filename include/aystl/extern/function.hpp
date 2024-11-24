@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/utility/singleton.hpp"
+#pragma once
 
-using namespace iin;
+#include "aystl/utility/ct_string.hpp"
 
-namespace {
-static int i_test_pms1 = 0;
-}
-
-TEST_CASE("PreMainSingleton") {
-    CHECK(i_test_pms1 == 1);
-    struct test_1 {
-        test_1() {
-            i_test_pms1 = 1;
-        }
-    };
-    PreMainSingleton<test_1>::instance();
-}
+template <iin::ct_str _name, typename RetTy, typename... Args>
+extern auto ay_ext_func(Args...) -> RetTy;
 

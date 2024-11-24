@@ -48,3 +48,19 @@ TEST_CASE("is spec of") {
     CHECK(!is_spec_of_v<Tmpl1<int>, TestTmplB>);
 }
 
+namespace{
+template <auto...>
+struct TestVTmpl {};
+template <auto... Args>
+using TmplV1 = TestVTmpl<Args...>;
+}
+
+TEST_CASE("is value spec of") {
+    CHECK(is_value_spec_of_v<TestVTmpl<1, 2, 3>, TestVTmpl>);
+    CHECK(is_value_spec_of_v<TestVTmpl<1, 2, 3>, TmplV1>);
+    CHECK(is_value_spec_of_v<TmplV1<1, 2, 3>, TestVTmpl>);
+    CHECK(is_value_spec_of_v<TmplV1<1, 2, 3>, TmplV1>);
+
+    CHECK(!is_value_spec_of_v<int, TestVTmpl>);
+}
+

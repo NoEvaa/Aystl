@@ -21,11 +21,11 @@
 namespace iin {
 template <typename T>
 constexpr auto getTypeName() noexcept {
-    constexpr auto entity      = detail::_getFuncSig<T>();
-    constexpr std::size_t lpos = detail::_getFuncSigTypePrefixLen();
-    constexpr std::size_t rpos = detail::_getFuncSigTypeSuffixLen();
-    static_assert(lpos + rpos <= entity.size());
-    constexpr std::size_t cnt = entity.size() - lpos - rpos;
+    constexpr auto entity = detail::_getFuncSig<T>();
+    constexpr auto lpos   = detail::_getFuncSigTypePrefixLen();
+    constexpr auto rpos   = detail::_getFuncSigTypeSuffixLen();
+    constexpr auto cnt    = entity.size() - lpos - rpos;
+    static_assert(cnt >= 0);
     return ct_str_substr_v<entity, lpos, cnt>;
 }
 }

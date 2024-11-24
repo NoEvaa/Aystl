@@ -13,22 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define AYTESTM_CONFIG_MAIN
 #include "testlib.h"
-#include "aystl/utility/singleton.hpp"
-
-using namespace iin;
-
-namespace {
-static int i_test_pms1 = 0;
-}
-
-TEST_CASE("PreMainSingleton") {
-    CHECK(i_test_pms1 == 1);
-    struct test_1 {
-        test_1() {
-            i_test_pms1 = 1;
-        }
-    };
-    PreMainSingleton<test_1>::instance();
-}
 

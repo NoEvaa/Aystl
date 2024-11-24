@@ -30,7 +30,7 @@ struct is_spec_of<Tmpl1<Args...>, Tmpl2,
         Tmpl1<Args...>,
         Tmpl2<Args...>>>> : std::true_type {};
 
-template <typename T, template <typename...> typename Tmpl, typename = void>
+template <typename T, template <typename...> typename Tmpl>
 inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
 
 template <typename T, template <auto...> typename Tmpl, typename = void>
@@ -45,7 +45,7 @@ struct is_value_spec_of<Tmpl1<args...>, Tmpl2,
         Tmpl1<args...>,
         Tmpl2<args...>>>> : std::true_type {};
 
-template <typename T, template <auto...> typename Tmpl, typename = void>
+template <typename T, template <auto...> typename Tmpl>
 inline constexpr bool is_value_spec_of_v = is_value_spec_of<T, Tmpl>::value;
 }
 

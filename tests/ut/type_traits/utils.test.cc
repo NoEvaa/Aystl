@@ -30,7 +30,9 @@ TEST_CASE("type") {
     CHECK(take_off<value_t<6>>::magic == 6);
 }
 
-TEST_CASE("type list") {}
+TEST_CASE("type list") {
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+}
 
 TEST_CASE("overload") {
     struct TO1 { int operator()(int) { return 1; } };

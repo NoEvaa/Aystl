@@ -42,7 +42,8 @@ struct ct_str {
         }
         value[sz] = '\0';
     }
-    consteval explicit ct_str(std::string_view const & s) noexcept
+    template<class _Traits>
+    consteval explicit ct_str(std::basic_string_view<CharT, _Traits> const & s) noexcept
         : ct_str(s.data(), s.size()) {}
 
     static constexpr std::size_t size() noexcept { return N - 1U; }
@@ -127,7 +128,7 @@ consteval auto _substr() {
     } else if constexpr (_pos + _len > _s.size()) {
         return _substr<_s, _pos, _s.size() - _pos>();
     } else {
-        return ct_str<char_type, _len + 1>(std::string_view(_s).substr(_pos, _len));
+        return ct_str<char_type, _len + 1>(std::basic_string_view<char_type>(_s).substr(_pos, _len));
     }
 }
 }

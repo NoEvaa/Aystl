@@ -36,14 +36,14 @@ struct ct_str {
             value[i] = s[i];
         }
     }
-    consteval explicit ct_str(char const * p_s, std::size_t sz) noexcept {
+    consteval explicit ct_str(char const * p_s, std::size_t sz) {
         for (std::size_t i = 0; i < sz; ++i) {
             value[i] = p_s[i];
         }
         value[sz] = '\0';
     }
     template<class _Traits>
-    consteval explicit ct_str(std::basic_string_view<CharT, _Traits> const & s) noexcept
+    consteval explicit ct_str(std::basic_string_view<CharT, _Traits> const & s)
         : ct_str(s.data(), s.size()) {}
 
     static constexpr std::size_t size() noexcept { return N - 1U; }
@@ -71,8 +71,8 @@ constexpr auto ct_str_v = ct_str_t<_s>::value;
 template <typename CharT, std::size_t N, std::size_t M>
 constexpr bool operator==(ct_str<CharT, N> const & lhs,
     ct_str<CharT, M> const & rhs) noexcept {
-    return static_cast<std::string_view>(lhs)
-        == static_cast<std::string_view>(rhs);
+    return static_cast<std::basic_string_view<CharT>>(lhs)
+        == static_cast<std::basic_string_view<CharT>>(rhs);
 }
 
 template <typename CharT, std::size_t N, std::size_t M>

@@ -39,6 +39,8 @@ struct take_off<value_t<_v>> { static constexpr auto magic = _v; };
 
 template <typename... Ts>
 struct type_list {
+    static constexpr auto size = sizeof...(Ts);
+
     template <template <typename...> class Tmpl>
     using wrapped = Tmpl<Ts...>;
 };

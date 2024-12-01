@@ -31,6 +31,8 @@ TEST_CASE("type") {
 }
 
 TEST_CASE("type list") {
+    CHECK(type_list<>::size == 0);
+    CHECK(type_list<int, int>::size == 2);
     CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
 }
 

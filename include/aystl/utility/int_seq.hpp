@@ -21,6 +21,7 @@
 
 #include "aystl/type_traits/compare.hpp"
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/utility/type_list.hpp"
 
 namespace iin {
 template <std::integral T, T... Is>
@@ -67,7 +68,7 @@ struct concat_int_seqs<T1, T2, Ts...> {
 
 template <std::integral T, T _start, T _stop, T _step, T... Is>
 struct monotone_int_seq {
-    using type = std::integer_sequence<T, Is...>;
+    using type = int_seq<T, Is...>;
 };
 
 template <std::integral T, T _start, T _stop, T _step, T... Is>

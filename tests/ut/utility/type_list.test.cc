@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include "aystl/utility/singleton.hpp"
+#include "testlib.h"
 #include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
-#include "aystl/utility/ct_string.hpp"
-#include "aystl/utility/function.hpp"
+
+using namespace iin;
+
+TEST_CASE("type list") {
+    CHECK(type_list<>::size == 0);
+    CHECK(type_list<int, int>::size == 2);
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(is_type_list_v<type_list<>>);
+    CHECK(!is_type_list_v<value_list<>>);
+    CHECK(!is_value_list_v<type_list<>>);
+    CHECK(is_value_list_v<value_list<>>);
+}
 

@@ -16,6 +16,7 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 namespace iin {
 struct null_t;
@@ -90,5 +91,17 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
+
+template <std::integral T, T... Is>
+using int_seq = std::integer_sequence<T, Is...>;
+
+namespace detail {
+template <typename T>
+struct is_int_seq : std::false_type {};
+template <std::integral T, T... Is>
+struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
+}
+template <typename T>
+concept IntSeqType = detail::is_int_seq<T>::value;
 }
 

@@ -84,8 +84,7 @@ consteval auto operator+(ct_str<CharT, N> const & lhs,
 }
 
 template<typename CharT, CharT... Cs>
-struct char_seq
-{
+struct char_seq {
     using value_type = CharT;
     using type       = value_list<Cs...>;
 

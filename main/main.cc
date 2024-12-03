@@ -13,6 +13,8 @@
 #include "aystl/utility.h"
 #include "aystl/math/limits.hpp"
 #include "aystl/utility/function.hpp"
+#include "aystl/utility/int_seq.hpp"
+#include "aystl/utility/type_list.hpp"
 
 
 using namespace iin;

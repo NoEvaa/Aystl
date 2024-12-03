@@ -69,8 +69,15 @@ struct type_list_cat<T1, T2, Ts...> {
         Ts...
     >::type;
 };
+
+template <TypeListType T, std::integral IntT, IntT... Is>
+auto _type_list_slice(int_seq<IntT, Is...>)
+    -> type_list<typename T::template get<static_cast<std::size_t>(Is)>...>; 
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
+
+template <TypeListType T, IntSeqType RangeT>
+using type_list_slice_t = decltype(detail::_type_list_slice<T>(std::declval<RangeT>()));
 }
 

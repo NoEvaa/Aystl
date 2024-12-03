@@ -18,9 +18,12 @@
 #include <cstddef>
 #include <array>
 #include <string_view>
+#include <type_traits>
 #include <utility>
+#include <algorithm>
 
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/utility/type_list.hpp"
 #include "aystl/utility/int_seq.hpp"
 
 namespace iin {
@@ -32,17 +35,14 @@ struct ct_str {
 
     consteval ct_str() = default;
     consteval ct_str(CharT const (&s)[N]) noexcept {
-        for (std::size_t i = 0; i < N; ++i) {
-            value[i] = s[i];
-        }
+        std::copy_n(s, N, value.begin());
     }
-    consteval explicit ct_str(char const * p_s, std::size_t sz) noexcept {
-        for (std::size_t i = 0; i < sz; ++i) {
-            value[i] = p_s[i];
-        }
+    consteval explicit ct_str(char const * p_s, std::size_t sz) {
+        std::copy_n(p_s, sz, value.begin());
         value[sz] = '\0';
     }
-    consteval explicit ct_str(std::string_view const & s) noexcept
+    template<class _Traits>
+    consteval explicit ct_str(std::basic_string_view<CharT, _Traits> const & s)
         : ct_str(s.data(), s.size()) {}
 
     static constexpr std::size_t size() noexcept { return N - 1U; }
@@ -70,20 +70,16 @@ constexpr auto ct_str_v = ct_str_t<_s>::value;
 template <typename CharT, std::size_t N, std::size_t M>
 constexpr bool operator==(ct_str<CharT, N> const & lhs,
     ct_str<CharT, M> const & rhs) noexcept {
-    return static_cast<std::string_view>(lhs)
-        == static_cast<std::string_view>(rhs);
+    return static_cast<std::basic_string_view<CharT>>(lhs)
+        == static_cast<std::basic_string_view<CharT>>(rhs);
 }
 
 template <typename CharT, std::size_t N, std::size_t M>
 consteval auto operator+(ct_str<CharT, N> const & lhs,
     ct_str<CharT, M> const & rhs) noexcept -> ct_str<CharT, N + M - 1> {
     ct_str<CharT, N + M - 1> ret{};
-    for (std::size_t i = 0; i < lhs.size(); ++i) {
-        ret.value[i] = lhs.value[i];
-    }
-    for (std::size_t i = 0; i < rhs.capacity(); ++i) {
-        ret.value[i + N - 1] = rhs.value[i];
-    }
+    std::copy_n(lhs.begin(), lhs.size(), ret.begin());
+    std::copy_n(rhs.begin(), rhs.capacity(), ret.begin() + lhs.size());
     return ret;
 }
 
@@ -127,7 +123,7 @@ consteval auto _substr() {
     } else if constexpr (_pos + _len > _s.size()) {
         return _substr<_s, _pos, _s.size() - _pos>();
     } else {
-        return ct_str<char_type, _len + 1>(std::string_view(_s).substr(_pos, _len));
+        return ct_str<char_type, _len + 1>(std::basic_string_view<char_type>(_s).substr(_pos, _len));
     }
 }
 }

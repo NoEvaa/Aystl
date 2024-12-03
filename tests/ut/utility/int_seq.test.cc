@@ -35,13 +35,13 @@ TEST_CASE("is int seq") {
     CHECK(!detail::is_int_seq<int>::value);
 }
 
-TEST_CASE("concat int seqs") {
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_0, test_seq_1>, test_seq_1>);
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_0, test_seq_3>, test_seq_2>);
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_3, test_seq_0>, test_seq_3>);
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_1, test_seq_2>, test_seq_1_2>);
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_1, test_seq_3>, test_seq_1_3>);
-    CHECK(std::is_same_v<concat_int_seqs_t<test_seq_3, test_seq_1>, test_seq_3_1>);
+TEST_CASE("int seq cat") {
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_0, test_seq_1>, test_seq_1>);
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_0, test_seq_3>, test_seq_2>);
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_3, test_seq_0>, test_seq_3>);
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_1, test_seq_2>, test_seq_1_2>);
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_1, test_seq_3>, test_seq_1_3>);
+    CHECK(std::is_same_v<int_seq_cat_t<test_seq_3, test_seq_1>, test_seq_3_1>);
 }
 
 TEST_CASE("monotone int seq") {
@@ -56,11 +56,11 @@ TEST_CASE("monotone int seq") {
 
 TEST_CASE("int seq list") {
     using test_mseqs_t1 = int_seq_list<test_seq_1, test_seq_2>;
-    using test_seq_t1 = test_mseqs_t1::template wrapped<concat_int_seqs_t>;
+    using test_seq_t1 = test_mseqs_t1::template wrapped<int_seq_cat_t>;
     CHECK(std::is_same_v<test_seq_t1, test_seq_1_2>);
 
     using test_mseqs_t2 = int_seq_list<test_seq_0, test_seq_3>;
-    using test_seq_t2 = test_mseqs_t2::template wrapped<concat_int_seqs_t>;
+    using test_seq_t2 = test_mseqs_t2::template wrapped<int_seq_cat_t>;
     CHECK(std::is_same_v<test_seq_t2, test_seq_2>);
 
     using test_mseqs_t3 = int_seq_list<
@@ -68,6 +68,6 @@ TEST_CASE("int seq list") {
         monotone_int_seq_t<int, 1, 5, 1>,
         monotone_int_seq_t<int, 5, 8, 1>
     >;
-    using test_seq_t3 = test_mseqs_t3::template wrapped<concat_int_seqs_t>;
+    using test_seq_t3 = test_mseqs_t3::template wrapped<int_seq_cat_t>;
     CHECK(std::is_same_v<test_seq_t3, monotone_int_seq_t<int, -3, 8, 1>>);
 }

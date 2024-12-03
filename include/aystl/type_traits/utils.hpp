@@ -38,24 +38,6 @@ template <auto _v>
 struct take_off<value_t<_v>> { static constexpr auto magic = _v; };
 
 template <typename... Ts>
-struct type_list {
-    template <template <typename...> class Tmpl>
-    using wrapped = Tmpl<Ts...>;
-};
-
-template <auto... Vs>
-struct value_list {
-    template <template <auto...> class Tmpl>
-    using wrapped = Tmpl<Vs...>;
-
-    template <template <typename...> class Tmpl>
-    using type_wrapped = Tmpl<value_t<Vs>...>;
-};
-
-template <auto... Vs>
-using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
-
-template <typename... Ts>
 struct overload : Ts... {
     using Ts::operator()...;
 };

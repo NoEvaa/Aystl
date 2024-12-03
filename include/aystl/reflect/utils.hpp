@@ -26,7 +26,9 @@ template <typename T>
 consteval auto _getFuncSig() noexcept { return ct_str_v<AY_FUNCSIG>; }
 
 constexpr std::size_t _getFuncSigTypePrefixLen() noexcept {
-    return std::string_view(_getFuncSig<void>()).find("void");
+    constexpr auto s = _getFuncSig<void>();
+    auto sv = std::string_view(s);
+    return sv.find("void");
 }
 constexpr std::size_t _getFuncSigTypeSuffixLen() noexcept {
     return _getFuncSig<void>().size() - _getFuncSigTypePrefixLen() - 4U;
@@ -36,7 +38,9 @@ template <auto _v>
 consteval auto _getFuncSig() noexcept { return ct_str_v<AY_FUNCSIG>; }
 
 constexpr std::size_t _getFuncSigValuePrefixLen() noexcept {
-    return std::string_view(_getFuncSig<0>()).find("0");
+    constexpr auto s = _getFuncSig<0>();
+    auto sv = std::string_view(s);
+    return sv.find("0");
 }
 constexpr std::size_t _getFuncSigValueSuffixLen() noexcept {
     return _getFuncSig<0>().size() - _getFuncSigValuePrefixLen() - 1U;

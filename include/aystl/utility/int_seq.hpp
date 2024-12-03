@@ -21,6 +21,7 @@
 
 #include "aystl/type_traits/compare.hpp"
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/utility/type_list.hpp"
 
 namespace iin {
 template <std::integral T, T... Is>
@@ -41,34 +42,22 @@ concept IntSeqType = detail::is_int_seq<T>::value;
 
 namespace detail {
 template <std::integral T, T... Is, std::integral T2, T2... Is2>
-constexpr auto _concat_two_int_seqs_impl(
-    int_seq<T, Is...>, int_seq<T2, Is2...>) noexcept {
-    return int_seq<T, Is..., Is2...>{};
-};
-
-template <IntSeqType T1, IntSeqType T2>
-struct concat_two_int_seqs {
-    using type = decltype(_concat_two_int_seqs_impl(
-        std::declval<T1>(), std::declval<T2>()));
-};
+auto _concat_two_int_seqs(int_seq<T, Is...>, int_seq<T2, Is2...>)
+    -> int_seq<T, Is..., Is2...>;
 
 template <IntSeqType T, IntSeqType... Ts>
-struct concat_int_seqs {
-    using type = T;
-};
+struct int_seq_cat : type_t<T> {};
 
 template <IntSeqType T1, IntSeqType T2, IntSeqType... Ts>
-struct concat_int_seqs<T1, T2, Ts...> {
-    using type = typename concat_int_seqs<
-        typename concat_two_int_seqs<T1, T2>::type,
+struct int_seq_cat<T1, T2, Ts...> {
+    using type = typename int_seq_cat<
+        decltype(_concat_two_int_seqs(std::declval<T1>(), std::declval<T2>())),
         Ts...
     >::type;
 };
 
 template <std::integral T, T _start, T _stop, T _step, T... Is>
-struct monotone_int_seq {
-    using type = std::integer_sequence<T, Is...>;
-};
+struct monotone_int_seq : type_t<int_seq<T, Is...>> {};
 
 template <std::integral T, T _start, T _stop, T _step, T... Is>
 requires (
@@ -81,7 +70,7 @@ struct monotone_int_seq<T, _start, _stop, _step, Is...> {
 }
 
 template <IntSeqType... Ts>
-using concat_int_seqs_t = typename detail::concat_int_seqs<Ts...>::type;
+using int_seq_cat_t = typename detail::int_seq_cat<Ts...>::type;
 
 template <std::integral T, T... Is>
 using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;

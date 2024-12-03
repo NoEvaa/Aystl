@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "aystl/reflect/type_name.hpp"
 #include "testlib.h"
+#include <string>
 #include "aystl/utility/ct_string.hpp"
 
 using namespace iin;
@@ -36,6 +38,8 @@ TEST_CASE("ct_str: basic") {
     CHECK(test_str_2::value.empty());
     CHECK(std::string_view(test_str_2::value) == std::string_view{""});
     CHECK(test_str_2::value == test_str_2::value);
+
+    CHECK(std::is_same_v<decltype(ct_str_v<u8"a">)::value_type, char8_t>);
 }
 
 TEST_CASE("ct_str: +") {

@@ -19,13 +19,13 @@
 using namespace iin;
 
 TEST_CASE("type list") {
-    using test_list_1 = type_list<int, double, char const &>;
-    CHECK(type_list<>::size == 0);
-    CHECK(test_list_1::size == 3);
+    using _test_list_1 = type_list<int, double, char const &>;
+    CHECK(type_list<>::size() == 0);
+    CHECK(_test_list_1::size() == 3);
     CHECK(is_type_list_v<type_list<>>);
-    CHECK(std::is_same_v<test_list_1::get<0>, int>);
-    CHECK(std::is_same_v<test_list_1::get<1>, double>);
-    CHECK(std::is_same_v<test_list_1::get<2>, char const &>);
+    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
+    CHECK(std::is_same_v<_test_list_1::get<1>, double>);
+    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
 }
 
 TEST_CASE("value list") {
@@ -33,5 +33,11 @@ TEST_CASE("value list") {
     CHECK(!is_type_list_v<value_list<>>);
     CHECK(!is_value_list_v<type_list<>>);
     CHECK(is_value_list_v<value_list<>>);
+}
+
+TEST_CASE("type list cat") {
+    using _test_list_1 = type_list<int, double>;
+    using _test_list_11 = type_list<int, double, int, double>;
+    CHECK(std::is_same_v<type_list_cat_t<_test_list_1, _test_list_1>, _test_list_11>);
 }
 

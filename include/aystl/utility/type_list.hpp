@@ -16,15 +16,14 @@
 #pragma once
 
 #include <tuple>
-#include <utility>
 
-#include "aystl/type_traits/is_specialization_of.hpp"
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/type_traits/is_specialization_of.hpp"
 
 namespace iin {
 template <typename... Ts>
 struct type_list {
-    static constexpr auto size = sizeof...(Ts);
+    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
 
     template <template <typename...> class Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
@@ -54,5 +53,24 @@ concept ValueListType = is_value_list_v<T>;
 
 template <auto... Vs>
 using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
+
+namespace detail {
+template <typename... Ts, typename... Ts2>
+auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)
+    -> type_list<Ts..., Ts2...>;
+
+template <TypeListType T, TypeListType... Ts>
+struct type_list_cat : type_t<T> {};
+
+template <TypeListType T1, TypeListType T2, TypeListType... Ts>
+struct type_list_cat<T1, T2, Ts...> {
+    using type = typename type_list_cat<
+        decltype(_concat_two_type_list(std::declval<T1>(), std::declval<T2>())),
+        Ts...
+    >::type;
+};
+}
+template <TypeListType... Ts>
+using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
 }
 

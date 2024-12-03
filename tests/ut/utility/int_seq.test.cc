@@ -35,7 +35,7 @@ TEST_CASE("is int seq") {
     CHECK(!detail::is_int_seq<int>::value);
 }
 
-TEST_CASE("concat int seqs") {
+TEST_CASE("int seq cat") {
     CHECK(std::is_same_v<int_seq_cat_t<test_seq_0, test_seq_1>, test_seq_1>);
     CHECK(std::is_same_v<int_seq_cat_t<test_seq_0, test_seq_3>, test_seq_2>);
     CHECK(std::is_same_v<int_seq_cat_t<test_seq_3, test_seq_0>, test_seq_3>);

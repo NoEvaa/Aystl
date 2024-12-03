@@ -30,7 +30,7 @@ struct type_list {
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
 
     template <std::size_t pos>
-    using get = decltype(std::get<pos>(std::declval<wrapped<std::tuple>>()));
+    using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
 };
 
 template <typename T>

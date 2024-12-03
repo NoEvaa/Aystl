@@ -82,7 +82,7 @@ struct monotone_int_seq<T, _start, _stop, _step, Is...> {
 }
 
 template <IntSeqType... Ts>
-using concat_int_seqs_t = typename detail::concat_int_seqs<Ts...>::type;
+using int_seq_cat_t = typename detail::concat_int_seqs<Ts...>::type;
 
 template <std::integral T, T... Is>
 using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;

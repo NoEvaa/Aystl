@@ -49,6 +49,8 @@ enum class ABC {
 
 int main()
 {
+    std::cout << getTypeName<type_list<int>::get<0>>() << std::endl;
+
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 
     auto xxx = []<int i>(int a, int b, int c){

@@ -15,6 +15,9 @@
  */
 #pragma once
 
+#include <tuple>
+#include <utility>
+
 #include "aystl/type_traits/is_specialization_of.hpp"
 #include "aystl/type_traits/utils.hpp"
 
@@ -24,7 +27,10 @@ struct type_list {
     static constexpr auto size = sizeof...(Ts);
 
     template <template <typename...> class Tmpl>
-    using wrapped = Tmpl<Ts...>;
+    using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
+
+    template <std::size_t pos>
+    using get = decltype(std::get<pos>(std::declval<wrapped<std::tuple>>()));
 };
 
 template <typename T>

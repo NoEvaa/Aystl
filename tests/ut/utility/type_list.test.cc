@@ -19,10 +19,16 @@
 using namespace iin;
 
 TEST_CASE("type list") {
+    using test_list_1 = type_list<int, double, float>;
     CHECK(type_list<>::size == 0);
-    CHECK(type_list<int, int>::size == 2);
-    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(test_list_1::size == 3);
     CHECK(is_type_list_v<type_list<>>);
+    CHECK(std::is_same_v<test_list_1::get<0>, int>);
+    CHECK(std::is_same_v<test_list_1::get<1>, double>);
+}
+
+TEST_CASE("value list") {
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
     CHECK(!is_type_list_v<value_list<>>);
     CHECK(!is_value_list_v<type_list<>>);
     CHECK(is_value_list_v<value_list<>>);

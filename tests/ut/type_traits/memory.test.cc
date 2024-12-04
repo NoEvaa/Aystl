@@ -18,5 +18,10 @@
 
 using namespace iin;
 
-TEST_CASE("") {
+TEST_CASE("remove_smart_ptr") {
+    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
+    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
+    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
+    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
 }
+

@@ -67,6 +67,12 @@ struct wrap_tmpl : type_t<Tmpl<Args...>> {};
 template <template <typename...> class Tmpl, typename... TmplArgs, typename... Args>
 struct wrap_tmpl<Tmpl, Tmpl<TmplArgs...>, Args...> : type_t<Tmpl<TmplArgs...>> {};
 
+template <typename T>
+struct unwrap_tmpl : type_t<T> {};
+
+template <template <typename...> class Tmpl, typename T, typename... Args>
+struct unwrap_tmpl<Tmpl<T, Args...>> : type_t<T> {};
+
 template <typename T, typename... Args>
 struct replace_tmpl_args : type_t<T> {};
 
@@ -85,6 +91,9 @@ struct replace_tmpl_wrapper<Tmpl1<Args...>, Tmpl2> : type_t<Tmpl2<Args...>> {};
 
 template <template <typename...> class Tmpl, typename... Args>
 using wrap_tmpl_t = typename detail::wrap_tmpl<Tmpl, Args...>::type;
+
+template <typename T>
+using unwrap_tmpl_t = typename detail::unwrap_tmpl<T>::type;
 
 template <typename T, typename... Args>
 using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type;

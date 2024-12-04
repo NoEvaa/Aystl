@@ -35,7 +35,7 @@ _AYSTL_DECL_TMPL_CT_CMP(GT, >)
 _AYSTL_DECL_TMPL_CT_CMP(GE, >=)
 
 template <CmpOp _op, auto _left, auto _right>
-constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
+inline constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
 
 template <CmpOp _op, auto _left, auto _right>
 concept CtCmp = ct_cmp_v<_op, _left, _right>;

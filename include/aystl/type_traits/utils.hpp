@@ -18,6 +18,9 @@
 #include <type_traits>
 #include <utility>
 
+#include "aystl/type_traits/meta.hpp"
+#include "aystl/type_traits/is_specialization_of.hpp"
+
 namespace iin {
 struct null_t;
 struct empty_t {};
@@ -34,9 +37,11 @@ struct value_t : type_t<decltype(_v)> { static constexpr auto value = _v; };
 template <typename T>
 struct take_off { using magic = T; };
 template <typename T>
-struct take_off<type_t<T>> { using magic = T; };
-template <auto _v>
-struct take_off<value_t<_v>> { static constexpr auto magic = _v; };
+requires is_spec_of_v<T, type_t>
+struct take_off<T> { using magic = typename T::type; };
+template <typename T>
+requires is_value_spec_of_v<T, value_t>
+struct take_off<T> { static constexpr auto magic = T::value; };
 
 template <typename... Ts>
 struct overload : Ts... {
@@ -45,22 +50,7 @@ struct overload : Ts... {
 template <typename... Ts>
 overload(Ts...) -> overload<Ts...>;
 
-template <class... Args>
-using is_any_of = std::disjunction<Args...>;
-
-template <class... Args>
-inline constexpr bool is_any_of_v = is_any_of<Args...>::value;
-
-template <class... Args>
-using is_all_of = std::conjunction<Args...>;
-
-template <class... Args>
-inline constexpr bool is_all_of_v = is_all_of<Args...>::value;
-
 namespace detail {
-template <typename T>
-constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
-
 template <template <typename...> class Tmpl, typename... Args>
 struct wrap_tmpl : type_t<Tmpl<Args...>> {};
 

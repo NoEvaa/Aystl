@@ -40,20 +40,6 @@ TEST_CASE("overload") {
     CHECK(test_op(true) == 3);
 }
 
-TEST_CASE("is any of") {
-    CHECK(is_any_of_v<std::true_type, std::true_type>);
-    CHECK(is_any_of_v<std::true_type, std::false_type>);
-    CHECK(is_any_of_v<std::false_type, std::true_type>);
-    CHECK(!is_any_of_v<std::false_type, std::false_type>);
-}
-
-TEST_CASE("is all of") {
-    CHECK(is_all_of_v<std::true_type, std::true_type>);
-    CHECK(!is_all_of_v<std::true_type, std::false_type>);
-    CHECK(!is_all_of_v<std::false_type, std::true_type>);
-    CHECK(!is_all_of_v<std::false_type, std::false_type>);
-}
-
 namespace{
 template <typename T, typename T2 = int>
 struct TestTmpl {};

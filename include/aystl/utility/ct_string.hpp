@@ -115,18 +115,18 @@ using char_seq_t = typename type_t<decltype(detail::ct_str_to_char_seq<_s>())>::
 
 namespace detail {
 template <ct_str _s, std::size_t _pos, std::size_t _len>
-consteval auto _substr() {
+consteval auto ct_str_substr() {
     using char_type = decltype(_s)::value_type;
     if constexpr (_len == 0 || _pos > _s.size()) {
         return ct_str<char_type, 1>("");
     } else if constexpr (_pos + _len > _s.size()) {
-        return _substr<_s, _pos, _s.size() - _pos>();
+        return ct_str_substr<_s, _pos, _s.size() - _pos>();
     } else {
         return ct_str<char_type, _len + 1>(std::basic_string_view<char_type>(_s).substr(_pos, _len));
     }
 }
 }
 template <ct_str _s, std::size_t _pos, std::size_t _len>
-constexpr auto ct_str_substr_v = detail::_substr<_s, _pos, _len>();
+constexpr auto ct_str_substr_v = detail::ct_str_substr<_s, _pos, _len>();
 }
 

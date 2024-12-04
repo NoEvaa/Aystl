@@ -34,7 +34,7 @@ struct type_list {
 };
 
 template <typename T>
-constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
+inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>
 concept TypeListType = is_type_list_v<T>;
 
@@ -48,7 +48,7 @@ struct value_list {
 };
 
 template <typename T>
-constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
+inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
 template <typename T>
 concept ValueListType = is_value_list_v<T>;
 

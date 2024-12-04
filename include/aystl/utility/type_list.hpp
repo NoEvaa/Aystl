@@ -17,6 +17,7 @@
 
 #include <tuple>
 
+#include "aystl/type_traits/compare.hpp"
 #include "aystl/type_traits/utils.hpp"
 #include "aystl/type_traits/is_specialization_of.hpp"
 
@@ -28,7 +29,7 @@ struct type_list {
     template <template <typename...> class Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
 
-    template <std::size_t pos>
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
 };
 

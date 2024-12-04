@@ -17,6 +17,8 @@
 
 #include <type_traits>
 
+#include "aystl/type_traits/utils.hpp"
+
 namespace iin {
 template <typename T, template <typename...> typename Tmpl, typename = void>
 struct is_spec_of : std::false_type {};
@@ -32,6 +34,9 @@ struct is_spec_of<Tmpl1<Args...>, Tmpl2,
 
 template <typename T, template <typename...> typename Tmpl>
 inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
+
+template <typename T, template <typename...> typename... Tmpls>
+inline constexpr bool is_any_spec_of_v = is_any_of_v<is_spec_of<T, Tmpls>...>;
 
 template <typename T, template <auto...> typename Tmpl, typename = void>
 struct is_value_spec_of : std::false_type {};

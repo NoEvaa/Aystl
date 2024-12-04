@@ -29,7 +29,7 @@ struct any_t {
 template <typename T>
 struct type_t { using type = T; };
 template <auto _v>
-struct value_t { static constexpr auto value = _v; };
+struct value_t : type_t<decltype(_v)> { static constexpr auto value = _v; };
 
 template <typename T>
 struct take_off { using magic = T; };

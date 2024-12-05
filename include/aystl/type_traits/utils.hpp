@@ -43,6 +43,9 @@ template <typename T>
 requires is_value_spec_of_v<T, value_t>
 struct take_off<T> { static constexpr auto magic = T::value; };
 
+template <typename T, typename... Ts>
+inline constexpr bool is_any_same_of_v = is_any_of_v<std::is_same<T, Ts>...>;
+
 template <typename... Ts>
 struct overload : Ts... {
     using Ts::operator()...;

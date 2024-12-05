@@ -30,6 +30,11 @@ TEST_CASE("type") {
     CHECK(take_off<value_t<6>>::magic == 6);
 }
 
+TEST_CASE("is any same of") {
+    CHECK(is_any_same_of_v<int, double, int>);
+    CHECK(!is_any_same_of_v<char, double, int>);
+}
+
 TEST_CASE("overload") {
     struct TO1 { int operator()(int) { return 1; } };
     struct TO2 { int operator()(double) { return 2; } };
@@ -49,7 +54,7 @@ template <typename T>
 using Tmpl2 = TestTmpl<T>;
 template <typename T, typename T2 = int>
 struct TestTmplB {};
-template <int _>
+template <int>
 struct TestTmplC {};
 }
 
@@ -58,6 +63,12 @@ TEST_CASE("wrap tmpl") {
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmpl, int, float>, Tmpl1<int, float>>);
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmpl, Tmpl1<int>>, Tmpl1<int>>);
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmplB, Tmpl1<int>>, TestTmplB<Tmpl1<int>>>);
+}
+
+TEST_CASE("unwrap tmpl") {
+    CHECK(std::is_same_v<unwrap_tmpl_t<TestTmpl<int>>, int>);
+    CHECK(std::is_same_v<unwrap_tmpl_t<TestTmpl<TestTmpl<int>>>, TestTmpl<int>>);
+    CHECK(std::is_same_v<unwrap_tmpl_t<int>, int>);
 }
 
 TEST_CASE("replace tmpl args") {

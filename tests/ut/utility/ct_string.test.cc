@@ -50,11 +50,19 @@ namespace {
 template <ct_str> struct TestOp { int operator()() { return 0; } };
 template <> struct TestOp<"1"> { int operator()() { return 1; } };
 template <> struct TestOp<"3"> { int operator()() { return 3; } };
+
+template <typename> struct TestOp2 { int operator()() { return 0; } };
+template <> struct TestOp2<ct_str_t<"1">> { int operator()() { return 1; } };
+template <> struct TestOp2<ct_str_t<"3">> { int operator()() { return 3; } };
 }
 TEST_CASE("ct_str: template specialization") {
     CHECK(TestOp<"aaa">()() == 0);
     CHECK(TestOp<"1">()() == 1);
     CHECK(TestOp<"3">()() == 3);
+
+    CHECK(TestOp2<int>()() == 0);
+    CHECK(TestOp2<ct_str_t<"1">>()() == 1);
+    CHECK(TestOp2<ct_str_t<"3">>()() == 3);
 }
 
 TEST_CASE("char_seq: basic") {

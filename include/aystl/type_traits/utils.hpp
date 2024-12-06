@@ -19,7 +19,6 @@
 #include <utility>
 
 #include "aystl/type_traits/meta.hpp"
-#include "aystl/type_traits/is_specialization_of.hpp"
 
 namespace iin {
 struct null_t;
@@ -35,12 +34,16 @@ template <auto _v>
 struct value_t : type_t<decltype(_v)> { static constexpr auto value = _v; };
 
 template <typename T>
+concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
+template <typename T>
+concept ValueTType = requires { detail::is_type_v<value_t<T::value>>; };
+
+template <typename T>
 struct take_off { using magic = T; };
-template <typename T>
-requires is_spec_of_v<T, type_t>
+template <TypeTType T> 
+requires (!ValueTType<T>)
 struct take_off<T> { using magic = typename T::type; };
-template <typename T>
-requires is_value_spec_of_v<T, value_t>
+template <ValueTType T>
 struct take_off<T> { static constexpr auto magic = T::value; };
 
 template <typename T, typename... Ts>

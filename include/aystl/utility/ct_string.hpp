@@ -79,7 +79,7 @@ consteval auto operator+(ct_str<CharT, N> const & lhs,
     ct_str<CharT, M> const & rhs) noexcept -> ct_str<CharT, N + M - 1> {
     ct_str<CharT, N + M - 1> ret{};
     std::copy_n(lhs.begin(), lhs.size(), ret.begin());
-    std::copy_n(rhs.begin(), rhs.capacity(), ret.begin() + lhs.size());
+    std::copy_n(rhs.begin(), rhs.capacity(), ret.begin() + static_cast<std::ptrdiff_t>(lhs.size()));
     return ret;
 }
 

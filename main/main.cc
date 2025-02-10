@@ -13,6 +13,7 @@
 #include "aystl/utility.h"
 #include "aystl/math/limits.hpp"
 #include "aystl/utility/function.hpp"
+#include "aystl/utility/hash.hpp"
 #include "aystl/utility/int_seq.hpp"
 #include "aystl/utility/type_list.hpp"
 
@@ -51,6 +52,10 @@ enum class ABC {
 
 int main()
 {
+    char ae3[] = "23i;o325";
+    std::cout << ayCharsHash(ae3) << std::endl;
+    std::cout << ayCharsHash(ae3, 9) << std::endl;
+
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 
     auto xxx = []<int i>(int a, int b, int c){

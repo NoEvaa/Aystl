@@ -18,22 +18,22 @@
 #include <memory>
 
 #include "aystl/type_traits/utils.hpp"
+#include "aystl/type_traits/is_specialization_of.hpp"
 
 namespace iin {
+template <typename T>
+inline constexpr bool is_std_smart_ptr_v = is_any_spec_of_v<T,
+    std::unique_ptr, std::shared_ptr, std::weak_ptr>;
+
 template <typename T>
 struct remove_smart_ptr : type_t<T> {};
 
 template <typename T>
-struct remove_smart_ptr<std::shared_ptr<T>> : type_t<T> {};
+requires is_std_smart_ptr_v<T>
+struct remove_smart_ptr<T> : type_t<unwrap_tmpl_t<T>> {};
 
 template <typename T>
-struct remove_smart_ptr<std::weak_ptr<T>> : type_t<T> {};
-
-template <typename T>
-struct remove_smart_ptr<std::unique_ptr<T>> : type_t<T> {};
-
-template <typename T>
-using remove_smart_ptr_t = remove_smart_ptr<T>;
+using remove_smart_ptr_t = typename remove_smart_ptr<T>::type;
 
 template <typename T>
 using wrap_sptr_t = wrap_tmpl_t<std::shared_ptr, T>;

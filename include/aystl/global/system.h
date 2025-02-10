@@ -18,11 +18,12 @@
  * The operating system, must be one of: `AY_OS_x`
  * 
  * The `x` can be:
- *     LINUX   - Linux
- *     ANDROID - Android platform
  *     WIN     - Any Windows system
  *     WIN32   - Win32 (Windows 2000/NT/XP/Vista/7 and Windows Server 2003/2008)
  *     WIN64   - Win64
+ *     UNIX     - Any UNIX system
+ *     LINUX   - Linux
+ *     ANDROID - Android platform
  *     APPLE   - Any Apple system (macOS, iOS, watchOS, tvOS, ...)
  *     MACOS   - macOS
  */
@@ -52,6 +53,8 @@
 
 #if defined(AY_OS_WIN32) || defined(AY_OS_WIN64)
 #    define AY_OS_WIN 1
+#else
+#    define AY_OS_UNIX 1
 #endif
 
 #if defined(__ANDROID__) || defined(ANDROID)

@@ -15,24 +15,29 @@
  */
 #pragma once
 
-#include <concepts>
 #include <cstddef>
+#include <cstdint>
 
 namespace iin {
-namespace detail {
-constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
-}
-template <std::unsigned_integral Ty, std::size_t _len>
-consteval Ty ayBitCycle(Ty _bits) noexcept {
-    static_assert(detail::_isPow2(_len));
-    constexpr std::size_t _s = sizeof(Ty) * 8;
-    static_assert(_s >= _len);
-    if constexpr (_s == _len) {
-        return _bits;
-    } else {
-        return ayBitCycle<Ty, static_cast<Ty>(_len << 1)>(
-            static_cast<Ty>(_bits | (_bits << _len)));
+template <typename HashT = std::uint32_t>
+HashT ayCharsHash(char const * cs, std::size_t cnt) noexcept {
+    std::size_t r = cnt % 2;
+    cnt          -= r;
+    HashT       v = 0;
+    std::size_t i = 0;
+    for ( ; i < cnt; ) {
+        // v * 31 + c
+        v = (v << 5) - v + static_cast<HashT>(cs[i++]);
+        v = (v << 5) - v + static_cast<HashT>(cs[i++]);
     }
-}
+    if (r) {
+        v = (v << 5) - v + static_cast<HashT>(cs[i]);
+    }
+    return v;
 }
 
+template <typename HashT = std::uint32_t, std::size_t N>
+HashT ayCharsHash(char const (&cs)[N]) noexcept {
+    return ayCharsHash<HashT>(cs, N);
+}
+}

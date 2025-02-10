@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/type_traits/memory.hpp"
+#pragma once
 
-using namespace iin;
+#include <type_traits>
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+namespace iin {
+template <class... Args>
+using is_any_of = std::disjunction<Args...>;
+
+template <class... Args>
+inline constexpr bool is_any_of_v = is_any_of<Args...>::value;
+
+template <class... Args>
+using is_all_of = std::conjunction<Args...>;
+
+template <class... Args>
+inline constexpr bool is_all_of_v = is_all_of<Args...>::value;
+
+namespace detail {
+template <typename T>
+constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
+}
 }
 

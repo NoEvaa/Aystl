@@ -15,6 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/utility/type_list.hpp"
+#include "aystl/utility/int_seq.hpp"
 
 using namespace iin;
 
@@ -39,5 +40,17 @@ TEST_CASE("type list cat") {
     using _test_list_1 = type_list<int, double>;
     using _test_list_11 = type_list<int, double, int, double>;
     CHECK(std::is_same_v<type_list_cat_t<_test_list_1, _test_list_1>, _test_list_11>);
+}
+
+TEST_CASE("type list slice") {
+    using _test_list_1 = type_list<int, double, char, float>;
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<1, 1>>, type_list<>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<0, 1>>, type_list<int>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<0, 2>>, type_list<int, double>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<1, 2>>, type_list<double>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<1, 3>>, type_list<double, char>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<1, 4>>, type_list<double, char, float>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<3, 4>>, type_list<float>>);
+    CHECK(std::is_same_v<type_list_slice_t<_test_list_1, ct_range_t<3, 3>>, type_list<>>);
 }
 

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/type_traits/memory.hpp"
+#include "aystl/type_traits/meta.hpp"
 
 using namespace iin;
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+TEST_CASE("is any of") {
+    CHECK(is_any_of_v<std::true_type, std::true_type>);
+    CHECK(is_any_of_v<std::true_type, std::false_type>);
+    CHECK(is_any_of_v<std::false_type, std::true_type>);
+    CHECK(!is_any_of_v<std::false_type, std::false_type>);
+}
+
+TEST_CASE("is all of") {
+    CHECK(is_all_of_v<std::true_type, std::true_type>);
+    CHECK(!is_all_of_v<std::true_type, std::false_type>);
+    CHECK(!is_all_of_v<std::false_type, std::true_type>);
+    CHECK(!is_all_of_v<std::false_type, std::false_type>);
 }
 

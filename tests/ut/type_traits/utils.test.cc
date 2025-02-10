@@ -25,9 +25,21 @@ TEST_CASE("type") {
     CHECK(std::is_same_v<type_t<int>::type, int>);
     CHECK(value_t<6>::value == 6);
 
+    CHECK(!TypeTType<int>);
+    CHECK(TypeTType<type_t<int>>);
+    CHECK(TypeTType<std::decay<int>>);
+    CHECK(!ValueTType<int>);
+    CHECK(ValueTType<value_t<1>>);
+    CHECK(ValueTType<std::is_same<int, double>>);
+
     CHECK(std::is_same_v<take_off<int>::magic, int>);
     CHECK(std::is_same_v<take_off<type_t<int>>::magic, int>);
     CHECK(take_off<value_t<6>>::magic == 6);
+}
+
+TEST_CASE("is any same of") {
+    CHECK(is_any_same_of_v<int, double, int>);
+    CHECK(!is_any_same_of_v<char, double, int>);
 }
 
 TEST_CASE("overload") {
@@ -40,20 +52,6 @@ TEST_CASE("overload") {
     CHECK(test_op(true) == 3);
 }
 
-TEST_CASE("is any of") {
-    CHECK(is_any_of_v<std::true_type, std::true_type>);
-    CHECK(is_any_of_v<std::true_type, std::false_type>);
-    CHECK(is_any_of_v<std::false_type, std::true_type>);
-    CHECK(!is_any_of_v<std::false_type, std::false_type>);
-}
-
-TEST_CASE("is all of") {
-    CHECK(is_all_of_v<std::true_type, std::true_type>);
-    CHECK(!is_all_of_v<std::true_type, std::false_type>);
-    CHECK(!is_all_of_v<std::false_type, std::true_type>);
-    CHECK(!is_all_of_v<std::false_type, std::false_type>);
-}
-
 namespace{
 template <typename T, typename T2 = int>
 struct TestTmpl {};
@@ -63,7 +61,7 @@ template <typename T>
 using Tmpl2 = TestTmpl<T>;
 template <typename T, typename T2 = int>
 struct TestTmplB {};
-template <int _>
+template <int>
 struct TestTmplC {};
 }
 
@@ -72,6 +70,12 @@ TEST_CASE("wrap tmpl") {
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmpl, int, float>, Tmpl1<int, float>>);
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmpl, Tmpl1<int>>, Tmpl1<int>>);
     CHECK(std::is_same_v<wrap_tmpl_t<TestTmplB, Tmpl1<int>>, TestTmplB<Tmpl1<int>>>);
+}
+
+TEST_CASE("unwrap tmpl") {
+    CHECK(std::is_same_v<unwrap_tmpl_t<TestTmpl<int>>, int>);
+    CHECK(std::is_same_v<unwrap_tmpl_t<TestTmpl<TestTmpl<int>>>, TestTmpl<int>>);
+    CHECK(std::is_same_v<unwrap_tmpl_t<int>, int>);
 }
 
 TEST_CASE("replace tmpl args") {

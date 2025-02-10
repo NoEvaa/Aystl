@@ -17,6 +17,7 @@
 
 #include <tuple>
 
+#include "aystl/type_traits/compare.hpp"
 #include "aystl/type_traits/utils.hpp"
 #include "aystl/type_traits/is_specialization_of.hpp"
 
@@ -28,12 +29,12 @@ struct type_list {
     template <template <typename...> class Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
 
-    template <std::size_t pos>
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
 };
 
 template <typename T>
-constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
+inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>
 concept TypeListType = is_type_list_v<T>;
 
@@ -47,7 +48,7 @@ struct value_list {
 };
 
 template <typename T>
-constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
+inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
 template <typename T>
 concept ValueListType = is_value_list_v<T>;
 
@@ -69,8 +70,15 @@ struct type_list_cat<T1, T2, Ts...> {
         Ts...
     >::type;
 };
+
+template <TypeListType T, std::integral IntT, IntT... Is>
+auto _type_list_slice(int_seq<IntT, Is...>)
+    -> type_list<typename T::template get<static_cast<std::size_t>(Is)>...>; 
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
+
+template <TypeListType T, IntSeqType RangeT>
+using type_list_slice_t = decltype(detail::_type_list_slice<T>(std::declval<RangeT>()));
 }
 

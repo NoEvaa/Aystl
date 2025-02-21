@@ -20,7 +20,7 @@
 
 namespace iin {
 template <typename HashT = std::uint32_t>
-HashT ayCharsHash(char const * cs, std::size_t cnt) noexcept {
+constexpr HashT ayCharsHash(char const * cs, std::size_t cnt) noexcept {
     std::size_t r = cnt % 2;
     cnt          -= r;
     HashT       v = 0;

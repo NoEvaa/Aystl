@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <limits>
@@ -50,11 +51,19 @@ enum class ABC {
     k1 = 1,
 };
 
+struct _AyAnyBuf {
+    uint8_t data_[32];
+};
+
+#include <any>
 int main()
 {
-    char ae3[] = "23i;o325";
-    std::cout << ayCharsHash(ae3) << std::endl;
-    std::cout << ayCharsHash(ae3, 9) << std::endl;
+    std::any aa;
+    std::cout << sizeof(std::any) << std::endl;
+    std::cout << sizeof(void*) << std::endl;
+    std::cout << sizeof(_AyAnyBuf) << std::endl;
+    std::cout << sizeof(std::max_align_t) << std::endl;
+    std::cout << alignof(std::max_align_t) << std::endl;
 
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 
@@ -80,11 +89,6 @@ int main()
     std::cout << getEnumName<CmpOp(-1)>() << std::endl;
     std::cout << is_enum_declared_v<CmpOp(-1)> << std::endl;
     std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
-
-    std::cout << getTypeName<double>() << std::endl;
-    std::cout << getTypeName<int_seq_list<> const &>() << std::endl;
-    std::cout << getTypeName<std::shared_ptr<int const>>() << std::endl;
-    std::cout << getTypeName<std::int64_t*>() << std::endl;
 
     return 0;
 }

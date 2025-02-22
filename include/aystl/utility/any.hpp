@@ -29,6 +29,7 @@ namespace iin {
 namespace _any_impl {
 enum class _Action {
     kTypeInfo = 0,
+    kGet,
     kDestroy,
     kCopyTo,
     kMoveTo,
@@ -51,8 +52,8 @@ public:
     static_assert((kBufByteSize % kPtrSize) == 0);
 
     AyAny() noexcept = default;
-    AyAny(AyAny const &);
-    AyAny(AyAny &&) noexcept;
+    AyAny(AyAny const & _ot) { _ot._copyTo(this); }
+    AyAny(AyAny && _ot) noexcept { _ot._moveTo(this); }
 
     ~AyAny() noexcept { this->reset(); }
 
@@ -61,7 +62,7 @@ public:
 
     void reset() noexcept;
 
-    void swap(AyAny &);
+    void swap(AyAny &) noexcept;
 
     bool hasValue() const noexcept { return m_act != nullptr; }
     operator bool() const noexcept { return this->hasValue(); }
@@ -70,7 +71,7 @@ public:
         if (!this->hasValue()) { return typeid(void); }
         return *static_cast<std::type_info const *>(this->_callAct(_Action::kTypeInfo));
     }
-    bool isType(std::type_info const & _tinfo) const noexcept { return this->getType() == _tinfo; }
+    bool isType(std::type_info const & _ti) const noexcept { return this->getType() == _ti; }
     template <typename _Tp>
     bool isType() const noexcept { return this->isType(typeid(_Tp)); }
 
@@ -95,38 +96,26 @@ public:
 
 private:
     template <typename _Tp>
-    void * _toVoidPtr() const noexcept {
-        if constexpr (sizeof(_Tp) <= kBufByteSize) {
-            return detail::_castToVoidPtr(&m_buf);
-        } else {
-            return detail::_castToVoidPtr(m_buf[0]);
-        }
-    }
+    void * _toVoidPtr() const noexcept { return this->_callAct(_Action::kGet); }
 
     template <typename _Tp>
     _Tp * _toPtr() const noexcept { return static_cast<_Tp *>(_toVoidPtr<_Tp>()); }
 
     template <typename _Tp>
-    void _initAct() noexcept {
-        m_act = [](_Action _action, AyAny const * _this, AyAny * _ot) -> void * {
-            using _any_impl::_AyAnyHandler;
-            switch (_action) {
-            case _Action::kTypeInfo:
-                return _AyAnyHandler<_Tp, _Action::kTypeInfo>::call();
-            case _Action::kDestroy:
-                return _AyAnyHandler<_Tp, _Action::kDestroy>::call(*_this);
-            case _Action::kCopyTo:
-                return _AyAnyHandler<_Tp, _Action::kCopyTo>::call(*_this, *_ot);
-            case _Action::kMoveTo:
-                return _AyAnyHandler<_Tp, _Action::kMoveTo>::call(const_cast<AyAny &>(*_this), *_ot);
-            default:
-                return nullptr;
-            }
-        };
+    void _initAct() noexcept;
+
+    void * _callAct(_Action _action, AyAny * _other = nullptr) const {
+        return m_act(_action, this, _other);
     }
 
-    void * _callAct(_Action _action, AyAny * _other = nullptr) const noexcept {
-        return m_act(_action, this, _other);
+    void _copyTo(AyAny * _dst) const {
+        this->_callAct(_Action::kCopyTo, _dst);
+        _dst->m_act = this->m_act;
+    }
+
+    void _moveTo(AyAny * _dst) noexcept {
+        this->_callAct(_Action::kMoveTo, _dst);
+        _dst->m_act = std::exchange(m_act, nullptr);
     }
 
 private:
@@ -140,13 +129,26 @@ private:
 namespace _any_impl {
 template <typename T>
 struct _AyAnyHandler<T, _Action::kTypeInfo> {
-    static void * call() noexcept { return detail::_castToVoidPtr(&typeid(T)); }
+    static void * call() noexcept {
+        return const_cast<void *>(static_cast<void const *>(&typeid(T)));
+    }
+};
+
+template <typename T>
+struct _AyAnyHandler<T, _Action::kGet> {
+    static void * call(AyAny const & _self) noexcept { 
+        if constexpr (sizeof(T) <= AyAny::kBufByteSize) {
+            return detail::_castToVoidPtr(&_self.m_buf);
+        } else {
+            return detail::_castToVoidPtr(_self.m_buf[0]);
+        }
+    }
 };
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kDestroy> {
     static void * call(AyAny const & _self) noexcept {
-        if constexpr (sizeof(T) <= AyAny::kBufSize) {
+        if constexpr (sizeof(T) <= AyAny::kBufByteSize) {
             if constexpr (!std::is_trivially_destructible<T>::value) {
                 auto * p_v = _self._toPtr<T>();
                 p_v->~ValT();
@@ -163,7 +165,7 @@ struct _AyAnyHandler<T, _Action::kDestroy> {
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kCopyTo> {
-    static void * call(AyAny const & _src, AyAny & _dst) noexcept {
+    static void * call(AyAny const & _src, AyAny & _dst) {
         return nullptr;
     }
 };
@@ -189,28 +191,18 @@ struct _AyAnyAlloc {
 };
 }
 
-inline AyAny::AyAny(AyAny const & _ot) {
-    _ot._callAct(_Action::kCopyTo, this);
-    m_act = _ot.m_act;
-}
-
-inline AyAny::AyAny(AyAny && _ot) noexcept {
-    _ot._callAct(_Action::kMoveTo, this);
-    m_act = std::exchange(_ot.m_act, nullptr);
-}
-
 inline AyAny & AyAny::operator=(AyAny const & rhs) {
     if (this != &rhs) [[likely]] {
-        rhs._callAct(_Action::kCopyTo, this);
-        m_act = rhs.m_act;
+        this->reset();
+        rhs._copyTo(this);
     }
     return *this;
 }
 
 inline AyAny & AyAny::operator=(AyAny && rhs) noexcept {
     if (this != &rhs) [[likely]] {
-        rhs._callAct(_Action::kMoveTo, this);
-        m_act = std::exchange(rhs.m_act, nullptr);
+        this->reset();
+        rhs._moveTo(this);
     }
     return *this;
 }
@@ -221,21 +213,40 @@ inline void AyAny::reset() noexcept {
     m_act = nullptr;
 }
 
-inline void AyAny::swap(AyAny & rhs)
+inline void AyAny::swap(AyAny & rhs) noexcept
 {
     if (this == &rhs) [[unlikely]] { return; }
     if (this->hasValue() && rhs.hasValue()) {
         AyAny temp;
-        temp = std::move(*this);
-        rhs._callAct(_Action::kMoveTo, this);
-        m_act = std::exchange(rhs.m_act, nullptr);
-        *this = std::move(temp);
+        this->_moveTo(&temp);
+        rhs._moveTo(this);
+        temp._moveTo(&rhs);
     } else if (this->hasValue()) {
-        rhs = std::move(*this);
+        this->_moveTo(&rhs);
     } else if (rhs.hasValue()) {
-        rhs._callAct(_Action::kMoveTo, this);
-        m_act = std::exchange(rhs.m_act, nullptr);
+        rhs._moveTo(this);
     }
+}
+
+template <typename _Tp>
+void AyAny::_initAct() noexcept {
+    m_act = [](_Action _action, AyAny const * _this, AyAny * _ot) -> void * {
+        using _any_impl::_AyAnyHandler;
+        switch (_action) {
+        case _Action::kTypeInfo:
+            return _AyAnyHandler<_Tp, _Action::kTypeInfo>::call();
+        case _Action::kGet:
+            return _AyAnyHandler<_Tp, _Action::kGet>::call(*_this);
+        case _Action::kDestroy:
+            return _AyAnyHandler<_Tp, _Action::kDestroy>::call(*_this);
+        case _Action::kCopyTo:
+            return _AyAnyHandler<_Tp, _Action::kCopyTo>::call(*_this, *_ot);
+        case _Action::kMoveTo:
+            return _AyAnyHandler<_Tp, _Action::kMoveTo>::call(const_cast<AyAny &>(*_this), *_ot);
+        default:
+            return nullptr;
+        }
+    };
 }
 }
 

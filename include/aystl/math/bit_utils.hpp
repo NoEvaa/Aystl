@@ -18,10 +18,9 @@
 #include <concepts>
 #include <cstddef>
 
+#include "aystl/global/common.h"
+
 namespace iin {
-namespace detail {
-constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
-}
 template <std::unsigned_integral Ty, std::size_t _len>
 consteval Ty ayBitCycle(Ty _bits) noexcept {
     static_assert(detail::_isPow2(_len));

@@ -51,15 +51,19 @@ enum class ABC {
     k1 = 1,
 };
 
-class AyAny {
-    enum class _Action {
-        kTypeInfo = 0,
-        kDestroy,
-        kCopy,
-        kMove,
-    };
-    using _act_type = void * (*)(_Action, AyAny const *, void *);
+namespace _any_impl {
+enum class _Action {
+    kTypeInfo = 0,
+    kDestroy,
+    kCopy,
+    kMove,
+};
+template <class, _Action> struct _AyAnyHandler;
+}
 
+class AyAny {
+    using _Action   = _any_impl::_Action;
+    using _act_type = void * (*)(_Action, AyAny const *);
 public:
     using size_type = std::size_t;
 
@@ -70,18 +74,16 @@ public:
     static_assert(kPtrSize <= kMaxPtrSize);
     static_assert((kBufByteSize % kPtrSize) == 0);
 
-private:
-    template <typename _Tp>
-    static void * _castToVoidPtr(_Tp const * __p) noexcept {
-        return const_cast<void *>(static_cast<void const *>(__p));
-    }
+    bool hasValue() const noexcept { return m_act; }
+    operator bool() const noexcept { return hasValue(); }
 
+private:
     template <typename _Tp>
     void * _toVoidPtr() const noexcept {
         if constexpr (sizeof(_Tp) <= kBufByteSize) {
-            return _castToVoidPtr(&m_buf);
+            return detail::_castToVoidPtr(&m_buf);
         } else {
-            return _castToVoidPtr(m_buf[0]);
+            return detail::_castToVoidPtr(m_buf[0]);
         }
     }
 
@@ -90,21 +92,12 @@ private:
 
     template <typename _Tp>
     void _initAct() noexcept {
-        m_act = [](_Action _action, AyAny const * _self, void *) -> void * {
+        m_act = [](_Action _action, AyAny const * _self) -> void * {
             switch (_action) {
             case _Action::kTypeInfo:
-                return _castToVoidPtr(&typeid(_Tp));
-            case _Action::kDestroy: {
-                auto * p_v = _self->_toPtr<_Tp>();
-                if constexpr (sizeof(_Tp) <= kBufSize) {
-                    p_v->~ValT();
-                } else if constexpr (std::is_array_v<_Tp>) {
-                    delete[] p_v;
-                } else {
-                    delete p_v;
-                }
-                return nullptr;
-            }
+                return _any_impl::_AyAnyHandler<_Tp, _Action::kTypeInfo>::call();
+            case _Action::kDestroy:
+                return _any_impl::_AyAnyHandler<_Tp, _Action::kDestroy>::call(_self);
             case _Action::kCopy:
             case _Action::kMove:
             default:
@@ -113,11 +106,40 @@ private:
         };
     }
 
-
 private:
     void *    m_buf[kBufSize] = {};
     _act_type m_act = nullptr;
+
+    template <class, _Action>
+    friend struct _any_impl::_AyAnyHandler;
 };
+
+namespace _any_impl {
+template <class T>
+struct _AyAnyHandler<T, _Action::kTypeInfo> {
+    static void * call() { return detail::_castToVoidPtr(&typeid(T)); }
+};
+
+template <class T>
+struct _AyAnyHandler<T, _Action::kDestroy> {
+    static void * call(AyAny const * _self) {
+        if constexpr (sizeof(T) <= AyAny::kBufSize) {
+            if constexpr (!std::is_trivially_destructible<T>::value) {
+                auto * p_v = _self->_toPtr<T>();
+                p_v->~ValT();
+                //std::launder(p_v)->~ValT();
+            }
+        } else if constexpr (std::is_array_v<T>) {
+            auto * p_v = _self->_toPtr<T>();
+            delete[] p_v;
+        } else {
+            auto * p_v = _self->_toPtr<T>();
+            delete p_v;
+        }
+        return nullptr;
+    }
+};
+}
 
 #include <any>
 int main()

@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include "aystl/type_traits/utils.hpp"
+#include "aystl/core/type_traits/utils.hpp"
 
 namespace iin {
 /*

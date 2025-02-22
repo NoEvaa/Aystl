@@ -17,7 +17,7 @@
 
 #include <type_traits>
 
-#include "aystl/type_traits/meta.hpp"
+#include "aystl/core/type_traits/meta.hpp"
 
 namespace iin {
 template <typename T, template <typename...> typename Tmpl, typename = void>

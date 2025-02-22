@@ -15,8 +15,10 @@
  */
 #pragma once
 
-#include "aystl/global/system.h"
-#include "aystl/global/compiler.h"
+#include <memory>
+
+#include "aystl/global/system.hpp"
+#include "aystl/global/compiler.hpp"
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
 #define AY_STR(s)      AY_STR_IMPL(s)
@@ -49,7 +51,7 @@ enum class CmpOp {
 namespace detail {
 template <typename T>
 void * _castToVoidPtr(T const * __p) noexcept {
-    return const_cast<void *>(static_cast<void const *>(__p));
+    return const_cast<void *>(static_cast<void const volatile *>(std::addressof(__p)));
 }
 
 inline constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define AYTESTM_CONFIG_MAIN
-#include "testlib.h"
+#include "aystl/utility/extern_func.hpp"
+
+template <> auto ay_ext_func<"return 0">() -> int { return 0; };
+template <> auto ay_ext_func<"return 0">() -> bool { return 0; };
 

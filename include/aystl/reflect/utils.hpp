@@ -17,7 +17,7 @@
 
 #include <string_view>
 
-#include "aystl/global/common.h"
+#include "aystl/global/common.hpp"
 #include "aystl/utility/ct_string.hpp"
 
 namespace iin {

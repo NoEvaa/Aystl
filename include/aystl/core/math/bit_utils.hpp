@@ -15,6 +15,23 @@
  */
 #pragma once
 
-#include "aystl/global/common.h"
-#include "aystl/global/member_func.h"
+#include <concepts>
+#include <cstddef>
+
+#include "aystl/global/common.hpp"
+
+namespace iin {
+template <std::unsigned_integral Ty, std::size_t _len>
+consteval Ty ayBitCycle(Ty _bits) noexcept {
+    static_assert(detail::_isPow2(_len));
+    constexpr std::size_t _s = sizeof(Ty) * 8;
+    static_assert(_s >= _len);
+    if constexpr (_s == _len) {
+        return _bits;
+    } else {
+        return ayBitCycle<Ty, static_cast<Ty>(_len << 1)>(
+            static_cast<Ty>(_bits | (_bits << _len)));
+    }
+}
+}
 

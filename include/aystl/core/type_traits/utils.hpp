@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "aystl/type_traits/meta.hpp"
+#include "aystl/core/type_traits/meta.hpp"
 
 namespace iin {
 struct null_t;

@@ -17,9 +17,9 @@
 
 #include <tuple>
 
-#include "aystl/type_traits/compare.hpp"
-#include "aystl/type_traits/utils.hpp"
-#include "aystl/type_traits/is_specialization_of.hpp"
+#include "aystl/core/type_traits/compare.hpp"
+#include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/type_traits/is_specialization_of.hpp"
 
 namespace iin {
 template <typename... Ts>

@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "aystl/global/common.h"
+#include "aystl/global/common.hpp"
 
 namespace iin {
 namespace _any_impl {
@@ -32,7 +32,8 @@ enum class _Action {
     kCopyTo,
     kMoveTo,
 };
-template <class, _Action> struct _AyAnyHandler;
+template <typename, _Action> struct _AyAnyHandler;
+template <typename> struct _AyAnyAlloc;
 }
 
 class AyAny {
@@ -131,17 +132,17 @@ private:
     void *    m_buf[kBufSize] = {};
     _act_type m_act = nullptr;
 
-    template <class, _Action>
+    template <typename, _Action>
     friend struct _any_impl::_AyAnyHandler;
 };
 
 namespace _any_impl {
-template <class T>
+template <typename T>
 struct _AyAnyHandler<T, _Action::kTypeInfo> {
     static void * call() noexcept { return detail::_castToVoidPtr(&typeid(T)); }
 };
 
-template <class T>
+template <typename T>
 struct _AyAnyHandler<T, _Action::kDestroy> {
     static void * call(AyAny const & _self) noexcept {
         if constexpr (sizeof(T) <= AyAny::kBufSize) {
@@ -150,28 +151,39 @@ struct _AyAnyHandler<T, _Action::kDestroy> {
                 p_v->~ValT();
                 //std::launder(p_v)->~ValT();
             }
-        } else if constexpr (std::is_array_v<T>) {
-            auto * p_v = _self._toPtr<T>();
-            delete[] p_v;
         } else {
+            using _alloc_type = _AyAnyAlloc<T>;
             auto * p_v = _self._toPtr<T>();
-            delete p_v;
+            _alloc_type::destroy(p_v);
         }
         return nullptr;
     }
 };
 
-template <class T>
+template <typename T>
 struct _AyAnyHandler<T, _Action::kCopyTo> {
     static void * call(AyAny const & _src, AyAny & _dst) noexcept {
         return nullptr;
     }
 };
 
-template <class T>
+template <typename T>
 struct _AyAnyHandler<T, _Action::kMoveTo> {
     static void * call(AyAny & _src, AyAny & _dst) noexcept {
         return nullptr;
+    }
+};
+
+template <typename T>
+struct _AyAnyAlloc {
+    static void construct() noexcept {}
+
+    static void destroy(T * __p) noexcept {
+        if constexpr (std::is_array_v<T>) {
+            delete[] __p;
+        } else {
+            delete __p;
+        }
     }
 };
 }
@@ -213,14 +225,13 @@ inline void AyAny::swap(AyAny & rhs) noexcept
     if (this == &rhs) [[unlikely]] { return; }
     if (this->hasValue() && rhs.hasValue()) {
         AyAny temp;
-        rhs._callAct(_Action::kMoveTo, &temp);
-        this->_callAct(_Action::kMoveTo, &rhs);
-        temp._callAct(_Action::kMoveTo, this);
-    }
-    else if (this->hasValue()) {
+        temp = std::move(*this);
+        rhs._callAct(_Action::kMoveTo, this);
+        m_act = std::exchange(rhs.m_act, nullptr);
+        *this = std::move(temp);
+    } else if (this->hasValue()) {
         rhs = std::move(*this);
-    }
-    else if (rhs.hasValue()) {
+    } else if (rhs.hasValue()) {
         rhs._callAct(_Action::kMoveTo, this);
         m_act = std::exchange(rhs.m_act, nullptr);
     }

@@ -15,11 +15,8 @@
  */
 #pragma once
 
-#include "aystl/utility/singleton.hpp"
-#include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
-#include "aystl/utility/hash.hpp"
-#include "aystl/utility/ct_string.hpp"
-#include "aystl/utility/any.hpp"
-#include "aystl/utility/function.hpp"
+#include "aystl/core/math/common.hpp"
+#include "aystl/core/math/limits.hpp"
+#include "aystl/core/math/enum_utils.hpp"
+#include "aystl/core/math/bit_utils.hpp"
 

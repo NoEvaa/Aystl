@@ -18,8 +18,8 @@
 #include <concepts>
 #include <utility>
 
-#include "aystl/type_traits/compare.hpp"
-#include "aystl/type_traits/utils.hpp"
+#include "aystl/core/type_traits/compare.hpp"
+#include "aystl/core/type_traits/utils.hpp"
 #include "aystl/utility/type_list.hpp"
 
 namespace iin {

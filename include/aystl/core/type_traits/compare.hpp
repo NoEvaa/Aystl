@@ -17,7 +17,7 @@
 
 #include <type_traits>
 
-#include "aystl/global/common.h"
+#include "aystl/global/common.hpp"
 
 #define _AYSTL_DECL_TMPL_CT_CMP(_op_name, ...)                                                     \
     template <auto _left, auto _right> requires (_left __VA_ARGS__ _right)                         \

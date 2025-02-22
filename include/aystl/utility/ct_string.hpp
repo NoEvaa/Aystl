@@ -22,7 +22,7 @@
 #include <utility>
 #include <algorithm>
 
-#include "aystl/type_traits/utils.hpp"
+#include "aystl/core/type_traits/utils.hpp"
 #include "aystl/utility/type_list.hpp"
 #include "aystl/utility/int_seq.hpp"
 

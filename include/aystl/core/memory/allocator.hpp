@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,4 @@
  */
 #pragma once
 
-#include "aystl/config.h"
-#include "aystl/global.h"
-#include "aystl/type_traits.h"
-#include "aystl/math.h"
 

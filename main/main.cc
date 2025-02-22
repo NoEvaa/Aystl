@@ -45,6 +45,7 @@ enum class ABC {
 #include <any>
 int main()
 {
+    std::vector<int> gg;
     std::any aa = int(1);
     auto ddd =  std::any_cast<const int>(aa);
     std::cout << ddd << std::endl;

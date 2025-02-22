@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "aystl/global/common.hpp"
+#include "aystl/core/memory/allocator.hpp"
 
 namespace iin {
 namespace _any_impl {
@@ -49,18 +50,18 @@ public:
     static_assert(kPtrSize <= kMaxPtrSize);
     static_assert((kBufByteSize % kPtrSize) == 0);
 
-    AyAny() = default;
-    AyAny(AyAny const &) noexcept;
+    AyAny() noexcept = default;
+    AyAny(AyAny const &);
     AyAny(AyAny &&) noexcept;
 
     ~AyAny() noexcept { this->reset(); }
 
-    AyAny & operator=(AyAny const &) noexcept;
+    AyAny & operator=(AyAny const &);
     AyAny & operator=(AyAny &&) noexcept;
 
     void reset() noexcept;
 
-    void swap(AyAny &) noexcept;
+    void swap(AyAny &);
 
     bool hasValue() const noexcept { return m_act != nullptr; }
     operator bool() const noexcept { return this->hasValue(); }
@@ -188,7 +189,7 @@ struct _AyAnyAlloc {
 };
 }
 
-inline AyAny::AyAny(AyAny const & _ot) noexcept {
+inline AyAny::AyAny(AyAny const & _ot) {
     _ot._callAct(_Action::kCopyTo, this);
     m_act = _ot.m_act;
 }
@@ -198,7 +199,7 @@ inline AyAny::AyAny(AyAny && _ot) noexcept {
     m_act = std::exchange(_ot.m_act, nullptr);
 }
 
-inline AyAny & AyAny::operator=(AyAny const & rhs) noexcept {
+inline AyAny & AyAny::operator=(AyAny const & rhs) {
     if (this != &rhs) [[likely]] {
         rhs._callAct(_Action::kCopyTo, this);
         m_act = rhs.m_act;
@@ -220,7 +221,7 @@ inline void AyAny::reset() noexcept {
     m_act = nullptr;
 }
 
-inline void AyAny::swap(AyAny & rhs) noexcept
+inline void AyAny::swap(AyAny & rhs)
 {
     if (this == &rhs) [[unlikely]] { return; }
     if (this->hasValue() && rhs.hasValue()) {

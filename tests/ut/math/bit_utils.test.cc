@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/math/bit_utils.hpp"
+#include "aystl/core/math/bit_utils.hpp"
 
 using namespace iin;
 

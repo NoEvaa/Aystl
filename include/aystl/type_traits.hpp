@@ -15,24 +15,10 @@
  */
 #pragma once
 
-#include <concepts>
-#include <cstddef>
-
-namespace iin {
-namespace detail {
-constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
-}
-template <std::unsigned_integral Ty, std::size_t _len>
-consteval Ty ayBitCycle(Ty _bits) noexcept {
-    static_assert(detail::_isPow2(_len));
-    constexpr std::size_t _s = sizeof(Ty) * 8;
-    static_assert(_s >= _len);
-    if constexpr (_s == _len) {
-        return _bits;
-    } else {
-        return ayBitCycle<Ty, static_cast<Ty>(_len << 1)>(
-            static_cast<Ty>(_bits | (_bits << _len)));
-    }
-}
-}
+#include "aystl/core/type_traits/compare.hpp"
+#include "aystl/core/type_traits/is_specialization_of.hpp"
+#include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/type_traits/enum.hpp"
+#include "aystl/core/type_traits/memory.hpp"
+#include "aystl/core/type_traits/optional.hpp"
 

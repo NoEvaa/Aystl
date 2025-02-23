@@ -1,21 +1,13 @@
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
-#include <limits>
 #include <string_view>
-#include <type_traits>
 #include <utility>
-#include "aystl/math/bit_utils.hpp"
-#include "aystl/type_traits.h"
-#include "aystl/math.h"
+#include "aystl/aystl.hpp"
+#include "aystl/utility.hpp"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
-#include "aystl/type_traits/utils.hpp"
-#include "aystl/utility.h"
-#include "aystl/math/limits.hpp"
-#include "aystl/utility/function.hpp"
 #include "aystl/utility/hash.hpp"
-#include "aystl/utility/int_seq.hpp"
-#include "aystl/utility/type_list.hpp"
 
 
 using namespace iin;
@@ -50,11 +42,20 @@ enum class ABC {
     k1 = 1,
 };
 
+#include <any>
 int main()
 {
-    char ae3[] = "23i;o325";
-    std::cout << ayCharsHash(ae3) << std::endl;
-    std::cout << ayCharsHash(ae3, 9) << std::endl;
+    std::vector<int> gg;
+    std::any aa = int(1);
+    auto ddd =  std::any_cast<const int>(aa);
+    std::cout << ddd << std::endl;
+    std::cout << sizeof(std::any) << std::endl;
+    std::cout << sizeof(iin::AyAny) << std::endl;
+    std::cout << sizeof(void*) << std::endl;
+    std::cout << sizeof(std::shared_ptr<int>) << std::endl;
+    std::cout << sizeof(std::weak_ptr<int>) << std::endl;
+    std::cout << sizeof(std::unique_ptr<int>) << std::endl;
+    std::cout << alignof(std::max_align_t) << std::endl;
 
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 
@@ -80,11 +81,6 @@ int main()
     std::cout << getEnumName<CmpOp(-1)>() << std::endl;
     std::cout << is_enum_declared_v<CmpOp(-1)> << std::endl;
     std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
-
-    std::cout << getTypeName<double>() << std::endl;
-    std::cout << getTypeName<int_seq_list<> const &>() << std::endl;
-    std::cout << getTypeName<std::shared_ptr<int const>>() << std::endl;
-    std::cout << getTypeName<std::int64_t*>() << std::endl;
 
     return 0;
 }

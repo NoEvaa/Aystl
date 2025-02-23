@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,5 @@
  */
 #pragma once
 
-#include <optional>
-
-#include "aystl/type_traits/utils.hpp"
-
-namespace iin {
-template <typename T>
-using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
-}
+#include "aystl/core/memory/allocator.hpp"
 

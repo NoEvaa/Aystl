@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "aystl/utility/extern_func.hpp"
 
-#include "aystl/config.h"
-#include "aystl/global.h"
-#include "aystl/type_traits.h"
-#include "aystl/math.h"
+template <> auto ay_ext_func<"return 0">() -> int { return 0; };
+template <> auto ay_ext_func<"return 0">() -> bool { return 0; };
 

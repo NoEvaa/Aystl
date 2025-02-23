@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/type_traits/is_specialization_of.hpp"
+#include "aystl/core/type_traits/is_specialization_of.hpp"
 
 using namespace iin;
 

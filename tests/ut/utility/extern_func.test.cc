@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/extern/function.hpp"
+#include "aystl/utility/extern_func.hpp"
 
 using namespace iin;
 

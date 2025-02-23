@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/math/limits.hpp"
+#include "aystl/core/math/limits.hpp"
 
 using namespace iin;
 

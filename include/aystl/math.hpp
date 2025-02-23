@@ -13,6 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define AYTESTM_CONFIG_MAIN
-#include "testlib.h"
+#pragma once
+
+#include "aystl/core/math/common.hpp"
+#include "aystl/core/math/limits.hpp"
+#include "aystl/core/math/enum_utils.hpp"
+#include "aystl/core/math/bit_utils.hpp"
 

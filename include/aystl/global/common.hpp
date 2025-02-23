@@ -15,8 +15,8 @@
  */
 #pragma once
 
-#include "aystl/global/system.h"
-#include "aystl/global/compiler.h"
+#include "aystl/global/system.hpp"
+#include "aystl/global/compiler.hpp"
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
 #define AY_STR(s)      AY_STR_IMPL(s)
@@ -45,5 +45,9 @@ enum class CmpOp {
     kGT,     // greater than
     kGE      // greater or equal
 };
+
+namespace detail {
+inline constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
+}
 }
 

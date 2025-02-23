@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/math/enum_utils.hpp"
+#include "aystl/core/math/enum_utils.hpp"
 
 using namespace testlib;
 using namespace iin;

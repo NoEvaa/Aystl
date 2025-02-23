@@ -25,6 +25,7 @@
 
 #include "aystl/core/memory/allocator.hpp"
 #include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/type_traits/is_specialization_of.hpp"
 
 namespace iin {
 namespace _any_impl {
@@ -64,6 +65,15 @@ public:
     AyAny(AyAny const & _ot) { _ot._copyTo(this); }
     AyAny(AyAny && _ot) noexcept { _ot._moveTo(this); }
 
+    template <typename _ValT, typename _Tp = std::decay_t<_ValT>>
+    requires (!std::is_same_v<_Tp, AyAny> && !is_spec_of_v<_Tp, std::in_place_type_t>)
+    AyAny(_ValT && _v) { setValue<_Tp>(std::forward<_ValT>(_v)); }
+
+    template <typename _ValT, typename ... _Args>
+    explicit AyAny(std::in_place_type_t<_ValT>, _Args && ... _args) {
+        setValue<_ValT>(std::forward<_Args>(_args)...);
+    }
+
     ~AyAny() noexcept { this->reset(); }
 
     AyAny & operator=(AyAny const &);
@@ -84,23 +94,11 @@ public:
     bool isType() const noexcept { return this->isType(typeid(_Tp)); }
 
     template <typename _Tp>
-    _Tp fastGetValue() const noexcept { return static_cast<_Tp>(*_toPtr<_Tp>()); }
+    _Tp fastGetValue() const noexcept { return __toValue<_Tp>(); }
 
-    template <typename _Tp>
-    _Tp * getValuePtr() const noexcept {
-        if (!this->hasValue()) { return nullptr; }
-        if (!isType<std::decay_t<_Tp>>()) { return nullptr; }
-        return __toPtr<_Tp>();
-    }
-
-    template <typename _Tp>
-    _Tp getValue() const {
-        auto * _p = getValuePtr<_Tp>();
-        if (!_p) {
-            throw std::runtime_error{"iin::AyAny can not access to value."};
-        }
-        return static_cast<_Tp>(*_p);
-    }
+    template <typename _Tp> _Tp * getValuePtr() const noexcept;
+    template <typename _Tp> _Tp getValue() const;
+    template <typename _Tp, typename ... _Args> _Tp & setValue(_Args && ...);
 
 private:
     template <typename _Tp> void _initAct() noexcept;
@@ -109,6 +107,7 @@ private:
 
     template <typename _Tp> _Tp * _toPtr() const noexcept;
     template <typename _Tp> _Tp * __toPtr() const noexcept;
+    template <typename _Tp> _Tp __toValue() const noexcept;
 
     void _copyTo(AyAny *) const;
     void __copyTo(AyAny *) const;
@@ -147,8 +146,8 @@ struct _AyAnyHandler<T, _Action::kGet> {
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kCreate> {
-    template <typename ..._Args>
-    static T * call(AyAny & _self, _Args&&... _args) {
+    template <typename ... _Args>
+    static T & call(AyAny & _self, _Args && ... _args) {
         T * _p = nullptr;
         if constexpr (_is_inp_value_v<T>) {
             _p = static_cast<T *>(static_cast<void *>(&_self.m_buf));
@@ -161,7 +160,7 @@ struct _AyAnyHandler<T, _Action::kCreate> {
             _atraits_type::construct(_a, _p, std::forward<_Args>(_args)...);
             _self.m_buf[0] = _p;
         }
-        return _p;
+        return *_p;
     }
 };
 
@@ -191,7 +190,7 @@ struct _AyAnyHandler<T, _Action::kCopyTo> {
             std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
         } else {
             using _lref_type = std::add_lvalue_reference_t<T>;
-            _AyAnyHandler<T, _Action::kCreate>::call(_dst, _src.fastGetValue<_lref_type>());
+            _AyAnyHandler<T, _Action::kCreate>::call(_dst, _src.__toValue<_lref_type>());
         }
         return nullptr;
     }
@@ -248,6 +247,28 @@ inline void AyAny::swap(AyAny & rhs) noexcept
 }
 
 template <typename _Tp>
+_Tp * AyAny::getValuePtr() const noexcept {
+    if (!this->hasValue()) { return nullptr; }
+    if (!isType<std::decay_t<_Tp>>()) { return nullptr; }
+    return __toPtr<_Tp>();
+}
+
+template <typename _Tp>
+_Tp AyAny::getValue() const {
+    auto * _p = getValuePtr<_Tp>();
+    if (!_p) {
+        throw std::runtime_error{"iin::AyAny can not access to value."};
+    }
+    return static_cast<_Tp>(*_p);
+}
+
+template <typename _Tp, typename ... _Args>
+_Tp & AyAny::setValue(_Args && ... _args) {
+    return _any_impl::_AyAnyHandler<std::decay_t<_Tp>, _Action::kCreate>::call(
+        *this, std::forward<_Args>(_args)...);
+}
+
+template <typename _Tp>
 void AyAny::_initAct() noexcept {
     m_act = [](_Action _action, AyAny const * _this, AyAny * _ot) -> void * {
         using _any_impl::_AyAnyHandler;
@@ -287,6 +308,11 @@ _Tp * AyAny::_toPtr() const noexcept {
 template <typename _Tp>
 _Tp * AyAny::__toPtr() const noexcept {
     return static_cast<_Tp *>(this->__callAct(_Action::kGet));
+}
+
+template <typename _Tp>
+_Tp AyAny::__toValue() const noexcept {
+    return static_cast<_Tp>(*__toPtr<_Tp>());
 }
 
 inline void AyAny::_copyTo(AyAny * _dst) const {

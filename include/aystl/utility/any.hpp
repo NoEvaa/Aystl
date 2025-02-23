@@ -17,19 +17,21 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <typeinfo>
 #include <type_traits>
 #include <utility>
 
-#include "aystl/global/common.hpp"
 #include "aystl/core/memory/allocator.hpp"
+#include "aystl/core/type_traits/utils.hpp"
 
 namespace iin {
 namespace _any_impl {
 enum class _Action {
     kTypeInfo = 0,
     kGet,
+    kCreate,
     kDestroy,
     kCopyTo,
     kMoveTo,
@@ -87,19 +89,18 @@ public:
 
     template <typename _Tp>
     _Tp getValue() const {
-        auto * __p = getValuePtr<_Tp>();
-        if (!__p) {
+        auto * _p = getValuePtr<_Tp>();
+        if (!_p) {
             throw std::runtime_error{"iin::AyAny can not access to value."};
         }
-        return static_cast<_Tp>(*__p);
+        return static_cast<_Tp>(*_p);
     }
 
 private:
-    template <typename _Tp>
     void * _toVoidPtr() const noexcept { return this->_callAct(_Action::kGet); }
 
     template <typename _Tp>
-    _Tp * _toPtr() const noexcept { return static_cast<_Tp *>(_toVoidPtr<_Tp>()); }
+    _Tp * _toPtr() const noexcept { return static_cast<_Tp *>(_toVoidPtr()); }
 
     template <typename _Tp>
     void _initAct() noexcept;
@@ -128,6 +129,9 @@ private:
 
 namespace _any_impl {
 template <typename T>
+inline constexpr bool _is_inp_value_v = value_t<(sizeof(T) <= AyAny::kBufByteSize)>::value;
+
+template <typename T>
 struct _AyAnyHandler<T, _Action::kTypeInfo> {
     static void * call() noexcept {
         return const_cast<void *>(static_cast<void const *>(&typeid(T)));
@@ -136,23 +140,37 @@ struct _AyAnyHandler<T, _Action::kTypeInfo> {
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kGet> {
-    static void * call(AyAny const & _self) noexcept { 
-        if constexpr (sizeof(T) <= AyAny::kBufByteSize) {
-            return detail::_castToVoidPtr(&_self.m_buf);
+    static void * call(AyAny & _self) noexcept { 
+        if constexpr (_is_inp_value_v<T>) {
+            return static_cast<void *>(&_self.m_buf);
         } else {
-            return detail::_castToVoidPtr(_self.m_buf[0]);
+            return static_cast<void *>(_self.m_buf[0]);
         }
+    }
+};
+
+template <typename T>
+struct _AyAnyHandler<T, _Action::kCreate> {
+    static void * call(AyAny & _self) {
+        T * _p = nullptr;
+        if constexpr (_is_inp_value_v<T>) {
+            _p = static_cast<T *>(static_cast<void *>(&_self.m_buf));
+            //std::construct_at(_p, );
+        } else {
+            using _alloc_type = _AyAnyAlloc<T>;
+            _p = _alloc_type::allocate();
+            _self.m_buf[0] = _p;
+        }
+        return nullptr;
     }
 };
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kDestroy> {
     static void * call(AyAny const & _self) noexcept {
-        if constexpr (sizeof(T) <= AyAny::kBufByteSize) {
+        if constexpr (_is_inp_value_v<T>) {
             if constexpr (!std::is_trivially_destructible<T>::value) {
-                auto * p_v = _self._toPtr<T>();
-                p_v->~ValT();
-                //std::launder(p_v)->~ValT();
+                std::destroy_at(_self._toPtr<T>());
             }
         } else {
             using _alloc_type = _AyAnyAlloc<T>;
@@ -173,6 +191,11 @@ struct _AyAnyHandler<T, _Action::kCopyTo> {
 template <typename T>
 struct _AyAnyHandler<T, _Action::kMoveTo> {
     static void * call(AyAny & _src, AyAny & _dst) noexcept {
+        if constexpr (_is_inp_value_v<T>) {
+            std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+        } else {
+            std::memcpy(&_dst.m_buf, &_src.m_buf, AyAny::kPtrSize);
+        }
         return nullptr;
     }
 };
@@ -236,7 +259,7 @@ void AyAny::_initAct() noexcept {
         case _Action::kTypeInfo:
             return _AyAnyHandler<_Tp, _Action::kTypeInfo>::call();
         case _Action::kGet:
-            return _AyAnyHandler<_Tp, _Action::kGet>::call(*_this);
+            return _AyAnyHandler<_Tp, _Action::kGet>::call(const_cast<AyAny &>(*_this));
         case _Action::kDestroy:
             return _AyAnyHandler<_Tp, _Action::kDestroy>::call(*_this);
         case _Action::kCopyTo:

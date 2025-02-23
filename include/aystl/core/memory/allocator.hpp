@@ -31,14 +31,14 @@ public:
     constexpr AyAlloc() noexcept = default;
 
     template <class U>
-    constexpr AyAlloc(const AyAlloc<U>&) noexcept { }
+    constexpr AyAlloc(AyAlloc<U> const &) noexcept { }
 
-    T * allocate(size_type _n) {
+    constexpr T * allocate(size_type _n) {
         alloc_type _a;
         return _a.allocate(_n);
     }
 
-    void deallocate(T * _p, size_type _n) noexcept {
+    constexpr void deallocate(T * _p, size_type _n) noexcept {
         alloc_type _a;
         _a.deallocate(_p, _n);
     }

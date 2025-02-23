@@ -47,11 +47,6 @@ enum class CmpOp {
 };
 
 namespace detail {
-template <typename T>
-void * _castToVoidPtr(T const * __p) noexcept {
-    return const_cast<void *>(static_cast<void const volatile *>(__p));
-}
-
 inline constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
 }
 }

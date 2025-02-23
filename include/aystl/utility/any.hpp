@@ -70,7 +70,6 @@ public:
     AyAny & operator=(AyAny &&) noexcept;
 
     void reset() noexcept;
-
     void swap(AyAny &) noexcept;
 
     bool hasValue() const noexcept { return m_act != nullptr; }
@@ -91,7 +90,7 @@ public:
     _Tp * getValuePtr() const noexcept {
         if (!this->hasValue()) { return nullptr; }
         if (!isType<std::decay_t<_Tp>>()) { return nullptr; }
-        return _toPtr<_Tp>();
+        return __toPtr<_Tp>();
     }
 
     template <typename _Tp>
@@ -104,19 +103,17 @@ public:
     }
 
 private:
-    template <typename _Tp>
-    _Tp * __toPtr() const noexcept { return static_cast<_Tp *>(__toVoidPtr()); }
-
-    template <typename _Tp>
-    void _initAct() noexcept;
-
-    void _copyTo(AyAny * _dst) const { if (this->hasValue()) { this->__copyTo(_dst); } }
-    void _moveTo(AyAny * _dst) noexcept { if (this->hasValue()) { this->__moveTo(_dst); } }
-
+    template <typename _Tp> void _initAct() noexcept;
+    void * _callAct(_Action, AyAny * _other = nullptr) const;
     void * __callAct(_Action, AyAny * _other = nullptr) const;
+
+    template <typename _Tp> _Tp * _toPtr() const noexcept;
+    template <typename _Tp> _Tp * __toPtr() const noexcept;
+
+    void _copyTo(AyAny *) const;
     void __copyTo(AyAny *) const;
+    void _moveTo(AyAny *) noexcept;
     void __moveTo(AyAny *) noexcept;
-    void * __toVoidPtr() const noexcept { return this->__callAct(_Action::kGet); }
 
 private:
     void *    m_buf[kBufSize] = {};
@@ -173,13 +170,13 @@ struct _AyAnyHandler<T, _Action::kDestroy> {
     static void * call(AyAny const & _self) noexcept {
         if constexpr (_is_inp_value_v<T>) {
             if constexpr (!std::is_trivially_destructible<T>::value) {
-                std::destroy_at(_self._toPtr<T>());
+                std::destroy_at(_self.__toPtr<T>());
             }
         } else {
             using _alloc_type   = _AyAnyAlloc<T>;
             using _atraits_type = AyAllocTraits<_alloc_type>;
             _alloc_type _a;
-            auto * _p = _self._toPtr<T>();
+            auto * _p = _self.__toPtr<T>();
             _atraits_type::destroy(_a, _p);
             _atraits_type::deallocate(_a, _p, 1);
         }
@@ -193,8 +190,8 @@ struct _AyAnyHandler<T, _Action::kCopyTo> {
         if constexpr (_is_inp_value_v<T>) {
             std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
         } else {
-            _src.getValuePtr<T>();
-            _AyAnyHandler<T, _Action::kCreate>::call(_dst, );
+            using _lref_type = std::add_lvalue_reference_t<T>;
+            _AyAnyHandler<T, _Action::kCreate>::call(_dst, _src.fastGetValue<_lref_type>());
         }
         return nullptr;
     }
@@ -231,7 +228,7 @@ inline AyAny & AyAny::operator=(AyAny && rhs) noexcept {
 
 inline void AyAny::reset() noexcept {
     if (!this->hasValue()) { return; }
-    this->_callAct(_Action::kDestroy);
+    this->__callAct(_Action::kDestroy);
     m_act = nullptr;
 }
 
@@ -240,13 +237,13 @@ inline void AyAny::swap(AyAny & rhs) noexcept
     if (this == &rhs) [[unlikely]] { return; }
     if (this->hasValue() && rhs.hasValue()) {
         AyAny temp;
-        this->_moveTo(&temp);
-        rhs._moveTo(this);
-        temp._moveTo(&rhs);
+        this->__moveTo(&temp);
+        rhs.__moveTo(this);
+        temp.__moveTo(&rhs);
     } else if (this->hasValue()) {
-        this->_moveTo(&rhs);
+        this->__moveTo(&rhs);
     } else if (rhs.hasValue()) {
-        rhs._moveTo(this);
+        rhs.__moveTo(this);
     }
 }
 
@@ -271,13 +268,46 @@ void AyAny::_initAct() noexcept {
     };
 }
 
+inline void * AyAny::_callAct(_Action _action, AyAny * _other) const {
+    if (this->hasValue()) {
+        return this->__callAct(_action, _other);
+    }
+    return nullptr;
+}
+
 inline void * AyAny::__callAct(_Action _action, AyAny * _other) const {
     return m_act(_action, this, _other);
+}
+
+template <typename _Tp>
+_Tp * AyAny::_toPtr() const noexcept {
+    return static_cast<_Tp *>(this->_callAct(_Action::kGet));
+}
+
+template <typename _Tp>
+_Tp * AyAny::__toPtr() const noexcept {
+    return static_cast<_Tp *>(this->__callAct(_Action::kGet));
+}
+
+inline void AyAny::_copyTo(AyAny * _dst) const {
+    if (this->hasValue()) {
+        this->__copyTo(_dst);
+    } else {
+        _dst->reset();
+    }
 }
 
 inline void AyAny::__copyTo(AyAny * _dst) const {
     this->__callAct(_Action::kCopyTo, _dst);
     _dst->m_act = this->m_act;
+}
+
+inline void AyAny::_moveTo(AyAny * _dst) noexcept {
+    if (this->hasValue()) {
+        this->__moveTo(_dst);
+    } else {
+        _dst->reset();
+    }
 }
 
 inline void AyAny::__moveTo(AyAny * _dst) noexcept {

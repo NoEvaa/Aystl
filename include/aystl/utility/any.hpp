@@ -36,8 +36,15 @@ enum class _Action {
     kCopyTo,
     kMoveTo,
 };
+
 template <typename, _Action> struct _AyAnyHandler;
-template <typename> struct _AyAnyAlloc;
+
+#if 0
+template <typename> class _AyAnyAlloc;
+#else
+template <typename T>
+using _AyAnyAlloc = AyAlloc<T>;
+#endif
 }
 
 class AyAny {
@@ -71,7 +78,7 @@ public:
 
     std::type_info const & getType() const noexcept {
         if (!this->hasValue()) { return typeid(void); }
-        return *static_cast<std::type_info const *>(this->_callAct(_Action::kTypeInfo));
+        return *static_cast<std::type_info const *>(this->__callAct(_Action::kTypeInfo));
     }
     bool isType(std::type_info const & _ti) const noexcept { return this->getType() == _ti; }
     template <typename _Tp>
@@ -97,27 +104,19 @@ public:
     }
 
 private:
-    void * _toVoidPtr() const noexcept { return this->_callAct(_Action::kGet); }
-
     template <typename _Tp>
-    _Tp * _toPtr() const noexcept { return static_cast<_Tp *>(_toVoidPtr()); }
+    _Tp * __toPtr() const noexcept { return static_cast<_Tp *>(__toVoidPtr()); }
 
     template <typename _Tp>
     void _initAct() noexcept;
 
-    void * _callAct(_Action _action, AyAny * _other = nullptr) const {
-        return m_act(_action, this, _other);
-    }
+    void _copyTo(AyAny * _dst) const { if (this->hasValue()) { this->__copyTo(_dst); } }
+    void _moveTo(AyAny * _dst) noexcept { if (this->hasValue()) { this->__moveTo(_dst); } }
 
-    void _copyTo(AyAny * _dst) const {
-        this->_callAct(_Action::kCopyTo, _dst);
-        _dst->m_act = this->m_act;
-    }
-
-    void _moveTo(AyAny * _dst) noexcept {
-        this->_callAct(_Action::kMoveTo, _dst);
-        _dst->m_act = std::exchange(m_act, nullptr);
-    }
+    void * __callAct(_Action, AyAny * _other = nullptr) const;
+    void __copyTo(AyAny *) const;
+    void __moveTo(AyAny *) noexcept;
+    void * __toVoidPtr() const noexcept { return this->__callAct(_Action::kGet); }
 
 private:
     void *    m_buf[kBufSize] = {};
@@ -151,17 +150,21 @@ struct _AyAnyHandler<T, _Action::kGet> {
 
 template <typename T>
 struct _AyAnyHandler<T, _Action::kCreate> {
-    static void * call(AyAny & _self) {
+    template <typename ..._Args>
+    static T * call(AyAny & _self, _Args&&... _args) {
         T * _p = nullptr;
         if constexpr (_is_inp_value_v<T>) {
             _p = static_cast<T *>(static_cast<void *>(&_self.m_buf));
-            //std::construct_at(_p, );
+            std::construct_at(_p, std::forward<_Args>(_args)...);
         } else {
-            using _alloc_type = _AyAnyAlloc<T>;
-            _p = _alloc_type::allocate();
+            using _alloc_type   = _AyAnyAlloc<T>;
+            using _atraits_type = AyAllocTraits<_alloc_type>;
+            _alloc_type _a;
+            _p = _atraits_type::allocate(_a, 1);
+            _atraits_type::construct(_a, _p, std::forward<_Args>(_args)...);
             _self.m_buf[0] = _p;
         }
-        return nullptr;
+        return _p;
     }
 };
 
@@ -173,9 +176,12 @@ struct _AyAnyHandler<T, _Action::kDestroy> {
                 std::destroy_at(_self._toPtr<T>());
             }
         } else {
-            using _alloc_type = _AyAnyAlloc<T>;
-            auto * p_v = _self._toPtr<T>();
-            _alloc_type::destroy(p_v);
+            using _alloc_type   = _AyAnyAlloc<T>;
+            using _atraits_type = AyAllocTraits<_alloc_type>;
+            _alloc_type _a;
+            auto * _p = _self._toPtr<T>();
+            _atraits_type::destroy(_a, _p);
+            _atraits_type::deallocate(_a, _p, 1);
         }
         return nullptr;
     }
@@ -184,6 +190,12 @@ struct _AyAnyHandler<T, _Action::kDestroy> {
 template <typename T>
 struct _AyAnyHandler<T, _Action::kCopyTo> {
     static void * call(AyAny const & _src, AyAny & _dst) {
+        if constexpr (_is_inp_value_v<T>) {
+            std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+        } else {
+            _src.getValuePtr<T>();
+            _AyAnyHandler<T, _Action::kCreate>::call(_dst, );
+        }
         return nullptr;
     }
 };
@@ -197,19 +209,6 @@ struct _AyAnyHandler<T, _Action::kMoveTo> {
             std::memcpy(&_dst.m_buf, &_src.m_buf, AyAny::kPtrSize);
         }
         return nullptr;
-    }
-};
-
-template <typename T>
-struct _AyAnyAlloc {
-    static void construct() noexcept {}
-
-    static void destroy(T * __p) noexcept {
-        if constexpr (std::is_array_v<T>) {
-            delete[] __p;
-        } else {
-            delete __p;
-        }
     }
 };
 }
@@ -270,6 +269,20 @@ void AyAny::_initAct() noexcept {
             return nullptr;
         }
     };
+}
+
+inline void * AyAny::__callAct(_Action _action, AyAny * _other) const {
+    return m_act(_action, this, _other);
+}
+
+inline void AyAny::__copyTo(AyAny * _dst) const {
+    this->__callAct(_Action::kCopyTo, _dst);
+    _dst->m_act = this->m_act;
+}
+
+inline void AyAny::__moveTo(AyAny * _dst) noexcept {
+    this->__callAct(_Action::kMoveTo, _dst);
+    _dst->m_act = std::exchange(m_act, nullptr);
 }
 }
 

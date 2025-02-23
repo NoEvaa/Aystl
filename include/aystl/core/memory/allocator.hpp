@@ -25,8 +25,10 @@ class AyAlloc;
 template <class T>
 class AyAlloc {
 public:
+    using value_type = T;
     using size_type  = std::size_t;
     using alloc_type = std::allocator<T>;
+    using difference_type = typename alloc_type::difference_type;
 
     constexpr AyAlloc() noexcept = default;
 

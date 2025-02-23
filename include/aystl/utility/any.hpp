@@ -160,6 +160,7 @@ private:
     template <_Action, typename ...>
     friend struct _any_impl::_AyAnyHandler;
 };
+using AyAny = AyBasicAny<>;
 
 namespace _any_impl {
 template <typename T>

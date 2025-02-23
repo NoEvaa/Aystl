@@ -22,6 +22,7 @@ namespace iin {
 template <class T>
 class AyAlloc;
 
+#if 1
 template <class T>
 class AyAlloc {
 public:
@@ -45,6 +46,7 @@ public:
         _a.deallocate(_p, _n);
     }
 };
+#endif
 
 template <class T>
 using AyAllocTraits = std::allocator_traits<T>;

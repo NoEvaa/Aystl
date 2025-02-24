@@ -20,17 +20,15 @@
 #include "aystl/core/type_traits/meta.hpp"
 
 namespace iin {
-template <typename T, template <typename...> typename Tmpl, typename = void>
+template <typename T, template <typename...> typename Tmpl>
 struct is_spec_of : std::false_type {};
 
 template <
     template <typename...> typename Tmpl1,
     template <typename...> typename Tmpl2,
     typename... Args>
-struct is_spec_of<Tmpl1<Args...>, Tmpl2,
-    std::enable_if_t<std::is_same_v<
-        Tmpl1<Args...>,
-        Tmpl2<Args...>>>> : std::true_type {};
+requires std::is_same_v<Tmpl1<Args...>, Tmpl2<Args...>>
+struct is_spec_of<Tmpl1<Args...>, Tmpl2> : std::true_type {};
 
 template <typename T, template <typename...> typename Tmpl>
 inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
@@ -38,17 +36,15 @@ inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
 template <typename T, template <typename...> typename... Tmpls>
 inline constexpr bool is_any_spec_of_v = is_any_of_v<is_spec_of<T, Tmpls>...>;
 
-template <typename T, template <auto...> typename Tmpl, typename = void>
+template <typename T, template <auto...> typename Tmpl>
 struct is_value_spec_of : std::false_type {};
 
 template <
     template <auto...> typename Tmpl1,
     template <auto...> typename Tmpl2,
     auto... args>
-struct is_value_spec_of<Tmpl1<args...>, Tmpl2,
-    std::enable_if_t<std::is_same_v<
-        Tmpl1<args...>,
-        Tmpl2<args...>>>> : std::true_type {};
+requires std::is_same_v<Tmpl1<args...>, Tmpl2<args...>>
+struct is_value_spec_of<Tmpl1<args...>, Tmpl2> : std::true_type {};
 
 template <typename T, template <auto...> typename Tmpl>
 inline constexpr bool is_value_spec_of_v = is_value_spec_of<T, Tmpl>::value;

@@ -16,6 +16,5 @@
 #pragma once
 
 namespace iin {
-
 }
 

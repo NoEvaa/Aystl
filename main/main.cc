@@ -45,10 +45,19 @@ enum class ABC {
 #include <any>
 int main()
 {
-    std::vector<int> gg;
+    iin::AyAny ann = int(1);
+    std::cout << ann.isType<int>() << std::endl;
+    std::cout << ann.getValue<int>() << std::endl;
+    auto& vann = ann.getValue<int &>();
+    vann = 2;
+    std::cout << ann.getValue<int>() << std::endl;
+    iin::AyAny ann2 = int(2);
+    std::cout << (ann == ann2) << std::endl;
+
     std::any aa = int(1);
     auto ddd =  std::any_cast<const int>(aa);
     std::cout << ddd << std::endl;
+
     std::cout << sizeof(std::any) << std::endl;
     std::cout << sizeof(iin::AyAny) << std::endl;
     std::cout << sizeof(void*) << std::endl;
@@ -56,7 +65,7 @@ int main()
     std::cout << sizeof(std::weak_ptr<int>) << std::endl;
     std::cout << sizeof(std::unique_ptr<int>) << std::endl;
     std::cout << alignof(std::max_align_t) << std::endl;
-
+    #if 0
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 
     auto xxx = []<int i>(int a, int b, int c){
@@ -81,7 +90,7 @@ int main()
     std::cout << getEnumName<CmpOp(-1)>() << std::endl;
     std::cout << is_enum_declared_v<CmpOp(-1)> << std::endl;
     std::cout << is_enum_declared_v<CmpOp(0)> << std::endl;
-
+    #endif
     return 0;
 }
 

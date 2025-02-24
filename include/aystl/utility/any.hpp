@@ -26,6 +26,7 @@
 #include "aystl/core/memory/allocator.hpp"
 #include "aystl/core/type_traits/utils.hpp"
 #include "aystl/core/type_traits/is_specialization_of.hpp"
+#include "aystl/core/math/compare.hpp"
 
 namespace iin {
 namespace _any_impl {
@@ -36,9 +37,10 @@ enum class _Action {
     kDestroy,
     kCopyTo,
     kMoveTo,
+    kCompare,
 };
 
-template <_Action, typename ...> struct _AyAnyHandler;
+template <_Action, typename...> struct _AyAnyHandler;
 }
 
 template <class AllocT = AyAlloc<void>>
@@ -46,6 +48,12 @@ class AyBasicAny {
     using _self_type = AyBasicAny<AllocT>;
     using _Action    = _any_impl::_Action;
     using _act_type  = void *(*)(_Action, _self_type const *, _self_type *);
+
+    template <class _ATp>
+    using _self_tmpl = AyBasicAny<_ATp>;
+    template <_Action _action, typename... _Tps>
+    using _hnd_tmpl = _any_impl::_AyAnyHandler<_action, _Tps...>;
+
 public:
     using size_type  = std::size_t;
     using alloc_type = AllocT;
@@ -63,11 +71,11 @@ public:
     AyBasicAny(_self_type && _ot) noexcept { _ot._moveTo(this); }
 
     template <typename _ValT, typename _Tp = std::decay_t<_ValT>>
-    requires (!is_any_spec_of_v<_Tp, AyBasicAny, std::in_place_type_t>)
+    requires (!is_any_spec_of_v<_Tp, _self_tmpl, std::in_place_type_t>)
     AyBasicAny(_ValT && _v) { this->setValue<_Tp>(std::forward<_ValT>(_v)); }
 
-    template <typename _ValT, typename ... _Args>
-    explicit AyBasicAny(std::in_place_type_t<_ValT>, _Args && ... _args) {
+    template <typename _ValT, typename... _Args>
+    explicit AyBasicAny(std::in_place_type_t<_ValT>, _Args &&... _args) {
         this->setValue<_ValT>(std::forward<_Args>(_args)...);
     }
 
@@ -89,6 +97,8 @@ public:
         return *this;
     }
 
+    bool operator==(_self_type const &) const noexcept;
+
     void reset() noexcept {
         if (!this->hasValue()) { return; }
         this->__callAct(_Action::kDestroy);
@@ -98,11 +108,13 @@ public:
     bool hasValue() const noexcept { return m_act != nullptr; }
     operator bool() const noexcept { return this->hasValue(); }
 
-    std::type_info const & getType() const noexcept {
+    std::type_info const & getTypeInfo() const noexcept {
         if (!this->hasValue()) { return typeid(void); }
         return *static_cast<std::type_info const *>(this->__callAct(_Action::kTypeInfo));
     }
-    bool isType(std::type_info const & _ti) const noexcept { return this->getType() == _ti; }
+    bool isType(std::type_info const & _ti) const noexcept {
+        return this->getTypeInfo() == _ti;
+    }
     template <typename _Tp>
     bool isType() const noexcept { return this->isType(typeid(_Tp)); }
 
@@ -118,33 +130,25 @@ public:
 
     template <typename _Tp>
     _Tp getValue() const {
-        auto * _p = this->getValuePtr<_Tp>();
+        auto * _p = this->getValuePtr<std::remove_reference_t<_Tp>>();
         if (!_p) {
-            throw std::runtime_error{"iin::AyAny can not access to value."};
+            throw std::runtime_error{"`iin::AyBasicAny` cannot access the value."};
         }
         return static_cast<_Tp>(*_p);
     }
 
-    template <typename _Tp, typename ... _Args>
-    _Tp & setValue(_Args && ... _args) {
-        using _type = std::decay_t<_Tp>;
-        this->reset();
-        this->_initAct<_type>();
-        return _any_impl::_AyAnyHandler<
-            _Action::kCreate,
-            _type,
-            _self_type
-        >::call(*this, std::forward<_Args>(_args)...);
-    }
+    template <typename _Tp, typename... _Args>
+    _Tp & setValue(_Args &&...);
 
     void swap(_self_type &) noexcept;
     
 private:
+    _self_type & _getSelf() const noexcept { return const_cast<_self_type &>(*this); }
+
     template <typename _Tp> void _initAct() noexcept;
     void * _callAct(_Action, _self_type * _other = nullptr) const;
     void * __callAct(_Action, _self_type * _other = nullptr) const;
 
-    template <typename _Tp> _Tp * _toPtr() const noexcept;
     template <typename _Tp> _Tp * __toPtr() const noexcept;
     template <typename _Tp> _Tp __toValue() const noexcept;
 
@@ -164,7 +168,7 @@ using AyAny = AyBasicAny<>;
 
 namespace _any_impl {
 template <typename T>
-inline constexpr bool _is_inp_value_v = value_t<(sizeof(T) <= AyBasicAny<>::kBufByteSize)>::value;
+inline constexpr bool _is_inp_value_v = value_t<(sizeof(T) <= AyAny::kBufByteSize)>::value;
 
 template <typename T>
 struct _AyAnyHandler<_Action::kTypeInfo, T> {
@@ -189,8 +193,8 @@ struct _AyAnyHandler<_Action::kCreate, T, AnyT> {
     using alloc_type = replace_tmpl_args_t<typename AnyT::alloc_type, T>;
     using atraits_type = AyAllocTraits<alloc_type>;
 
-    template <typename ... _Args>
-    static T & call(AnyT & _self, _Args && ... _args) {
+    template <typename... _Args>
+    static T & call(AnyT & _self, _Args &&... _args) {
         T * _p = nullptr;
         if constexpr (_is_inp_value_v<T>) {
             _p = static_cast<T *>(static_cast<void *>(&_self.m_buf));
@@ -232,7 +236,8 @@ struct _AyAnyHandler<_Action::kCopyTo, T, AnyT> {
             std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
         } else {
             using _lref_type = std::add_lvalue_reference_t<T>;
-            _AyAnyHandler<_Action::kCreate, T, AnyT>::call(_dst, _src.template __toValue<_lref_type>());
+            _AyAnyHandler<_Action::kCreate, T, AnyT>::call(
+                _dst, _src.template __toValue<_lref_type>());
         }
         return nullptr;
     }
@@ -249,6 +254,42 @@ struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
         return nullptr;
     }
 };
+
+template <typename T, typename AnyT>
+struct _AyAnyHandler<_Action::kCompare, T, AnyT> {
+    static void * call(AnyT const & lhs, AnyT const & rhs) {
+        if (AyCmp<CmpOp::kEQ, T>::call(
+            lhs.template __toValue<T const &>(),
+            rhs.template __toValue<T const &>())) {
+            return static_cast<void *>((bool *)1);
+        }
+        return nullptr;
+    }
+};
+}
+
+template <typename ATp>
+bool AyBasicAny<ATp>::operator==(_self_type const & rhs) const noexcept {
+    if (this == &rhs) [[unlikely]] { return true; }
+    if (!this->hasValue()) {
+        return !rhs.hasValue();
+    } else if (!rhs.hasValue()) {
+        return false;
+    }
+    if (!this->isType(rhs.getTypeInfo())) {
+        return false;
+    }
+    return bool(this->__callAct(_Action::kCompare, &rhs._getSelf()));
+}
+
+template <typename ATp>
+template <typename _Tp, typename... _Args>
+_Tp & AyBasicAny<ATp>::setValue(_Args &&... _args) {
+    using _type = std::decay_t<_Tp>;
+    this->reset();
+    this->_initAct<_type>();
+    return _hnd_tmpl<_Action::kCreate, _type, _self_type>::call(
+        *this, std::forward<_Args>(_args)...);
 }
 
 template <typename ATp>
@@ -271,18 +312,19 @@ template <typename ATp>
 template <typename _Tp>
 void AyBasicAny<ATp>::_initAct() noexcept {
     m_act = [](_Action _a, _self_type const * _this, _self_type * _ot) -> void * {
-        using _any_impl::_AyAnyHandler;
         switch (_a) {
         case _Action::kTypeInfo:
-            return _AyAnyHandler<_Action::kTypeInfo, _Tp>::call();
+            return _hnd_tmpl<_Action::kTypeInfo, _Tp>::call();
         case _Action::kGet:
-            return _AyAnyHandler<_Action::kGet, _Tp, _self_type>::call(const_cast<_self_type &>(*_this));
+            return _hnd_tmpl<_Action::kGet, _Tp, _self_type>::call(_this->_getSelf());
         case _Action::kDestroy:
-            return _AyAnyHandler<_Action::kDestroy, _Tp, _self_type>::call(*_this);
+            return _hnd_tmpl<_Action::kDestroy, _Tp, _self_type>::call(*_this);
         case _Action::kCopyTo:
-            return _AyAnyHandler<_Action::kCopyTo, _Tp, _self_type>::call(*_this, *_ot);
+            return _hnd_tmpl<_Action::kCopyTo, _Tp, _self_type>::call(*_this, *_ot);
         case _Action::kMoveTo:
-            return _AyAnyHandler<_Action::kMoveTo, _Tp, _self_type>::call(const_cast<_self_type &>(*_this), *_ot);
+            return _hnd_tmpl<_Action::kMoveTo, _Tp, _self_type>::call(_this->_getSelf(), *_ot);
+        case _Action::kCompare:
+            return _hnd_tmpl<_Action::kCompare, _Tp, _self_type>::call(*_this, *_ot);
         default:
             return nullptr;
         }
@@ -304,12 +346,6 @@ void * AyBasicAny<ATp>::__callAct(_Action _action, _self_type * _other) const {
 
 template <typename ATp>
 template <typename _Tp>
-_Tp * AyBasicAny<ATp>::_toPtr() const noexcept {
-    return static_cast<_Tp *>(this->_callAct(_Action::kGet));
-}
-
-template <typename ATp>
-template <typename _Tp>
 _Tp * AyBasicAny<ATp>::__toPtr() const noexcept {
     return static_cast<_Tp *>(this->__callAct(_Action::kGet));
 }
@@ -317,7 +353,7 @@ _Tp * AyBasicAny<ATp>::__toPtr() const noexcept {
 template <typename ATp>
 template <typename _Tp>
 _Tp AyBasicAny<ATp>::__toValue() const noexcept {
-    return static_cast<_Tp>(*__toPtr<_Tp>());
+    return static_cast<_Tp>(*__toPtr<std::remove_reference_t<_Tp>>());
 }
 
 template <typename ATp>

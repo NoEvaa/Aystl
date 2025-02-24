@@ -32,9 +32,9 @@ public:
     using difference_type = typename alloc_type::difference_type;
 
     constexpr AyAlloc() noexcept = default;
-
-    template <class U>
-    constexpr AyAlloc(AyAlloc<U> const &) noexcept { }
+    template <class U> constexpr AyAlloc(AyAlloc<U> const &) noexcept { }
+    ~AyAlloc() = default;
+    template <class U> AyAlloc & operator=(AyAlloc<U> const &) { }
 
     constexpr T * allocate(size_type _n) {
         alloc_type _a;

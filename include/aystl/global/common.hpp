@@ -19,6 +19,7 @@
 
 #include "aystl/global/system.hpp"
 #include "aystl/global/compiler.hpp"
+#include "aystl/global/enum.hpp"
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
 #define AY_STR(...)      AY_STR_IMPL(__VA_ARGS__)
@@ -66,7 +67,11 @@ enum class CmpOp : std::uint8_t {
     kGE = _kB2 | _kB0, // greater or equal
 
     k3Way = kLT | kEQ | kGT, // <=>
-    kFuzzy = _kB3,
+
+    kFuzzy   = _kB3,
+    kFuzzyEQ = kFuzzy | kEQ,
+    kFuzzyLE = kFuzzy | kLE,
+    kFuzzyGE = kFuzzy | kGE,
 };
 }
 

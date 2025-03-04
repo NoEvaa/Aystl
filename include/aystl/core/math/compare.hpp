@@ -16,12 +16,13 @@
 #pragma once
 
 #include "aystl/global/common.hpp"
+#include "aystl/global/enum.hpp"
 
 #define _AYSTL_DECL_TMPL_AY_CMP(_op_name, ...)                                                     \
     template <typename T>                                                                          \
     requires requires (T const & lhs, T const & rhs) { lhs __VA_ARGS__ rhs; }                      \
     struct AyCmp<CmpOp::k##_op_name, T> {                                                          \
-        bool operator()(T const & lhs, T const & rhs) {                                            \
+        bool operator()(T const & lhs, T const & rhs) noexcept {                                   \
             return lhs __VA_ARGS__ rhs;                                                            \
         }                                                                                          \
     };
@@ -31,6 +32,27 @@ template <CmpOp, typename>
 struct AyCmp;
 
 _AYSTL_DECL_CMP_OPS(_AYSTL_DECL_TMPL_AY_CMP)
+
+namespace detail {
+template <CmpOp _cmp_op>
+inline constexpr bool _has_fuzzy_eq_v = ((_cmp_op & CmpOp::kFuzzyEQ) == CmpOp::kFuzzyEQ); 
+}
+
+template <typename T>
+struct AyCmp<CmpOp::kFuzzyEQ, T> {
+    bool operator()(T const & lhs, T const & rhs) noexcept {
+        return AyCmp<CmpOp::kEQ, T>{}(lhs, rhs);
+    }
+};
+
+template <CmpOp _cmp_op, typename T>
+requires detail::_has_fuzzy_eq_v<_cmp_op>
+struct AyCmp<_cmp_op, T> {
+    bool operator()(T const & lhs, T const & rhs) {
+        return AyCmp<_cmp_op & ~CmpOp::kFuzzyEQ, T>{}(lhs, rhs) ||
+            AyCmp<CmpOp::kFuzzyEQ, T>{}(lhs, rhs);
+    }
+};
 }
 
 #undef _AYSTL_DECL_TMPL_AY_CMP

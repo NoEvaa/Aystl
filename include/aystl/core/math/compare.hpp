@@ -20,8 +20,8 @@
 #define _AYSTL_DECL_TMPL_AY_CMP(_op_name, ...)                                                     \
     template <typename T>                                                                          \
     requires requires (T const & lhs, T const & rhs) { lhs __VA_ARGS__ rhs; }                      \
-    struct AyCmp<CmpOp::k##_op_name, T> {                                                           \
-        static bool call(T const & lhs, T const & rhs) {                                           \
+    struct AyCmp<CmpOp::k##_op_name, T> {                                                          \
+        bool operator()(T const & lhs, T const & rhs) {                                            \
             return lhs __VA_ARGS__ rhs;                                                            \
         }                                                                                          \
     };
@@ -30,13 +30,7 @@ namespace iin {
 template <CmpOp, typename>
 struct AyCmp;
 
-_AYSTL_DECL_TMPL_AY_CMP(EQ, ==)
-_AYSTL_DECL_TMPL_AY_CMP(NE, !=)
-_AYSTL_DECL_TMPL_AY_CMP(LT, <)
-_AYSTL_DECL_TMPL_AY_CMP(LE, <=)
-_AYSTL_DECL_TMPL_AY_CMP(GT, >)
-_AYSTL_DECL_TMPL_AY_CMP(GE, >=)
-
+_AYSTL_DECL_CMP_OPS(_AYSTL_DECL_TMPL_AY_CMP)
 }
 
 #undef _AYSTL_DECL_TMPL_AY_CMP

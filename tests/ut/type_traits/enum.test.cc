@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/core/type_traits/enum.hpp"
 
-#include <type_traits>
+using namespace iin;
 
-namespace iin {
-template <typename T>
-concept EnumType = std::is_enum_v<T>;
+namespace {
+enum class _TestEnumClass {};
+enum _TestEnum {};
+}
 
-template <typename T>
-struct is_enum_class {
-    static constexpr bool value = std::is_enum_v<T>
-        && !std::is_convertible_v<T, typename std::underlying_type_t<T>>;
-};
+TEST_CASE("is enum") {
+    CHECK(std::is_enum_v<_TestEnumClass>);
+    CHECK(std::is_enum_v<_TestEnum>);
+}
 
-template <typename T>
-inline constexpr bool is_enum_class_v = is_enum_class<T>::value;
-
-template <typename T>
-concept EnumClassType = is_enum_class_v<T>;
+TEST_CASE("is enum class") {
+    CHECK(is_enum_class_v<_TestEnumClass>);
+    CHECK(!is_enum_class_v<_TestEnum>);
 }
 

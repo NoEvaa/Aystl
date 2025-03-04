@@ -15,16 +15,18 @@
  */
 #pragma once
 
+#include <cstdint>
+
 #include "aystl/global/system.hpp"
 #include "aystl/global/compiler.hpp"
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
-#define AY_STR(s)      AY_STR_IMPL(s)
+#define AY_STR(...)      AY_STR_IMPL(__VA_ARGS__)
 #define AY_EXPAND(...) AY_EXPAND_IMPL(__VA_ARGS__)
 #define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
 
 #define AY_CAT_IMPL(a, b) a##b
-#define AY_STR_IMPL(a) #a
+#define AY_STR_IMPL(...) #__VA_ARGS__
 #define AY_EXPAND_IMPL(...) __VA_ARGS__
 #define AY_EMPTY_IMPL(...)
 
@@ -36,14 +38,35 @@
 #define AY_FUNCSIG __PRETTY_FUNCTION__
 #endif
 
+#define _AYSTL_DECL_CMP_OPS(_macro)                                                                \
+    _macro(EQ, ==)                                                                                 \
+    _macro(NE, !=)                                                                                 \
+    _macro(LT, <)                                                                                  \
+    _macro(LE, <=)                                                                                 \
+    _macro(GT, >)                                                                                  \
+    _macro(GE, >=)
+
 namespace iin {
-enum class CmpOp {
-    kEQ = 0, // equal to
-    kNE,     // not equal
-    kLT,     // less than
-    kLE,     // less or equal
-    kGT,     // greater than
-    kGE      // greater or equal
+// compare operation
+enum class CmpOp : std::uint8_t {
+    _kB0 = 0x01, // ==
+    _kB1 = 0x02, // <
+    _kB2 = 0x04, // >
+    _kB3 = 0x08, // Fuzzy
+    _kB4 = 0x10,
+    _kB5 = 0x20,
+    _kB6 = 0x40,
+    _kB7 = 0x80,
+
+    kEQ = _kB0,        // equal to
+    kNE = _kB1 | _kB2, // not equal
+    kLT = _kB1,        // less than
+    kLE = _kB1 | _kB0, // less or equal
+    kGT = _kB2,        // greater than
+    kGE = _kB2 | _kB0, // greater or equal
+
+    k3Way = kLT | kEQ | kGT, // <=>
+    kFuzzy = _kB3,
 };
 }
 

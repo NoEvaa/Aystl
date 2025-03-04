@@ -55,17 +55,10 @@ inline void AyFloat16::_fromFp32(float _fp32) noexcept {
         return;
     } else if (_abs < 0x38800000) {
         // (De)normalized number or zero
-#if 0
-        constexpr uint32_t _kDenormUiVal = ((127 - 15) + (23 - 10) + 1) << 23;
-        constexpr float _kDenormFpVal = std::bit_cast<float>(_kDenormUiVal);
-        _abs = std::bit_cast<uint32_t>(std::bit_cast<float>(_abs) + _kDenormFpVal);
-        m_value = static_cast<uint16_t>(_abs - _kDenormUiVal);
-#else
 		uint32_t _mantissa = (_abs & 0x007FFFFF) | 0x00800000;
 		uint32_t _e = 113 - (_abs >> 23);
         _abs = _e < 24 ? (_mantissa >> _e) : 0;
 		m_value = _sign | (_abs + 0x00000FFF + ((_abs >> 13) & 1)) >> 13;
-#endif
         return;
 	} else {
 		m_value = _sign | (_abs + 0xC8000FFF + ((_abs >> 13) & 1)) >> 13;

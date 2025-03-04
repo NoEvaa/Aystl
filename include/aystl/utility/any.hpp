@@ -258,7 +258,7 @@ struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
 template <typename T, typename AnyT>
 struct _AyAnyHandler<_Action::kCompare, T, AnyT> {
     static void * call(AnyT const & lhs, AnyT const & rhs) {
-        if (AyCmp<CmpOp::kEQ, T>::call(
+        if (AyCmp<CmpOp::kEQ, T>{}(
             lhs.template __toValue<T const &>(),
             rhs.template __toValue<T const &>())) {
             return static_cast<void *>((bool *)1);

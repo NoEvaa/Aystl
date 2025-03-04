@@ -27,12 +27,7 @@ namespace iin {
 template <CmpOp _op, auto _left, auto _right>
 struct ct_cmp : std::false_type {};
 
-_AYSTL_DECL_TMPL_CT_CMP(EQ, ==)
-_AYSTL_DECL_TMPL_CT_CMP(NE, !=)
-_AYSTL_DECL_TMPL_CT_CMP(LT, <)
-_AYSTL_DECL_TMPL_CT_CMP(LE, <=)
-_AYSTL_DECL_TMPL_CT_CMP(GT, >)
-_AYSTL_DECL_TMPL_CT_CMP(GE, >=)
+_AYSTL_DECL_CMP_OPS(_AYSTL_DECL_TMPL_CT_CMP)
 
 template <CmpOp _op, auto _left, auto _right>
 inline constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;

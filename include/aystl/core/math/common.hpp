@@ -16,5 +16,8 @@
 #pragma once
 
 namespace iin {
+namespace detail {
+inline constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
+}
 }
 

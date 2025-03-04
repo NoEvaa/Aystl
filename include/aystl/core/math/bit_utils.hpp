@@ -18,7 +18,7 @@
 #include <concepts>
 #include <cstddef>
 
-#include "aystl/global/common.hpp"
+#include "aystl/core/math/common.hpp"
 
 namespace iin {
 template <std::unsigned_integral Ty, std::size_t _len>

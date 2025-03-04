@@ -35,12 +35,22 @@ public:
 
 private:
     void _fromFp32(float) noexcept;
-    float _toFp32() noexcept;
+    float _toFp32() const noexcept;
 
 private:
     uint16_t m_value{};
 };
 
+namespace detail {
+union Float32Bits {
+    float    f;
+    uint32_t u;
+};
+}
+
+/**
+ * Inspired by SwiftShader::half.
+ */
 inline void AyFloat16::_fromFp32(float _fp32) noexcept {
     constexpr uint32_t _kFp32InfVal = 255 << 23;
     constexpr uint32_t _kFp16MaxVal = (127 + 16) << 23;
@@ -51,19 +61,49 @@ inline void AyFloat16::_fromFp32(float _fp32) noexcept {
 
     if (_abs >= _kFp16MaxVal) {
         // Inf or NaN 
-        m_value = _sign | (_abs > _kFp32InfVal ? AyFloat16::kNaNValue : AyFloat16::kInfValue);
-        return;
+        m_value = _abs > _kFp32InfVal ? AyFloat16::kNaNValue : AyFloat16::kInfValue;
     } else if (_abs < 0x38800000) {
         // (De)normalized number or zero
-		uint32_t _mantissa = (_abs & 0x007FFFFF) | 0x00800000;
 		uint32_t _e = 113 - (_abs >> 23);
-        _abs = _e < 24 ? (_mantissa >> _e) : 0;
-		m_value = _sign | (_abs + 0x00000FFF + ((_abs >> 13) & 1)) >> 13;
-        return;
+        if (_e < 24) {
+            _abs = ((_abs & 0x007FFFFF) | 0x00800000) >> _e;
+            m_value = (_abs + 0x00000FFF + ((_abs >> 13) & 1)) >> 13;
+        } else {
+            m_value = 0x00000FFF >> 13;
+        }
 	} else {
-		m_value = _sign | (_abs + 0xC8000FFF + ((_abs >> 13) & 1)) >> 13;
-        return;
+		m_value = (_abs + 0xC8000FFF + ((_abs >> 13) & 1)) >> 13;
 	}
+
+    // Sign bit
+    m_value |= _sign;
+}
+
+/**
+ * Inspired by Eigen::half.
+ */
+inline float AyFloat16::_toFp32() const noexcept {
+    constexpr uint32_t _kShiftedExp = 0x7C00 << 13;
+    constexpr float _kMagic = std::bit_cast<float>(uint32_t{ 113 << 23 });
+
+    detail::Float32Bits o;
+
+    o.u = (m_value & 0x7FFF) << 13;    // Exponent/mantissa bits
+    uint32_t exp = _kShiftedExp & o.u; // Just the exponent
+    o.u += (127 - 15) << 23;           // Exponent adjust
+
+    if (exp == _kShiftedExp) {
+        // Inf or NaN 
+        o.u += (128 - 16) << 23; // Extra exp adjust
+    } else if (exp == 0) {
+        // (De)normalized number or zero
+        o.u += 1 << 23; // Extra exp adjust
+        o.f -= _kMagic; // Renormalize
+    }
+
+    // Sign bit
+    o.u |= (m_value & 0x8000) << 16;
+    return o.f;
 }
 }
 

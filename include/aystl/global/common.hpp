@@ -16,13 +16,14 @@
 #pragma once
 
 #include <cstdint>
+#include <cassert>
 
 #include "aystl/global/system.hpp"
 #include "aystl/global/compiler.hpp"
 #include "aystl/global/enum.hpp"
 
 #define AY_CAT(a, b)   AY_CAT_IMPL(a, b)
-#define AY_STR(...)      AY_STR_IMPL(__VA_ARGS__)
+#define AY_STR(...)    AY_STR_IMPL(__VA_ARGS__)
 #define AY_EXPAND(...) AY_EXPAND_IMPL(__VA_ARGS__)
 #define AY_EMPTY(...)  AY_EMPTY_IMPL(__VA_ARGS__)
 
@@ -38,6 +39,26 @@
 #else
 #define AY_FUNCSIG __PRETTY_FUNCTION__
 #endif
+
+// assert
+#if defined(_DEBUG)
+#define AY_ASSERT(...) assert(__VA_ARGS__)
+#else
+#define AY_ASSERT(...) 
+#endif
+
+// unreachable
+#define AY_UNREACHABLE(...) AY_ASSERT(0)
+
+#define AY_DECL_CLASS_COPY(_class, _mode)                                                          \
+    _class(_class const &) = _mode;                                                                \
+    _class & operator=(_class const &) = _mode;
+#define AY_DECL_CLASS_MOVE(_class, _mode)                                                          \
+    _class(_class &&) = _mode;                                                                     \
+    _class & operator=(_class &&) = _mode;
+
+#define AY_DISABLE_COPY(_class) AY_DECL_CLASS_COPY(_class, delete)
+#define AY_DISABLE_MOVE(_class) AY_DECL_CLASS_MOVE(_class, delete)
 
 #define _AYSTL_DECL_CMP_OPS(_macro)                                                                \
     _macro(EQ, ==)                                                                                 \

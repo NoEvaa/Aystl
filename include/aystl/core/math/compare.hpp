@@ -60,13 +60,13 @@ struct AyCmp<_cmp_op, T> {
 template <typename T>
 bool ayCompare(CmpOp cmp_op, T const & lhs, T const & rhs) noexcept {
     switch (cmp_op) {
-        _AYSTL_DECL_CMP_OPS(_AYSTL_SWITCH_CASE_AY_CMP)
-        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyEQ)
-        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyLE)
-        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyGE)
-        default:
-            AY_UNREACHABLE();
-            return false;
+    _AYSTL_DECL_CMP_OPS(_AYSTL_SWITCH_CASE_AY_CMP)
+    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyEQ)
+    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyLE)
+    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyGE)
+    default:
+        AY_UNREACHABLE();
+        return false;
     }
 }
 }

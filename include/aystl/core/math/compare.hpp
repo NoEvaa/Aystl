@@ -27,6 +27,9 @@
         }                                                                                          \
     };
 
+#define _AYSTL_SWITCH_CASE_AY_CMP(_op_name, ...)                                                   \
+    case CmpOp::k##_op_name: return AyCmp<CmpOp::k##_op_name, T>{}(lhs, rhs);
+
 namespace iin {
 template <CmpOp, typename>
 struct AyCmp;
@@ -48,12 +51,26 @@ struct AyCmp<CmpOp::kFuzzyEQ, T> {
 template <CmpOp _cmp_op, typename T>
 requires detail::_has_fuzzy_eq_v<_cmp_op>
 struct AyCmp<_cmp_op, T> {
-    bool operator()(T const & lhs, T const & rhs) {
+    bool operator()(T const & lhs, T const & rhs) noexcept {
         return AyCmp<_cmp_op & ~CmpOp::kFuzzyEQ, T>{}(lhs, rhs) ||
             AyCmp<CmpOp::kFuzzyEQ, T>{}(lhs, rhs);
     }
 };
+
+template <typename T>
+bool ayCompare(CmpOp cmp_op, T const & lhs, T const & rhs) noexcept {
+    switch (cmp_op) {
+        _AYSTL_DECL_CMP_OPS(_AYSTL_SWITCH_CASE_AY_CMP)
+        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyEQ)
+        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyLE)
+        _AYSTL_SWITCH_CASE_AY_CMP(FuzzyGE)
+        default:
+            AY_UNREACHABLE();
+            return false;
+    }
+}
 }
 
 #undef _AYSTL_DECL_TMPL_AY_CMP
+#undef _AYSTL_SWITCH_CASE_AY_CMP
 

@@ -16,6 +16,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cassert>
 
 #include "aystl/global/system.hpp"
 #include "aystl/global/compiler.hpp"
@@ -38,6 +39,14 @@
 #else
 #define AY_FUNCSIG __PRETTY_FUNCTION__
 #endif
+
+#if defined(_DEBUG)
+#define AY_ASSERT(...) assert(__VA_ARGS__)
+#else
+#define AY_ASSERT(...) 
+#endif
+
+#define AY_UNREACHABLE(...) AY_ASSERT(0)
 
 #define _AYSTL_DECL_CMP_OPS(_macro)                                                                \
     _macro(EQ, ==)                                                                                 \

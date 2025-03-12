@@ -33,11 +33,14 @@ namespace _any_impl {
 enum class _Action {
     kTypeInfo = 0,
     kGet,
+
     kCreate,
     kDestroy,
+
     kCopyTo,
     kMoveTo,
-    kCompare,
+    
+    kEqualTo,
 };
 
 template <_Action, typename...> struct _AyAnyHandler;
@@ -256,7 +259,7 @@ struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kCompare, T, AnyT> {
+struct _AyAnyHandler<_Action::kEqualTo, T, AnyT> {
     static void * call(AnyT const & lhs, AnyT const & rhs) {
         if (AyCmp<CmpOp::kEQ, T>{}(
             lhs.template __toValue<T const &>(),
@@ -279,7 +282,7 @@ bool AyBasicAny<ATp>::operator==(_self_type const & rhs) const noexcept {
     if (!this->isType(rhs.getTypeInfo())) {
         return false;
     }
-    return bool(this->__callAct(_Action::kCompare, &rhs._getSelf()));
+    return bool(this->__callAct(_Action::kEqualTo, &rhs._getSelf()));
 }
 
 template <typename ATp>
@@ -323,8 +326,8 @@ void AyBasicAny<ATp>::_initAct() noexcept {
             return _hnd_tmpl<_Action::kCopyTo, _Tp, _self_type>::call(*_this, *_ot);
         case _Action::kMoveTo:
             return _hnd_tmpl<_Action::kMoveTo, _Tp, _self_type>::call(_this->_getSelf(), *_ot);
-        case _Action::kCompare:
-            return _hnd_tmpl<_Action::kCompare, _Tp, _self_type>::call(*_this, *_ot);
+        case _Action::kEqualTo:
+            return _hnd_tmpl<_Action::kEqualTo, _Tp, _self_type>::call(*_this, *_ot);
         default:
             return nullptr;
         }

@@ -18,12 +18,26 @@
 #include <type_traits>
 
 #include "aystl/global/common.hpp"
+#include "aystl/core/type_traits/utils.hpp"
+
+#define _AYSTL_DECL_CONCEPT_CMPABLE(_op_name, ...)                                                 \
+    template <class T, class U>                                                                    \
+    requires requires (T _v, U _u) { { _v __VA_ARGS__ _u } -> std::convertible_to<bool>; }         \
+    struct is_comparable<CmpOp::k##_op_name, T, U> : std::true_type {};
 
 #define _AYSTL_DECL_TMPL_CT_CMP(_op_name, ...)                                                     \
     template <auto _left, auto _right> requires (_left __VA_ARGS__ _right)                         \
     struct ct_cmp<CmpOp::k##_op_name, _left, _right> : std::true_type {};
 
 namespace iin {
+template <CmpOp, class T, class U = T>
+struct is_comparable : std::false_type {};
+
+_AYSTL_DECL_CMP_OPS(_AYSTL_DECL_CONCEPT_CMPABLE)
+
+template <CmpOp _op, class T, class U = T>
+inline constexpr bool is_comparable_v = is_comparable<_op, T, U>::value;
+
 template <CmpOp _op, auto _left, auto _right>
 struct ct_cmp : std::false_type {};
 
@@ -36,5 +50,6 @@ template <CmpOp _op, auto _left, auto _right>
 concept CtCmp = ct_cmp_v<_op, _left, _right>;
 }
 
+#undef _AYSTL_DECL_CONCEPT_CMPABLE
 #undef _AYSTL_DECL_TMPL_CT_CMP
 

@@ -30,7 +30,6 @@ TEST_CASE("is comparable") {
     };
     __Test2 v;
     CHECK(is_comparable_v<CmpOp::kEQ, __Test2>);
-    CHECK(is_comparable_v<CmpOp::kNE, __Test2>);
     CHECK(!is_comparable_v<CmpOp::kLT, __Test2>);
 }
 

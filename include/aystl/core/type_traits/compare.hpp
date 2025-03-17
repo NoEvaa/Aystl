@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include <functional>
 #include <type_traits>
 
 #include "aystl/global/common.hpp"

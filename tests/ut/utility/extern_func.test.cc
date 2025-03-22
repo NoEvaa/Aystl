@@ -38,21 +38,21 @@ TEST_CASE("extern function") {
 }
 
 TEST_CASE("extern lambda") {
-    CHECK(std::is_same_v<decltype(iin::ext_lambda<"return 1", int>()), int>);
-    CHECK(ext_lambda<"return 1", int>() == 1);
-    CHECK(std::is_same_v<decltype(ext_lambda<"return 1", bool>()), bool>);
-    CHECK(ext_lambda<"return 1", bool>() == bool(1));
+    CHECK(std::is_same_v<decltype(iin::ext_func_lambda<"return 1", int>()), int>);
+    CHECK(ext_func_lambda<"return 1", int>() == 1);
+    CHECK(std::is_same_v<decltype(ext_func_lambda<"return 1", bool>()), bool>);
+    CHECK(ext_func_lambda<"return 1", bool>() == bool(1));
 
-    CHECK(std::is_same_v<decltype(ext_lambda<"return 0", int>()), int>);
-    CHECK(ext_lambda<"return 0", int>() == 0);
-    CHECK(std::is_same_v<decltype(ext_lambda<"return 0", bool>()), bool>);
-    CHECK(ext_lambda<"return 0", bool>() == bool(0));
+    CHECK(std::is_same_v<decltype(ext_func_lambda<"return 0", int>()), int>);
+    CHECK(ext_func_lambda<"return 0", int>() == 0);
+    CHECK(std::is_same_v<decltype(ext_func_lambda<"return 0", bool>()), bool>);
+    CHECK(ext_func_lambda<"return 0", bool>() == bool(0));
 
 
-    CHECK(ext_lambda<"add", int, int, int>(1, 2) == 3);
+    CHECK(ext_func_lambda<"add", int, int, int>(1, 2) == 3);
 
-    CHECK(ext_lambda_t<"return 1", int>{}() == 1);
-    CHECK(ext_lambda_t<"return 0", bool>{}() == bool(0));
-    CHECK(ext_lambda_t<"add", int, int, int>{}(1, 2) == 3);
+    CHECK(ext_func_lambda_t<"return 1", int>{}() == 1);
+    CHECK(ext_func_lambda_t<"return 0", bool>{}() == bool(0));
+    CHECK(ext_func_lambda_t<"add", int, int, int>{}(1, 2) == 3);
 }
 

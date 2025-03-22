@@ -22,11 +22,11 @@ extern auto ay_ext_func(Args...) -> RetTy;
 
 namespace iin{
 template <ct_str _name, typename RetT = void, typename... Args>
-constexpr auto ext_lambda = [](Args... args) -> RetT {
+constexpr auto ext_func_lambda = [](Args... args) -> RetT {
     return ay_ext_func<_name, RetT, Args...>(std::forward<Args>(args)...);
 };
 
 template <ct_str _name, typename RetT = void, typename... Args>
-using ext_lambda_t = decltype(ext_lambda<_name, RetT, Args...>);
+using ext_func_lambda_t = decltype(ext_func_lambda<_name, RetT, Args...>);
 }
 

@@ -60,14 +60,6 @@
 #define AY_DISABLE_COPY(_class) AY_DECL_CLASS_COPY(_class, delete)
 #define AY_DISABLE_MOVE(_class) AY_DECL_CLASS_MOVE(_class, delete)
 
-#define _AYSTL_DECL_CMP_OPS(_macro)                                                                \
-    _macro(EQ, ==)                                                                                 \
-    _macro(NE, !=)                                                                                 \
-    _macro(LT, <)                                                                                  \
-    _macro(LE, <=)                                                                                 \
-    _macro(GT, >)                                                                                  \
-    _macro(GE, >=)
-
 namespace iin {
 // compare operation
 enum class CmpOp : std::uint8_t {

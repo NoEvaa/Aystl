@@ -18,7 +18,11 @@
 #include "aystl/global/common.hpp"
 #include "aystl/global/enum.hpp"
 
-#define _AYSTL_DECL_TMPL_AY_CMP(_op_name, ...)                                                     \
+namespace iin {
+template <CmpOp, typename>
+struct AyCmp;
+
+#define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
     template <typename T>                                                                          \
     requires requires (T const & lhs, T const & rhs) { lhs __VA_ARGS__ rhs; }                      \
     struct AyCmp<CmpOp::k##_op_name, T> {                                                          \
@@ -26,15 +30,8 @@
             return lhs __VA_ARGS__ rhs;                                                            \
         }                                                                                          \
     };
-
-#define _AYSTL_SWITCH_CASE_AY_CMP(_op_name, ...)                                                   \
-    case CmpOp::k##_op_name: return AyCmp<CmpOp::k##_op_name, T>{}(lhs, rhs);
-
-namespace iin {
-template <CmpOp, typename>
-struct AyCmp;
-
-_AYSTL_DECL_CMP_OPS(_AYSTL_DECL_TMPL_AY_CMP)
+#include "aystl/global/compare_def.inl"
+#undef _AYSTL_DECL_COMPARE_DEF
 
 namespace detail {
 template <CmpOp _cmp_op>
@@ -59,18 +56,21 @@ struct AyCmp<_cmp_op, T> {
 
 template <typename T>
 bool ayCompare(CmpOp cmp_op, T const & lhs, T const & rhs) noexcept {
+
+#define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
+    case CmpOp::k##_op_name: return AyCmp<CmpOp::k##_op_name, T>{}(lhs, rhs);
+
     switch (cmp_op) {
-    _AYSTL_DECL_CMP_OPS(_AYSTL_SWITCH_CASE_AY_CMP)
-    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyEQ)
-    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyLE)
-    _AYSTL_SWITCH_CASE_AY_CMP(FuzzyGE)
+#include "aystl/global/compare_def.inl"
+    _AYSTL_DECL_COMPARE_DEF(FuzzyEQ)
+    _AYSTL_DECL_COMPARE_DEF(FuzzyLE)
+    _AYSTL_DECL_COMPARE_DEF(FuzzyGE)
     default:
         AY_UNREACHABLE();
         return false;
     }
-}
-}
 
-#undef _AYSTL_DECL_TMPL_AY_CMP
-#undef _AYSTL_SWITCH_CASE_AY_CMP
+#undef _AYSTL_DECL_COMPARE_DEF
+}
+}
 

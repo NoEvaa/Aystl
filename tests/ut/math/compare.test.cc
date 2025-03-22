@@ -18,6 +18,14 @@
 
 using namespace iin;
 
-TEST_CASE("") {
+namespace {
+struct _TestC1 {
+    bool operator==(_TestC1 const &) const { return true; }
+};
+}
+
+TEST_CASE("AyCmp") {
+    CHECK(AyCmp<CmpOp::kEQ, int>{}(1, 1));
+    CHECK(AyCmp<CmpOp::kEQ, _TestC1>{}(_TestC1{}, _TestC1{}));
 }
 

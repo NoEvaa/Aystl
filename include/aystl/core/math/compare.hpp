@@ -19,8 +19,10 @@
 #include "aystl/global/enum.hpp"
 
 namespace iin {
-template <CmpOp, typename>
-struct AyCmp;
+template <CmpOp, typename T>
+struct AyCmp {
+    bool operator()(T const &, T const &) noexcept { return false; }
+};
 
 #define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
     template <typename T>                                                                          \

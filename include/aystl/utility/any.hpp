@@ -70,15 +70,15 @@ public:
 
     AyBasicAny() noexcept = default;
 
-    AyBasicAny(_self_type const & _ot) { _ot._copyTo(this); }
+    AyBasicAny(_self_type const & _ot) noexcept { _ot._copyTo(this); }
     AyBasicAny(_self_type && _ot) noexcept { _ot._moveTo(this); }
 
     template <typename _ValT, typename _Tp = std::decay_t<_ValT>>
     requires (!is_any_spec_of_v<_Tp, _self_tmpl, std::in_place_type_t>)
-    AyBasicAny(_ValT && _v) { this->setValue<_Tp>(std::forward<_ValT>(_v)); }
+    AyBasicAny(_ValT && _v) noexcept { this->setValue<_Tp>(std::forward<_ValT>(_v)); }
 
     template <typename _ValT, typename... _Args>
-    explicit AyBasicAny(std::in_place_type_t<_ValT>, _Args &&... _args) {
+    explicit AyBasicAny(std::in_place_type_t<_ValT>, _Args &&... _args) noexcept {
         this->setValue<_ValT>(std::forward<_Args>(_args)...);
     }
 
@@ -235,13 +235,9 @@ struct _AyAnyHandler<_Action::kDestroy, T, AnyT> {
 template <typename T, typename AnyT>
 struct _AyAnyHandler<_Action::kCopyTo, T, AnyT> {
     static void * call(AnyT const & _src, AnyT & _dst) {
-        if constexpr (_is_inp_value_v<T>) {
-            std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
-        } else {
-            using _lref_type = std::add_lvalue_reference_t<T>;
-            _AyAnyHandler<_Action::kCreate, T, AnyT>::call(
-                _dst, _src.template __toValue<_lref_type>());
-        }
+        using _lref_type = std::add_lvalue_reference_t<T>;
+        _AyAnyHandler<_Action::kCreate, T, AnyT>::call(
+            _dst, _src.template __toValue<_lref_type>());
         return nullptr;
     }
 };

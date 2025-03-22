@@ -33,3 +33,15 @@ TEST_CASE("extern function") {
     CHECK(ay_ext_func<"return 0", bool>() == bool(0));
 }
 
+TEST_CASE("extern lambda") {
+    CHECK(std::is_same_v<decltype(iin::ay_ext_lambda<"return 1", int>()), int>);
+    CHECK(ay_ext_lambda<"return 1", int>() == 1);
+    CHECK(std::is_same_v<decltype(ay_ext_lambda<"return 1", bool>()), bool>);
+    CHECK(ay_ext_lambda<"return 1", bool>() == bool(1));
+
+    CHECK(std::is_same_v<decltype(ay_ext_lambda<"return 0", int>()), int>);
+    CHECK(ay_ext_lambda<"return 0", int>() == 0);
+    CHECK(std::is_same_v<decltype(ay_ext_lambda<"return 0", bool>()), bool>);
+    CHECK(ay_ext_lambda<"return 0", bool>() == bool(0));
+}
+

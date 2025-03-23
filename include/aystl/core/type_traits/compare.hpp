@@ -26,7 +26,7 @@ struct is_comparable : std::false_type {};
 
 #define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
     template <class T>                                                                             \
-    requires requires (add_clref<T> _v) {                                                          \
+    requires requires (add_clref_t<T> _v) {                                                        \
         { _v __VA_ARGS__ _v } -> std::convertible_to<bool>;                                        \
     }                                                                                              \
     struct is_comparable<CmpOp::k##_op_name, T> : std::true_type {};

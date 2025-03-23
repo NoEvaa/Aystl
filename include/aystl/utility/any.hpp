@@ -16,7 +16,6 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <typeinfo>
@@ -46,14 +45,15 @@ enum class _Action {
 template <_Action, typename...> struct _AyAnyHandler;
 }
 
-template <class AllocT = AyAlloc<void>>
+template <class AllocT = AyAlloc<void>,
+    ValueTType MemSizeVT = constant_t<std::size_t, 32U>>
 class AyBasicAny {
-    using _self_type = AyBasicAny<AllocT>;
+    using _self_type = AyBasicAny<AllocT, MemSizeVT>;
     using _Action    = _any_impl::_Action;
     using _act_type  = void *(*)(_Action, _self_type const *, _self_type *);
 
-    template <class _ATp>
-    using _self_tmpl = AyBasicAny<_ATp>;
+    template <typename _ATp, typename _MemSz>
+    using _self_tmpl = AyBasicAny<_ATp, _MemSz>;
     template <_Action _action, typename... _Tps>
     using _hnd_tmpl = _any_impl::_AyAnyHandler<_action, _Tps...>;
 
@@ -62,10 +62,12 @@ public:
     using alloc_type = AllocT;
 
     static constexpr size_type kPtrSize     = sizeof(void *);
-    static constexpr size_type kMaxPtrSize  = sizeof(std::uint64_t);
-    static constexpr size_type kBufByteSize = kMaxPtrSize * 3;
+    static constexpr size_type kMemSize     = MemSizeVT::value;
+    static constexpr size_type kBufByteSize = kMemSize - kPtrSize;
     static constexpr size_type kBufSize     = kBufByteSize / kPtrSize;
-    static_assert(kPtrSize <= kMaxPtrSize);
+    static_assert(sizeof(_act_type) == kPtrSize);
+    static_assert(kMemSize > kPtrSize);
+    static_assert(kBufByteSize >= kPtrSize);
     static_assert((kBufByteSize % kPtrSize) == 0);
 
     AyBasicAny() noexcept = default;
@@ -267,8 +269,8 @@ struct _AyAnyHandler<_Action::kEqualTo, T, AnyT> {
 };
 }
 
-template <typename ATp>
-bool AyBasicAny<ATp>::operator==(_self_type const & rhs) const noexcept {
+template <typename ATp, ValueTType MemSz>
+bool AyBasicAny<ATp, MemSz>::operator==(_self_type const & rhs) const noexcept {
     if (this == &rhs) [[unlikely]] { return true; }
     if (!this->hasValue()) {
         return !rhs.hasValue();
@@ -281,9 +283,9 @@ bool AyBasicAny<ATp>::operator==(_self_type const & rhs) const noexcept {
     return bool(this->__callAct(_Action::kEqualTo, &rhs._getSelf()));
 }
 
-template <typename ATp>
+template <typename ATp, ValueTType MemSz>
 template <typename _Tp, typename... _Args>
-_Tp & AyBasicAny<ATp>::setValue(_Args &&... _args) {
+_Tp & AyBasicAny<ATp, MemSz>::setValue(_Args &&... _args) {
     using _type = std::decay_t<_Tp>;
     this->reset();
     this->_initAct<_type>();
@@ -291,8 +293,8 @@ _Tp & AyBasicAny<ATp>::setValue(_Args &&... _args) {
         *this, std::forward<_Args>(_args)...);
 }
 
-template <typename ATp>
-void AyBasicAny<ATp>::swap(_self_type & _ot) noexcept
+template <typename ATp, ValueTType MemSz>
+void AyBasicAny<ATp, MemSz>::swap(_self_type & _ot) noexcept
 {
     if (this == &_ot) [[unlikely]] { return; }
     if (this->hasValue() && _ot.hasValue()) {
@@ -307,9 +309,9 @@ void AyBasicAny<ATp>::swap(_self_type & _ot) noexcept
     }
 }
 
-template <typename ATp>
+template <typename ATp, ValueTType MemSz>
 template <typename _Tp>
-void AyBasicAny<ATp>::_initAct() noexcept {
+void AyBasicAny<ATp, MemSz>::_initAct() noexcept {
     m_act = [](_Action _a, _self_type const * _this, _self_type * _ot) -> void * {
         switch (_a) {
         case _Action::kTypeInfo:
@@ -330,33 +332,33 @@ void AyBasicAny<ATp>::_initAct() noexcept {
     };
 }
 
-template <typename ATp>
-void * AyBasicAny<ATp>::_callAct(_Action _action, _self_type * _other) const {
+template <typename ATp, ValueTType MemSz>
+void * AyBasicAny<ATp, MemSz>::_callAct(_Action _action, _self_type * _other) const {
     if (this->hasValue()) {
         return this->__callAct(_action, _other);
     }
     return nullptr;
 }
 
-template <typename ATp>
-void * AyBasicAny<ATp>::__callAct(_Action _action, _self_type * _other) const {
+template <typename ATp, ValueTType MemSz>
+void * AyBasicAny<ATp, MemSz>::__callAct(_Action _action, _self_type * _other) const {
     return this->m_act(_action, this, _other);
 }
 
-template <typename ATp>
+template <typename ATp, ValueTType MemSz>
 template <typename _Tp>
-_Tp * AyBasicAny<ATp>::__toPtr() const noexcept {
+_Tp * AyBasicAny<ATp, MemSz>::__toPtr() const noexcept {
     return static_cast<_Tp *>(this->__callAct(_Action::kGet));
 }
 
-template <typename ATp>
+template <typename ATp, ValueTType MemSz>
 template <typename _Tp>
-_Tp AyBasicAny<ATp>::__toValue() const noexcept {
+_Tp AyBasicAny<ATp, MemSz>::__toValue() const noexcept {
     return static_cast<_Tp>(*__toPtr<std::remove_reference_t<_Tp>>());
 }
 
-template <typename ATp>
-void AyBasicAny<ATp>::_copyTo(_self_type * _dst) const {
+template <typename ATp, ValueTType MemSz>
+void AyBasicAny<ATp, MemSz>::_copyTo(_self_type * _dst) const {
     if (this->hasValue()) {
         this->__copyTo(_dst);
     } else {
@@ -364,14 +366,14 @@ void AyBasicAny<ATp>::_copyTo(_self_type * _dst) const {
     }
 }
 
-template <typename ATp>
-void AyBasicAny<ATp>::__copyTo(_self_type * _dst) const {
+template <typename ATp, ValueTType MemSz>
+void AyBasicAny<ATp, MemSz>::__copyTo(_self_type * _dst) const {
     this->__callAct(_Action::kCopyTo, _dst);
     _dst->m_act = this->m_act;
 }
 
-template <typename ATp>
-void AyBasicAny<ATp>::_moveTo(_self_type * _dst) noexcept {
+template <typename ATp, ValueTType MemSz>
+void AyBasicAny<ATp, MemSz>::_moveTo(_self_type * _dst) noexcept {
     if (this->hasValue()) {
         this->__moveTo(_dst);
     } else {
@@ -379,8 +381,8 @@ void AyBasicAny<ATp>::_moveTo(_self_type * _dst) noexcept {
     }
 }
 
-template <typename ATp>
-void AyBasicAny<ATp>::__moveTo(_self_type * _dst) noexcept {
+template <typename ATp, ValueTType MemSz>
+void AyBasicAny<ATp, MemSz>::__moveTo(_self_type * _dst) noexcept {
     this->__callAct(_Action::kMoveTo, _dst);
     _dst->m_act = std::exchange(m_act, nullptr);
 }

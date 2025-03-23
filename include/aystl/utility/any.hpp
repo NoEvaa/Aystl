@@ -161,8 +161,8 @@ private:
     void __moveTo(_self_type *) noexcept;
 
 private:
-    void *    m_buf[kBufSize] = {};
     _act_type m_act = nullptr;
+    void *    m_buf[kBufSize] = {};
 
     template <_Action, typename ...>
     friend struct _any_impl::_AyAnyHandler;

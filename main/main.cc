@@ -44,21 +44,9 @@ enum class ABC {
 };
 
 #include <any>
+
 int main()
 {
-    iin::AyAny ann = int(1);
-    std::cout << ann.isType<int>() << std::endl;
-    std::cout << ann.getValue<int>() << std::endl;
-    auto& vann = ann.getValue<int &>();
-    vann = 2;
-    std::cout << ann.getValue<int>() << std::endl;
-    iin::AyAny ann2 = int(2);
-    std::cout << (ann == ann2) << std::endl;
-
-    std::any aa = int(1);
-    auto ddd =  std::any_cast<const int>(aa);
-    std::cout << ddd << std::endl;
-
     std::cout << sizeof(std::any) << std::endl;
     std::cout << sizeof(iin::AyAny) << std::endl;
     std::cout << sizeof(void*) << std::endl;

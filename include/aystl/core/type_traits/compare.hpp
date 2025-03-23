@@ -18,16 +18,32 @@
 #include <type_traits>
 
 #include "aystl/global/common.hpp"
-
-#define _AYSTL_DECL_TMPL_CT_CMP(_op_name, ...)                                                     \
-    template <auto _left, auto _right> requires (_left __VA_ARGS__ _right)                         \
-    struct ct_cmp<CmpOp::k##_op_name, _left, _right> : std::true_type {};
+#include "aystl/core/type_traits/utils.hpp"
 
 namespace iin {
+template <CmpOp, class T>
+struct is_comparable : std::false_type {};
+
+#define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
+    template <class T>                                                                             \
+    requires requires (add_clref_t<T> _v) {                                                        \
+        { _v __VA_ARGS__ _v } -> std::convertible_to<bool>;                                        \
+    }                                                                                              \
+    struct is_comparable<CmpOp::k##_op_name, T> : std::true_type {};
+#include "aystl/global/compare_def.inl"
+#undef _AYSTL_DECL_COMPARE_DEF
+
+template <CmpOp _op, class T>
+inline constexpr bool is_comparable_v = is_comparable<_op, T>::value;
+
 template <CmpOp _op, auto _left, auto _right>
 struct ct_cmp : std::false_type {};
 
-_AYSTL_DECL_CMP_OPS(_AYSTL_DECL_TMPL_CT_CMP)
+#define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
+    template <auto _left, auto _right> requires (_left __VA_ARGS__ _right)                         \
+    struct ct_cmp<CmpOp::k##_op_name, _left, _right> : std::true_type {};
+#include "aystl/global/compare_def.inl"
+#undef _AYSTL_DECL_COMPARE_DEF
 
 template <CmpOp _op, auto _left, auto _right>
 inline constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
@@ -35,6 +51,4 @@ inline constexpr bool ct_cmp_v = ct_cmp<_op, _left, _right>::value;
 template <CmpOp _op, auto _left, auto _right>
 concept CtCmp = ct_cmp_v<_op, _left, _right>;
 }
-
-#undef _AYSTL_DECL_TMPL_CT_CMP
 

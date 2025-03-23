@@ -30,8 +30,10 @@ struct any_t {
 
 template <typename T>
 struct type_t { using type = T; };
+template <typename T, T _v>
+struct constant_t : type_t<T> { static constexpr T value = _v; };
 template <auto _v>
-struct value_t : type_t<decltype(_v)> { static constexpr auto value = _v; };
+struct value_t : constant_t<decltype(_v), _v> {};
 
 template <typename T>
 concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
@@ -96,6 +98,9 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
+
+template <typename T>
+using add_clref_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
 
 template <std::integral T, T... Is>
 using int_seq = std::integer_sequence<T, Is...>;

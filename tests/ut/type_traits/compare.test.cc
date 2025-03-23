@@ -18,6 +18,22 @@
 
 using namespace iin;
 
+TEST_CASE("is comparable") {
+    CHECK(is_comparable_v<CmpOp::kEQ, int>);
+    CHECK(is_comparable_v<CmpOp::kEQ, float>);
+
+    struct __Test1;
+    CHECK(!is_comparable_v<CmpOp::kEQ, __Test1>);
+
+    struct __Test2 {
+        bool operator==(__Test2 const &) const { return true; }
+    };
+    __Test2 v;
+    CHECK(is_comparable_v<CmpOp::kEQ, __Test2>);
+    CHECK(is_comparable_v<CmpOp::kNE, __Test2>);
+    CHECK(!is_comparable_v<CmpOp::kLT, __Test2>);
+}
+
 TEST_CASE("ct cmp EQ") {
     constexpr auto op = CmpOp::kEQ;
     CHECK(ct_cmp_v<op, 0, 0>);

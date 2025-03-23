@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/core/math/compare.hpp"
 
-#include "aystl/utility/ct_string.hpp"
+using namespace iin;
 
-template <iin::ct_str _name, typename RetTy = void, typename... Args>
-extern auto ay_ext_func(Args...) -> RetTy;
-
-namespace iin{
-template <ct_str _name, typename RetT = void, typename... Args>
-constexpr auto ext_func_lambda = [](Args... args) -> RetT {
-    return ay_ext_func<_name, RetT, Args...>(std::forward<Args>(args)...);
+namespace {
+struct _TestC1 {
+    bool operator==(_TestC1 const &) const { return true; }
 };
+}
 
-template <ct_str _name, typename RetT = void, typename... Args>
-using ext_func_lambda_t = decltype(ext_func_lambda<_name, RetT, Args...>);
+TEST_CASE("AyCmp") {
+    CHECK(AyCmp<CmpOp::kEQ, int>{}(1, 1));
+    CHECK(AyCmp<CmpOp::kEQ, _TestC1>{}(_TestC1{}, _TestC1{}));
 }
 

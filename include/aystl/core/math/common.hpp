@@ -15,9 +15,38 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace iin {
 namespace detail {
 inline constexpr bool _isPow2(auto x) noexcept { return !(x & (x - 1)); }
+
+/**
+ * Round up to the next highest power of 2.
+ * 
+ * Refer to: https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+ */
+inline constexpr uint64_t _roundUpPow2(std::uint64_t v) noexcept {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v |= v >> 32;
+    v++;
+    return v;
+}
+inline constexpr uint32_t _roundUpPow2(std::uint32_t v) noexcept {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+}
 }
 }
 

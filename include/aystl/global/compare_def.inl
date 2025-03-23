@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include "aystl/utility/ct_string.hpp"
+/**
+ * #define _AYSTL_DECL_COMPARE_DEF(...)
+ * #include "aystl/global/compare_def.inl"
+ * #undef _AYSTL_DECL_COMPARE_DEF
+ */
 
-template <iin::ct_str _name, typename RetTy = void, typename... Args>
-extern auto ay_ext_func(Args...) -> RetTy;
-
-namespace iin{
-template <ct_str _name, typename RetT = void, typename... Args>
-constexpr auto ext_func_lambda = [](Args... args) -> RetT {
-    return ay_ext_func<_name, RetT, Args...>(std::forward<Args>(args)...);
-};
-
-template <ct_str _name, typename RetT = void, typename... Args>
-using ext_func_lambda_t = decltype(ext_func_lambda<_name, RetT, Args...>);
-}
+_AYSTL_DECL_COMPARE_DEF(EQ, ==)
+_AYSTL_DECL_COMPARE_DEF(NE, !=)
+_AYSTL_DECL_COMPARE_DEF(LT, <)
+_AYSTL_DECL_COMPARE_DEF(LE, <=)
+_AYSTL_DECL_COMPARE_DEF(GT, >)
+_AYSTL_DECL_COMPARE_DEF(GE, >=)
 

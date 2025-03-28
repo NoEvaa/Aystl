@@ -221,7 +221,7 @@ struct _AyAnyHandler<_Action::kDestroy, T, AnyT> {
 
     static void * call(AnyT const & _self) noexcept {
         if constexpr (_is_inp_value_v<T>) {
-            if constexpr (!std::is_trivially_destructible<T>::value) {
+            if constexpr (!std::is_trivially_destructible_v<T>) {
                 std::destroy_at(_self.template __toPtr<T>());
             }
         } else {
@@ -248,7 +248,15 @@ template <typename T, typename AnyT>
 struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
     static void * call(AnyT & _src, AnyT & _dst) noexcept {
         if constexpr (_is_inp_value_v<T>) {
-            std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+            if constexpr (std::is_trivially_copy_assignable_v<T>) {
+                std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+            } else {
+                std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+                //using _rref_type = std::add_rvalue_reference_t<T>;
+                //_AyAnyHandler<_Action::kCreate, T, AnyT>::call(
+                //    _dst, _src.template __toValue<_rref_type>());
+                //_AyAnyHandler<_Action::kDestroy, T, AnyT>::call(_src);
+            }
         } else {
             std::memcpy(&_dst.m_buf, &_src.m_buf, AnyT::kPtrSize);
         }

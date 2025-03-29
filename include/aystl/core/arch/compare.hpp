@@ -21,7 +21,8 @@
 namespace iin {
 template <CmpOp, typename T>
 struct AyCmp {
-    bool operator()(T const &, T const &) noexcept {
+    template <typename _Tp>
+    bool operator()(_Tp &&, _Tp &&) noexcept {
         AY_UNREACHABLE("Undefined compare operation.");
         return false;
     }

@@ -13,19 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define AYTESTM_CONFIG_MAIN
 #include "testlib.h"
-#include "aystl/core/math/compare.hpp"
-
-using namespace iin;
-
-namespace {
-struct _TestC1 {
-    bool operator==(_TestC1 const &) const { return true; }
-};
-}
-
-TEST_CASE("AyCmp") {
-    CHECK(AyCmp<CmpOp::kEQ, int>{}(1, 1));
-    CHECK(AyCmp<CmpOp::kEQ, _TestC1>{}(_TestC1{}, _TestC1{}));
-}
 

@@ -15,5 +15,6 @@
  */
 #pragma once
 
-#include "aystl/core/memory/allocator.hpp"
+#include "aystl/core/arch/allocator.hpp"
+#include "aystl/core/arch/compare.hpp"
 

@@ -86,5 +86,13 @@ enum class CmpOp : std::uint8_t {
     kFuzzyLE = kFuzzy | kLE,
     kFuzzyGE = kFuzzy | kGE,
 };
+
+// copy operation
+enum class CpyOp : std::uint8_t {
+    kCopy = 1,
+    kMove = 2,
+    kMemCopy = 3, // memory copy
+    kDeepCopy = 4,
+};
 }
 

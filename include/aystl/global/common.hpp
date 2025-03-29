@@ -89,11 +89,11 @@ enum class CmpOp : std::uint8_t {
 
 // copy operation
 enum class CpyOp : std::uint8_t {
-    kCopy        = 1,
-    kMove        = 2,
-    kMemCopy     = 3, // memory copy
-    kDeepCopy    = 4,
-    kShallowCopy = 5,
+    kCopy    = 1,
+    kMove    = 2,
+    kMemory  = 3, // memory copy
+    kDeep    = 4, // deep copy
+    kShallow = 5, // shallow copy
 };
 }
 

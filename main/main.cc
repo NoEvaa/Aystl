@@ -45,8 +45,20 @@ enum class ABC {
 
 #include <any>
 
+template <typename T>
+void ppp(T && v) {
+    std::cout << getTypeName<decltype(v)>() << std::endl;
+}
+
+void foo(auto &&... args) {
+    (ppp(std::forward<decltype(args)>(args)), ...);
+}
+
 int main()
 {
+    int i = 3;
+    foo(1, i, std::move(i));
+
     std::cout << sizeof(std::any) << std::endl;
     std::cout << sizeof(iin::AyAny) << std::endl;
     std::cout << sizeof(void*) << std::endl;

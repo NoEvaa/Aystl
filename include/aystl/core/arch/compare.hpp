@@ -17,6 +17,7 @@
 
 #include "aystl/global/common.hpp"
 #include "aystl/global/enum.hpp"
+#include "aystl/core/arch/base.hpp"
 
 namespace iin {
 template <CmpOp, typename T>
@@ -27,6 +28,11 @@ struct AyCmp {
         return false;
     }
 };
+
+template <CmpOp _cmp_op>
+struct AyArch<value_t<_cmp_op>> : AyArchBaseVT<CmpOp, value_t<_cmp_op>, AyCmp> {};
+template <CmpOp _cmp_op>
+using arch_cmp_t = AyArch<value_t<_cmp_op>>;
 
 #define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
     template <typename T>                                                                          \

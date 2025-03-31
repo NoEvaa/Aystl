@@ -16,9 +16,31 @@
 #pragma once
 
 #include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/type_traits/is_specialization_of.hpp"
 
 namespace iin {
 template <class T>
 struct AyArch;
+
+template <typename ArchT, typename... Ts>
+requires is_spec_of_v<ArchT, AyArch>
+using build_arch_t = typename ArchT::template build<Ts...>;
+
+template <typename ArchT, typename... Ts>
+decltype(auto) ayArchCall(auto &&... _args) {
+    return build_arch_t<ArchT, Ts...>{}(std::forward<decltype(_args)>(_args)...);
+}
+
+template <template <typename...> typename Tmpl>
+struct AyArchBaseT {
+    template <typename... Ts>
+    using build = Tmpl<Ts...>;
+};
+
+template <typename VT, ConstantTType<VT> T, template <VT, typename...> typename Tmpl>
+struct AyArchBaseVT {
+    template <typename... Ts>
+    using build = Tmpl<T::value, Ts...>;
+};
 }
 

@@ -20,6 +20,7 @@
 
 #include "aystl/global/common.hpp"
 #include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/arch/base.hpp"
 
 namespace iin {
 template <CpyOp, typename T>
@@ -30,15 +31,10 @@ struct AyCpy : value_t<false> {
     }
 };
 
-/*
-template <CpyOp cpy_op>
-struct AyCpy<cpy_op, void> : value_t<false> {
-    template <typename _Tp>
-    using spec = typename AyCpy<cpy_op, _Tp>;
-};
-template <CpyOp cpy_op>
-using AyCpyHd = AyCpy<cpy_op, void>;
-*/
+template <CpyOp _cpy_op>
+struct AyArch<value_t<_cpy_op>> : AyArchBaseVT<CpyOp, value_t<_cpy_op>, AyCpy> {};
+template <CpyOp _cpy_op>
+using arch_cpy_t = AyArch<value_t<_cpy_op>>;
 
 template <typename T>
 requires requires (T & dst, T const & src) { dst = src; }

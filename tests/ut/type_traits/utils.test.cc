@@ -31,10 +31,14 @@ TEST_CASE("type") {
     CHECK(!ValueTType<int>);
     CHECK(ValueTType<value_t<1>>);
     CHECK(ValueTType<std::is_same<int, double>>);
+    CHECK(ConstantTType<value_t<int(1)>, int>);
+    CHECK(ConstantTType<constant_t<int, 1>, int>);
+    CHECK(!ConstantTType<int, int>);
 
     CHECK(std::is_same_v<take_off<int>::magic, int>);
     CHECK(std::is_same_v<take_off<type_t<int>>::magic, int>);
     CHECK(take_off<value_t<6>>::magic == 6);
+    CHECK(take_off<constant_t<int, 6>>::magic == 6);
 }
 
 TEST_CASE("is any same of") {

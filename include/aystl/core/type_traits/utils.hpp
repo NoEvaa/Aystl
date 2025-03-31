@@ -39,6 +39,8 @@ template <typename T>
 concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
 template <typename T>
 concept ValueTType = requires { detail::is_type_v<value_t<T::value>>; };
+template <typename T, typename VT>
+concept ConstantTType = ValueTType<T> && TypeTType<T> && std::is_same_v<typename T::type, VT>;
 
 template <typename T>
 struct take_off { using magic = T; };

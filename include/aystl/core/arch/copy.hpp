@@ -53,7 +53,7 @@ struct AyCpy<CpyOp::kMove, T> : value_t<true> {
 };
 
 template <typename T>
-requires std::is_trivially_copy_assignable_v<T>
+requires std::is_trivially_copyable_v<T>
 struct AyCpy<CpyOp::kMemory, T> : value_t<true> {
     void operator()(T dst, T const & src) noexcept {
         std::memcpy(std::addressof(dst), std::addressof(src), sizeof(T));

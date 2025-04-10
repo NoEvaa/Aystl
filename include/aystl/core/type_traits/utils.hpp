@@ -50,6 +50,21 @@ struct take_off<T> { using magic = typename T::type; };
 template <ValueTType T>
 struct take_off<T> { static constexpr auto magic = T::value; };
 
+template <template <typename...> class Tmpl>
+struct template_t {
+    template <typename... Ts>
+    using wrap = Tmpl<Ts...>;
+};
+
+namespace detail {
+template <typename T>
+struct is_template_t : std::false_type {};
+template <template <typename...> class Tmpl>
+struct is_template_t<template_t<Tmpl>> : std::true_type {};
+}
+template <typename T>
+concept TemplateTType = detail::is_template_t<T>::value;
+
 template <typename T, typename... Ts>
 inline constexpr bool is_any_same_of_v = is_any_of_v<std::is_same<T, Ts>...>;
 

@@ -56,6 +56,8 @@ void foo(auto &&... args) {
 
 int main()
 {
+    using xxxx = template_t<std::vector>::template wrap<any_t>;
+
     int i = 3;
     foo(1, i, std::move(i));
 

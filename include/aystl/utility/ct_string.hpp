@@ -50,11 +50,17 @@ struct ct_str {
     static constexpr std::size_t empty() noexcept { return size() == 0; }
 
     constexpr value_type const * data() const noexcept { return value.data(); }
+    constexpr value_type const * c_str() const noexcept { return data(); }
 
-    constexpr auto begin() noexcept { return value.begin(); }
     constexpr auto begin() const noexcept { return value.begin(); }
-    constexpr auto end() noexcept { return value.end(); }
     constexpr auto end() const noexcept { return value.end(); }
+    constexpr auto cbegin() const noexcept { return value.cbegin(); }
+    constexpr auto cend() const noexcept { return value.cend(); }
+
+    constexpr std::basic_string_view<CharT> view() const noexcept
+    {
+        return std::basic_string_view<CharT>(*this);
+    }
 
     template<class _Traits>
     constexpr explicit operator std::basic_string_view<CharT, _Traits>() const noexcept {

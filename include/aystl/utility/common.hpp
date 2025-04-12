@@ -15,12 +15,12 @@
  */
 #pragma once
 
-#include <optional>
-
-#include "aystl/core/type_traits/utils.hpp"
-
 namespace iin {
-template <typename T>
-using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
+template <typename... Ts>
+struct overload : Ts... {
+    using Ts::operator()...;
+};
+template <typename... Ts>
+overload(Ts...) -> overload<Ts...>;
 }
 

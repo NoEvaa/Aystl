@@ -15,65 +15,37 @@
  */
 #pragma once
 
-#include <type_traits>
-#include <utility>
-
 #include "aystl/core/type_traits/meta.hpp"
 
 namespace iin {
-struct null_t;
-struct empty_t {};
-struct any_t {
-    template <typename U>
-    constexpr operator U();
-};
+template <typename T, template <typename...> typename Tmpl>
+struct is_spec_of : std::false_type {};
 
-template <typename T>
-struct type_t { using type = T; };
-template <typename T, T _v>
-struct constant_t : type_t<T> { static constexpr T value = _v; };
-template <auto _v>
-struct value_t : constant_t<decltype(_v), _v> {};
+template <
+    template <typename...> typename Tmpl1,
+    template <typename...> typename Tmpl2,
+    typename... Args>
+requires std::is_same_v<Tmpl1<Args...>, Tmpl2<Args...>>
+struct is_spec_of<Tmpl1<Args...>, Tmpl2> : std::true_type {};
 
-template <typename T>
-concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
-template <typename T>
-concept ValueTType = requires { detail::is_type_v<value_t<T::value>>; };
-template <typename T, typename VT>
-concept ConstantTType = ValueTType<T> && TypeTType<T> && std::is_same_v<typename T::type, VT>;
+template <typename T, template <typename...> typename Tmpl>
+inline constexpr bool is_spec_of_v = is_spec_of<T, Tmpl>::value;
 
-template <typename T>
-struct take_off { using magic = T; };
-template <TypeTType T> 
-requires (!ValueTType<T>)
-struct take_off<T> { using magic = typename T::type; };
-template <ValueTType T>
-struct take_off<T> { static constexpr auto magic = T::value; };
+template <typename T, template <typename...> typename... Tmpls>
+inline constexpr bool is_any_spec_of_v = is_any_of_v<is_spec_of<T, Tmpls>...>;
 
-template <template <typename...> class Tmpl>
-struct template_t {
-    template <typename... Ts>
-    using wrap = Tmpl<Ts...>;
-};
+template <typename T, template <auto...> typename Tmpl>
+struct is_value_spec_of : std::false_type {};
 
-namespace detail {
-template <typename T>
-struct is_template_t : std::false_type {};
-template <template <typename...> class Tmpl>
-struct is_template_t<template_t<Tmpl>> : std::true_type {};
-}
-template <typename T>
-concept TemplateTType = detail::is_template_t<T>::value;
+template <
+    template <auto...> typename Tmpl1,
+    template <auto...> typename Tmpl2,
+    auto... args>
+requires std::is_same_v<Tmpl1<args...>, Tmpl2<args...>>
+struct is_value_spec_of<Tmpl1<args...>, Tmpl2> : std::true_type {};
 
-template <typename T, typename... Ts>
-inline constexpr bool is_any_same_of_v = is_any_of_v<std::is_same<T, Ts>...>;
-
-template <typename... Ts>
-struct overload : Ts... {
-    using Ts::operator()...;
-};
-template <typename... Ts>
-overload(Ts...) -> overload<Ts...>;
+template <typename T, template <auto...> typename Tmpl>
+inline constexpr bool is_value_spec_of_v = is_value_spec_of<T, Tmpl>::value;
 
 namespace detail {
 template <template <typename...> class Tmpl, typename... Args>
@@ -115,20 +87,5 @@ using replace_tmpl_args_t = typename detail::replace_tmpl_args<T, Args...>::type
 
 template <typename T, template <typename...> class Tmpl>
 using replace_tmpl_wrapper_t = typename detail::replace_tmpl_wrapper<T, Tmpl>::type;
-
-template <typename T>
-using add_clref_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
-
-template <std::integral T, T... Is>
-using int_seq = std::integer_sequence<T, Is...>;
-
-namespace detail {
-template <typename T>
-struct is_int_seq : std::false_type {};
-template <std::integral T, T... Is>
-struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
-}
-template <typename T>
-concept IntSeqType = detail::is_int_seq<T>::value;
 }
 

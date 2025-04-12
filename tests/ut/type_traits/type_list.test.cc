@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
+#include "aystl/core/type_traits/utils/type_list.hpp"
 
 using namespace iin;
 

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#include "aystl/utility/common.hpp"
 
 using namespace iin;
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+TEST_CASE("overload") {
+    struct TO1 { int operator()(int) { return 1; } };
+    struct TO2 { int operator()(double) { return 2; } };
+    struct TO3 { int operator()(bool) { return 3; } };
+    auto test_op = overload(TO1{}, TO2{}, TO3{});
+    CHECK(test_op(0) == 1);
+    CHECK(test_op(0.) == 2);
+    CHECK(test_op(true) == 3);
 }
 

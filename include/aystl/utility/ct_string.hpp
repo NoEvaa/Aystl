@@ -22,9 +22,9 @@
 #include <utility>
 #include <algorithm>
 
-#include "aystl/core/type_traits/utils.hpp"
-#include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
+#include "aystl/core/type_traits/meta.hpp"
+#include "aystl/core/type_traits/utils/type_list.hpp"
+#include "aystl/core/type_traits/utils/int_seq.hpp"
 
 namespace iin {
 template <typename CharT, std::size_t N>
@@ -52,6 +52,8 @@ struct ct_str {
     constexpr value_type const * data() const noexcept { return value.data(); }
     constexpr value_type const * c_str() const noexcept { return data(); }
 
+    constexpr auto begin() noexcept { return value.begin(); }
+    constexpr auto end() noexcept { return value.end(); }
     constexpr auto begin() const noexcept { return value.begin(); }
     constexpr auto end() const noexcept { return value.end(); }
     constexpr auto cbegin() const noexcept { return value.cbegin(); }

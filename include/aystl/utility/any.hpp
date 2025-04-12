@@ -22,8 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "aystl/core/type_traits/utils.hpp"
-#include "aystl/core/type_traits/is_specialization_of.hpp"
+#include "aystl/core/type_traits/template.hpp"
 #include "aystl/core/arch/compare.hpp"
 #include "aystl/core/arch/allocator.hpp"
 

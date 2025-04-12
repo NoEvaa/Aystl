@@ -15,8 +15,7 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/utils.hpp"
-#include "aystl/core/type_traits/is_specialization_of.hpp"
+#include "aystl/core/type_traits/template.hpp"
 
 namespace iin {
 template <class T>

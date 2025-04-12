@@ -26,7 +26,7 @@ namespace iin {
 template <CpyOp, typename T>
 struct AyCpy : value_t<false> {
     template <typename _Tp>
-    void operator()(_Tp &&, _Tp &&) noexcept {
+    void operator()(_Tp &&, _Tp &&) const noexcept {
         AY_UNREACHABLE("Undefined copy operation.");
     }
 };
@@ -39,7 +39,7 @@ using arch_cpy_t = AyArch<value_t<_cpy_op>>;
 template <typename T>
 requires requires (T & dst, T const & src) { dst = src; }
 struct AyCpy<CpyOp::kCopy, T> : value_t<true> {
-    void operator()(T dst, T const & src) noexcept {
+    void operator()(T & dst, T const & src) const noexcept {
         dst = src;
     }
 };
@@ -47,7 +47,7 @@ struct AyCpy<CpyOp::kCopy, T> : value_t<true> {
 template <typename T>
 requires requires (T & dst, T && src) { dst = std::move(src); }
 struct AyCpy<CpyOp::kMove, T> : value_t<true> {
-    void operator()(T dst, T && src) noexcept {
+    void operator()(T & dst, T && src) const noexcept {
         dst = std::move(src);
     }
 };
@@ -55,21 +55,21 @@ struct AyCpy<CpyOp::kMove, T> : value_t<true> {
 template <typename T>
 requires std::is_trivially_copyable_v<T>
 struct AyCpy<CpyOp::kMemory, T> : value_t<true> {
-    void operator()(T dst, T const & src) noexcept {
+    void operator()(T & dst, T const & src) const noexcept {
         std::memcpy(std::addressof(dst), std::addressof(src), sizeof(T));
     }
 };
 
 template <typename T>
 struct AyCpy<CpyOp::kDeep, T> : value_t<true> {
-    void operator()(T dst, T const & src) noexcept {
+    void operator()(T & dst, T const & src) const noexcept {
         AyCpy<CpyOp::kCopy, T>{}(dst, src);
     }
 };
 
 template <typename T>
 struct AyCpy<CpyOp::kShallow, T> : value_t<true> {
-    void operator()(T dst, T const & src) noexcept {
+    void operator()(T & dst, T const & src) const noexcept {
         AyCpy<CpyOp::kCopy, T>{}(dst, src);
     }
 };

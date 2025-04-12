@@ -15,9 +15,16 @@
  */
 #pragma once
 
-#include "aystl/core/arch/allocator.hpp"
-#include "aystl/core/arch/compare.hpp"
-#include "aystl/core/arch/copy.hpp"
-#include "aystl/core/arch/cast.hpp"
-#include "aystl/core/arch/hash.hpp"
+#include "aystl/global/common.hpp"
+#include "aystl/core/arch/base.hpp"
+
+namespace iin {
+template <CastOp, typename, typename>
+struct AyCast;
+
+template <CastOp _cast_op>
+struct AyArch<value_t<_cast_op>> : AyArchBaseVT<CastOp, value_t<_cast_op>, AyCast> {};
+template <CastOp _cast_op>
+using arch_cast_t = AyArch<value_t<_cast_op>>;
+}
 

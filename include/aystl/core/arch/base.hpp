@@ -18,7 +18,7 @@
 #include "aystl/core/type_traits/template.hpp"
 
 namespace iin {
-template <class T>
+template <typename...>
 struct AyArch;
 
 template <typename ArchT, typename... Ts>
@@ -32,14 +32,20 @@ decltype(auto) ayArchCall(auto &&... _args) {
 
 template <template <typename...> typename Tmpl>
 struct AyArchBaseT {
-    template <typename... Ts>
-    using build = Tmpl<Ts...>;
+    template <typename... _Ts>
+    using build = Tmpl<_Ts...>;
+};
+
+template <template <typename...> typename Tmpl, typename... Ts>
+struct AyArchBaseTT {
+    template <typename... _Ts>
+    using build = Tmpl<Ts..., _Ts...>;
 };
 
 template <typename VT, ConstantTType<VT> T, template <VT, typename...> typename Tmpl>
 struct AyArchBaseVT {
-    template <typename... Ts>
-    using build = Tmpl<T::value, Ts...>;
+    template <typename... _Ts>
+    using build = Tmpl<T::value, _Ts...>;
 };
 }
 

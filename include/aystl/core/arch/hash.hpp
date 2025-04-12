@@ -15,9 +15,25 @@
  */
 #pragma once
 
-#include "aystl/core/arch/allocator.hpp"
-#include "aystl/core/arch/compare.hpp"
-#include "aystl/core/arch/copy.hpp"
-#include "aystl/core/arch/cast.hpp"
-#include "aystl/core/arch/hash.hpp"
+#include <functional>
+
+#include "aystl/core/arch/base.hpp"
+
+namespace iin {
+template <typename RetT, typename T>
+struct AyHash;
+
+template <class T>
+struct AyHash<std::size_t, T> {
+    std::size_t operator()(T const & _v) const noexcept {
+        return std::hash<T>{}(_v);
+    }
+};
+
+struct arch_hash;
+template <typename RetT>
+struct AyArch<arch_hash, RetT> : AyArchBaseTT<AyHash, RetT> {};
+template <typename RetT>
+using arch_hash_t = AyArch<arch_hash, RetT>;
+}
 

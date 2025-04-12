@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include "aystl/core/type_traits/common.hpp"
-#include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/enum.hpp"
-#include "aystl/core/type_traits/template.hpp"
-#include "aystl/core/type_traits/utils/type_list.hpp"
+#include "testlib.h"
 #include "aystl/core/type_traits/utils/value_list.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
-#include "aystl/core/type_traits/utils/char_seq.hpp"
-#include "aystl/core/type_traits/utils/memory.hpp"
-#include "aystl/core/type_traits/utils/optional.hpp"
+
+using namespace iin;
+
+TEST_CASE("value list") {
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(!is_type_list_v<value_list<>>);
+    CHECK(!is_value_list_v<type_list<>>);
+    CHECK(is_value_list_v<value_list<>>);
+}
 

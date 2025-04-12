@@ -18,13 +18,12 @@
 #include <cstddef>
 #include <array>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <algorithm>
 
 #include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/utils/type_list.hpp"
 #include "aystl/core/type_traits/utils/int_seq.hpp"
+#include "aystl/core/type_traits/utils/char_seq.hpp"
 
 namespace iin {
 template <typename CharT, std::size_t N>
@@ -90,23 +89,6 @@ consteval auto operator+(ct_str<CharT, N> const & lhs,
     std::copy_n(rhs.begin(), rhs.capacity(), ret.begin() + static_cast<std::ptrdiff_t>(lhs.size()));
     return ret;
 }
-
-template<typename CharT, CharT... Cs>
-struct char_seq {
-    using value_type = CharT;
-    using type       = value_list<Cs...>;
-
-    static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
-};
-
-namespace detail {
-template <typename T>
-struct is_char_seq : std::false_type {};
-template<typename CharT, CharT... Cs>
-struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
-}
-template <typename T>
-concept CharSeqType = detail::is_char_seq<T>::value;
 
 namespace detail{
 template <ct_str _s>

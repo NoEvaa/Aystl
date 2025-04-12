@@ -39,23 +39,6 @@ inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>
 concept TypeListType = is_type_list_v<T>;
 
-template <auto... Vs>
-struct value_list {
-    template <template <auto...> class Tmpl>
-    using wrapped = Tmpl<Vs...>;
-
-    template <template <typename...> class Tmpl>
-    using type_wrapped = Tmpl<value_t<Vs>...>;
-};
-
-template <typename T>
-inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
-template <typename T>
-concept ValueListType = is_value_list_v<T>;
-
-template <auto... Vs>
-using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
-
 namespace detail {
 template <typename... Ts, typename... Ts2>
 auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)

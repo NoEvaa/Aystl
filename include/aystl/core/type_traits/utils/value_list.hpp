@@ -15,15 +15,28 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/common.hpp"
 #include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/enum.hpp"
 #include "aystl/core/type_traits/template.hpp"
 #include "aystl/core/type_traits/utils/type_list.hpp"
-#include "aystl/core/type_traits/utils/value_list.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
-#include "aystl/core/type_traits/utils/char_seq.hpp"
-#include "aystl/core/type_traits/utils/memory.hpp"
-#include "aystl/core/type_traits/utils/optional.hpp"
+
+namespace iin {
+template <auto... Vs>
+struct value_list {
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+
+    template <template <auto...> class Tmpl>
+    using wrapped = Tmpl<Vs...>;
+
+    template <template <typename...> class Tmpl>
+    using type_wrapped = Tmpl<value_t<Vs>...>;
+};
+
+template <typename T>
+inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
+template <typename T>
+concept ValueListType = is_value_list_v<T>;
+
+template <auto... Vs>
+using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
+}
 

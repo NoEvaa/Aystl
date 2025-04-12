@@ -95,5 +95,8 @@ enum class CpyOp : std::uint8_t {
     kDeep    = 4, // deep copy
     kShallow = 5, // shallow copy
 };
+
+// cast operation
+enum class CastOp {};
 }
 

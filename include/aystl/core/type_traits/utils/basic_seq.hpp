@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/common.hpp"
 #include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/enum.hpp"
-#include "aystl/core/type_traits/template.hpp"
-#include "aystl/core/type_traits/utils/type_list.hpp"
-#include "aystl/core/type_traits/utils/value_list.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
-#include "aystl/core/type_traits/utils/char_seq.hpp"
-#include "aystl/core/type_traits/utils/memory.hpp"
-#include "aystl/core/type_traits/utils/optional.hpp"
+
+namespace iin {
+template<typename T, T... Vs>
+struct ct_basic_seq {
+    using value_type = T;
+    using type       = value_list<Vs...>;
+
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+};
+}
 

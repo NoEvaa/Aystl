@@ -28,13 +28,6 @@ TEST_CASE("type list") {
     CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
 }
 
-TEST_CASE("value list") {
-    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
-    CHECK(!is_type_list_v<value_list<>>);
-    CHECK(!is_value_list_v<type_list<>>);
-    CHECK(is_value_list_v<value_list<>>);
-}
-
 TEST_CASE("type list cat") {
     using _test_list_1 = type_list<int, double>;
     using _test_list_11 = type_list<int, double, int, double>;

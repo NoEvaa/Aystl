@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "aystl/reflect/type_name.hpp"
 #include "testlib.h"
-#include <string>
 #include "aystl/utility/ct_string.hpp"
 
 using namespace iin;

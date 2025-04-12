@@ -15,15 +15,19 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/common.hpp"
-#include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/enum.hpp"
-#include "aystl/core/type_traits/template.hpp"
-#include "aystl/core/type_traits/utils/type_list.hpp"
-#include "aystl/core/type_traits/utils/value_list.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
-#include "aystl/core/type_traits/utils/char_seq.hpp"
-#include "aystl/core/type_traits/utils/memory.hpp"
-#include "aystl/core/type_traits/utils/optional.hpp"
+#include "aystl/core/type_traits/utils/basic_seq.hpp"
+
+namespace iin {
+template<typename CharT, CharT... Cs>
+struct char_seq : ct_basic_seq<CharT, Cs...> {};
+
+namespace detail {
+template <typename T>
+struct is_char_seq : std::false_type {};
+template<typename CharT, CharT... Cs>
+struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
+}
+template <typename T>
+concept CharSeqType = detail::is_char_seq<T>::value;
+}
 

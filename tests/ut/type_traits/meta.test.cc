@@ -18,17 +18,44 @@
 
 using namespace iin;
 
-TEST_CASE("is any of") {
-    CHECK(is_any_of_v<std::true_type, std::true_type>);
-    CHECK(is_any_of_v<std::true_type, std::false_type>);
-    CHECK(is_any_of_v<std::false_type, std::true_type>);
-    CHECK(!is_any_of_v<std::false_type, std::false_type>);
+TEST_CASE("base") {
+    CHECK(std::is_same_v<decltype(int(any_t{})), int>);
 }
 
-TEST_CASE("is all of") {
-    CHECK(is_all_of_v<std::true_type, std::true_type>);
-    CHECK(!is_all_of_v<std::true_type, std::false_type>);
-    CHECK(!is_all_of_v<std::false_type, std::true_type>);
-    CHECK(!is_all_of_v<std::false_type, std::false_type>);
+TEST_CASE("type_t") {
+    CHECK(std::is_same_v<type_t<int>::type, int>);
+
+    CHECK(!TypeTType<int>);
+    CHECK(TypeTType<type_t<int>>);
+    CHECK(TypeTType<std::decay<int>>);
+}
+
+TEST_CASE("value_t") {
+    CHECK(value_t<6>::value == 6);
+
+    CHECK(!ValueTType<int>);
+    CHECK(ValueTType<value_t<1>>);
+    CHECK(ValueTType<std::is_same<int, double>>);
+}
+
+TEST_CASE("constant_t") {
+    CHECK(std::is_same_v<constant_t<int, 6>::type, int>);
+    CHECK(constant_t<int, 6>::value == 6);
+
+    CHECK(ConstantTType<value_t<int(1)>, int>);
+    CHECK(ConstantTType<constant_t<int, 1>, int>);
+    CHECK(!ConstantTType<int, int>);
+}
+
+TEST_CASE("template_t") {
+    CHECK(std::is_same_v<template_t<type_t>::wrap<int>, type_t<int>>);
+    CHECK(std::is_same_v<template_t<type_list>::wrap<int, int, double>, type_list<int, int, double>>);
+}
+
+TEST_CASE("take off") {
+    CHECK(std::is_same_v<take_off<int>::magic, int>);
+    CHECK(std::is_same_v<take_off<type_t<int>>::magic, int>);
+    CHECK(take_off<value_t<6>>::magic == 6);
+    CHECK(take_off<constant_t<int, 6>>::magic == 6);
 }
 

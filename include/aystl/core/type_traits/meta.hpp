@@ -15,24 +15,54 @@
  */
 #pragma once
 
-#include <type_traits>
+#include "aystl/core/type_traits/common.hpp"
 
 namespace iin {
-template <class... Args>
-using is_any_of = std::disjunction<Args...>;
+struct null_t;
+struct empty_t {};
+struct any_t {
+    template <typename U>
+    constexpr operator U();
+};
 
-template <class... Args>
-inline constexpr bool is_any_of_v = is_any_of<Args...>::value;
+template <typename T>
+struct type_t { using type = T; };
+template <typename T, T _v>
+struct constant_t : type_t<T> { static constexpr T value = _v; };
+template <auto _v>
+struct value_t : constant_t<decltype(_v), _v> {};
 
-template <class... Args>
-using is_all_of = std::conjunction<Args...>;
+template <template <typename...> class Tmpl>
+struct template_t {
+    template <typename... Ts>
+    using wrap = Tmpl<Ts...>;
+};
 
-template <class... Args>
-inline constexpr bool is_all_of_v = is_all_of<Args...>::value;
+template <typename... Ts> struct type_list;
+template <auto... Vs> struct value_list;
+
+template <typename T>
+concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
+template <typename T>
+concept ValueTType = requires { detail::is_type_v<value_t<T::value>>; };
+template <typename T, typename VT>
+concept ConstantTType = ValueTType<T> && TypeTType<T> && std::is_same_v<typename T::type, VT>;
 
 namespace detail {
 template <typename T>
-constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
+struct is_template_t : std::false_type {};
+template <template <typename...> class Tmpl>
+struct is_template_t<template_t<Tmpl>> : std::true_type {};
 }
+template <typename T>
+concept TemplateTType = detail::is_template_t<T>::value;
+
+template <typename T>
+struct take_off { using magic = T; };
+template <TypeTType T> 
+requires (!ValueTType<T>)
+struct take_off<T> { using magic = typename T::type; };
+template <ValueTType T>
+struct take_off<T> { static constexpr auto magic = T::value; };
 }
 

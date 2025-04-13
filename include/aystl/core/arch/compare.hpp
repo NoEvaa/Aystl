@@ -17,18 +17,28 @@
 
 #include "aystl/global/common.hpp"
 #include "aystl/global/enum.hpp"
+#include "aystl/core/arch/base.hpp"
 
 namespace iin {
 template <CmpOp, typename T>
 struct AyCmp {
-    bool operator()(T const &, T const &) noexcept { return false; }
+    template <typename _Tp>
+    bool operator()(_Tp &&, _Tp &&) const noexcept {
+        AY_UNREACHABLE("Undefined compare operation.");
+        return false;
+    }
 };
+
+template <CmpOp _cmp_op>
+struct AyArch<value_t<_cmp_op>> : AyArchBaseVT<CmpOp, value_t<_cmp_op>, AyCmp> {};
+template <CmpOp _cmp_op>
+using arch_cmp_t = AyArch<value_t<_cmp_op>>;
 
 #define _AYSTL_DECL_COMPARE_DEF(_op_name, ...)                                                     \
     template <typename T>                                                                          \
     requires requires (T const & lhs, T const & rhs) { lhs __VA_ARGS__ rhs; }                      \
     struct AyCmp<CmpOp::k##_op_name, T> {                                                          \
-        bool operator()(T const & lhs, T const & rhs) noexcept {                                   \
+        bool operator()(T const & lhs, T const & rhs) const noexcept {                             \
             return lhs __VA_ARGS__ rhs;                                                            \
         }                                                                                          \
     };
@@ -42,7 +52,7 @@ inline constexpr bool _has_fuzzy_eq_v = ((_cmp_op & CmpOp::kFuzzyEQ) == CmpOp::k
 
 template <typename T>
 struct AyCmp<CmpOp::kFuzzyEQ, T> {
-    bool operator()(T const & lhs, T const & rhs) noexcept {
+    bool operator()(T const & lhs, T const & rhs) const noexcept {
         return AyCmp<CmpOp::kEQ, T>{}(lhs, rhs);
     }
 };
@@ -50,7 +60,7 @@ struct AyCmp<CmpOp::kFuzzyEQ, T> {
 template <CmpOp _cmp_op, typename T>
 requires detail::_has_fuzzy_eq_v<_cmp_op>
 struct AyCmp<_cmp_op, T> {
-    bool operator()(T const & lhs, T const & rhs) noexcept {
+    bool operator()(T const & lhs, T const & rhs) const noexcept {
         return AyCmp<_cmp_op & ~CmpOp::kFuzzyEQ, T>{}(lhs, rhs) ||
             AyCmp<CmpOp::kFuzzyEQ, T>{}(lhs, rhs);
     }

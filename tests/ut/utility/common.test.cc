@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/utility/common.hpp"
 
-#include <optional>
+using namespace iin;
 
-#include "aystl/core/type_traits/utils.hpp"
-
-namespace iin {
-template <typename T>
-using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
+TEST_CASE("overload") {
+    struct TO1 { int operator()(int) { return 1; } };
+    struct TO2 { int operator()(double) { return 2; } };
+    struct TO3 { int operator()(bool) { return 3; } };
+    auto test_op = overload(TO1{}, TO2{}, TO3{});
+    CHECK(test_op(0) == 1);
+    CHECK(test_op(0.) == 2);
+    CHECK(test_op(true) == 3);
 }
 

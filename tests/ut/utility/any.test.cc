@@ -19,6 +19,10 @@
 using namespace iin;
 
 TEST_CASE("AyAny") {
+    CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 32U>>) == 32);
+    CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 64U>>) == 64);
+    CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 128U>>) == 128);
+
     AyAny a;
     CHECK(!a.hasValue());
     CHECK(!bool(a));
@@ -114,5 +118,17 @@ TEST_CASE("AyAny class") {
         _TestC::w_ = 0;
     }
     CHECK(_TestC::w_ == 1);
+}
+
+TEST_CASE("AyAny shared_ptr") {
+    auto p = std::make_shared<int>();
+    REQUIRE(p.use_count() == 1);
+    {
+        AyAny a = p;
+        CHECK(p.use_count() == 2);
+        AyAny b = std::move(a);
+        CHECK(p.use_count() == 2);
+    }
+    CHECK(p.use_count() == 1);
 }
 

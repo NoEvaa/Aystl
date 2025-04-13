@@ -18,13 +18,12 @@
 #include <cstddef>
 #include <array>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <algorithm>
 
-#include "aystl/core/type_traits/utils.hpp"
-#include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
+#include "aystl/core/type_traits/meta.hpp"
+#include "aystl/core/type_traits/utils/int_seq.hpp"
+#include "aystl/core/type_traits/utils/char_seq.hpp"
 
 namespace iin {
 template <typename CharT, std::size_t N>
@@ -50,11 +49,19 @@ struct ct_str {
     static constexpr std::size_t empty() noexcept { return size() == 0; }
 
     constexpr value_type const * data() const noexcept { return value.data(); }
+    constexpr value_type const * c_str() const noexcept { return data(); }
 
     constexpr auto begin() noexcept { return value.begin(); }
-    constexpr auto begin() const noexcept { return value.begin(); }
     constexpr auto end() noexcept { return value.end(); }
+    constexpr auto begin() const noexcept { return value.begin(); }
     constexpr auto end() const noexcept { return value.end(); }
+    constexpr auto cbegin() const noexcept { return value.cbegin(); }
+    constexpr auto cend() const noexcept { return value.cend(); }
+
+    constexpr std::basic_string_view<CharT> view() const noexcept
+    {
+        return std::basic_string_view<CharT>(*this);
+    }
 
     template<class _Traits>
     constexpr explicit operator std::basic_string_view<CharT, _Traits>() const noexcept {
@@ -82,23 +89,6 @@ consteval auto operator+(ct_str<CharT, N> const & lhs,
     std::copy_n(rhs.begin(), rhs.capacity(), ret.begin() + static_cast<std::ptrdiff_t>(lhs.size()));
     return ret;
 }
-
-template<typename CharT, CharT... Cs>
-struct char_seq {
-    using value_type = CharT;
-    using type       = value_list<Cs...>;
-
-    static constexpr std::size_t size() noexcept { return sizeof...(Cs); }
-};
-
-namespace detail {
-template <typename T>
-struct is_char_seq : std::false_type {};
-template<typename CharT, CharT... Cs>
-struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
-}
-template <typename T>
-concept CharSeqType = detail::is_char_seq<T>::value;
 
 namespace detail{
 template <ct_str _s>

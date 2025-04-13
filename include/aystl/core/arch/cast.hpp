@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#pragma once
 
-using namespace iin;
+#include "aystl/global/common.hpp"
+#include "aystl/core/arch/base.hpp"
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+namespace iin {
+template <CastOp, typename, typename>
+struct AyCast;
+
+template <CastOp _cast_op>
+struct AyArch<value_t<_cast_op>> : AyArchBaseVT<CastOp, value_t<_cast_op>, AyCast> {};
+template <CastOp _cast_op>
+using arch_cast_t = AyArch<value_t<_cast_op>>;
 }
 

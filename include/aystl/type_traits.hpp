@@ -15,10 +15,15 @@
  */
 #pragma once
 
+#include "aystl/core/type_traits/common.hpp"
+#include "aystl/core/type_traits/meta.hpp"
 #include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/is_specialization_of.hpp"
-#include "aystl/core/type_traits/utils.hpp"
 #include "aystl/core/type_traits/enum.hpp"
-#include "aystl/core/type_traits/memory.hpp"
-#include "aystl/core/type_traits/optional.hpp"
+#include "aystl/core/type_traits/template.hpp"
+#include "aystl/core/type_traits/utils/type_list.hpp"
+#include "aystl/core/type_traits/utils/value_list.hpp"
+#include "aystl/core/type_traits/utils/int_seq.hpp"
+#include "aystl/core/type_traits/utils/char_seq.hpp"
+#include "aystl/core/type_traits/utils/memory.hpp"
+#include "aystl/core/type_traits/utils/optional.hpp"
 

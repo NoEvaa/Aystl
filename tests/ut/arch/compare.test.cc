@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#include "aystl/core/arch/compare.hpp"
 
 using namespace iin;
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+namespace {
+struct _TestC1 {
+    bool operator==(_TestC1 const &) const { return true; }
+};
+}
+
+TEST_CASE("AyCmp") {
+    CHECK(AyCmp<CmpOp::kEQ, int>{}(1, 1));
+    CHECK(AyCmp<CmpOp::kEQ, _TestC1>{}(_TestC1{}, _TestC1{}));
 }
 

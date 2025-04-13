@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#pragma once
 
-using namespace iin;
-
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
-}
+#include "aystl/core/arch/allocator.hpp"
+#include "aystl/core/arch/compare.hpp"
+#include "aystl/core/arch/copy.hpp"
+#include "aystl/core/arch/cast.hpp"
+#include "aystl/core/arch/hash.hpp"
 

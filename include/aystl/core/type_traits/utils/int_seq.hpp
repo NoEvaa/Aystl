@@ -15,14 +15,22 @@
  */
 #pragma once
 
-#include <concepts>
-#include <utility>
-
+#include "aystl/core/type_traits/meta.hpp"
 #include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/utils.hpp"
-#include "aystl/utility/type_list.hpp"
 
 namespace iin {
+template <std::integral T, T... Is>
+using int_seq = std::integer_sequence<T, Is...>;
+
+namespace detail {
+template <typename T>
+struct is_int_seq : std::false_type {};
+template <std::integral T, T... Is>
+struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
+}
+template <typename T>
+concept IntSeqType = detail::is_int_seq<T>::value;
+
 template <std::size_t... Is>
 using index_seq = int_seq<std::size_t, Is...>;
 

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#pragma once
 
-using namespace iin;
+#include <optional>
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+#include "aystl/core/type_traits/template.hpp"
+
+namespace iin {
+template <typename T>
+using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
 }
 

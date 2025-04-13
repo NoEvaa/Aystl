@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 NoEvaa
+ * Copyright 2024 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/core/math/compare.hpp"
+#pragma once
 
-using namespace iin;
+#include "aystl/core/type_traits/utils/basic_seq.hpp"
 
-namespace {
-struct _TestC1 {
-    bool operator==(_TestC1 const &) const { return true; }
-};
+namespace iin {
+template<typename CharT, CharT... Cs>
+struct char_seq : ct_basic_seq<CharT, Cs...> {};
+
+namespace detail {
+template <typename T>
+struct is_char_seq : std::false_type {};
+template<typename CharT, CharT... Cs>
+struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
 }
-
-TEST_CASE("AyCmp") {
-    CHECK(AyCmp<CmpOp::kEQ, int>{}(1, 1));
-    CHECK(AyCmp<CmpOp::kEQ, _TestC1>{}(_TestC1{}, _TestC1{}));
+template <typename T>
+concept CharSeqType = detail::is_char_seq<T>::value;
 }
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#include "aystl/core/type_traits/utils/value_list.hpp"
 
 using namespace iin;
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+TEST_CASE("value list") {
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(!is_type_list_v<value_list<>>);
+    CHECK(!is_value_list_v<type_list<>>);
+    CHECK(is_value_list_v<value_list<>>);
 }
 

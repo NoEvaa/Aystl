@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/core/type_traits/utils/memory.hpp"
+#pragma once
 
-using namespace iin;
+#include <functional>
 
-TEST_CASE("remove_smart_ptr") {
-    CHECK(std::is_same_v<remove_smart_ptr_t<int>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::shared_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::unique_ptr<int>>, int>);
-    CHECK(std::is_same_v<remove_smart_ptr_t<std::weak_ptr<int const>>, int const>);
+#include "aystl/core/arch/base.hpp"
+
+namespace iin {
+template <typename RetT, typename T>
+struct AyHash;
+
+template <class T>
+struct AyHash<std::size_t, T> {
+    std::size_t operator()(T const & _v) const noexcept {
+        return std::hash<T>{}(_v);
+    }
+};
+
+struct arch_hash;
+template <typename RetT>
+struct AyArch<arch_hash, RetT> : AyArchBaseTT<AyHash, RetT> {};
+template <typename RetT>
+using arch_hash_t = AyArch<arch_hash, RetT>;
 }
 

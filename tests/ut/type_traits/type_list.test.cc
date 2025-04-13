@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/utility/type_list.hpp"
-#include "aystl/utility/int_seq.hpp"
+#include "aystl/core/type_traits/utils/type_list.hpp"
 
 using namespace iin;
 
@@ -27,13 +26,6 @@ TEST_CASE("type list") {
     CHECK(std::is_same_v<_test_list_1::get<0>, int>);
     CHECK(std::is_same_v<_test_list_1::get<1>, double>);
     CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
-}
-
-TEST_CASE("value list") {
-    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
-    CHECK(!is_type_list_v<value_list<>>);
-    CHECK(!is_value_list_v<type_list<>>);
-    CHECK(is_value_list_v<value_list<>>);
 }
 
 TEST_CASE("type list cat") {

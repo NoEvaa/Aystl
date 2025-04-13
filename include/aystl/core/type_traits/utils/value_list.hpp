@@ -15,20 +15,28 @@
  */
 #pragma once
 
+#include "aystl/core/type_traits/meta.hpp"
 #include "aystl/core/type_traits/template.hpp"
+#include "aystl/core/type_traits/utils/type_list.hpp"
 
 namespace iin {
-/*
-template <typename... Ts>
-decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
-    using ret_type = decltype(_fn.template operator()<take_off<Ts>::magic...>(args...));
-    if constexpr (std::is_void_v<ret_type>) {
-        _fn.template operator()<take_off<Ts>::magic...>(args...);
-        return;
-    } else {
-        return _fn.template operator()<take_off<Ts>::magic...>(args...);
-    }
-}
-*/
+template <auto... Vs>
+struct value_list {
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+
+    template <template <auto...> class Tmpl>
+    using wrapped = Tmpl<Vs...>;
+
+    template <template <typename...> class Tmpl>
+    using type_wrapped = Tmpl<value_t<Vs>...>;
+};
+
+template <typename T>
+inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
+template <typename T>
+concept ValueListType = is_value_list_v<T>;
+
+template <auto... Vs>
+using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
 }
 

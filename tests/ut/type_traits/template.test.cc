@@ -14,43 +14,9 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include <type_traits>
-#include "aystl/core/type_traits/utils.hpp"
+#include "aystl/core/type_traits/template.hpp"
 
 using namespace iin;
-
-TEST_CASE("type") {
-    CHECK(std::is_same_v<decltype(int(any_t{})), int>);
-
-    CHECK(std::is_same_v<type_t<int>::type, int>);
-    CHECK(value_t<6>::value == 6);
-
-    CHECK(!TypeTType<int>);
-    CHECK(TypeTType<type_t<int>>);
-    CHECK(TypeTType<std::decay<int>>);
-    CHECK(!ValueTType<int>);
-    CHECK(ValueTType<value_t<1>>);
-    CHECK(ValueTType<std::is_same<int, double>>);
-
-    CHECK(std::is_same_v<take_off<int>::magic, int>);
-    CHECK(std::is_same_v<take_off<type_t<int>>::magic, int>);
-    CHECK(take_off<value_t<6>>::magic == 6);
-}
-
-TEST_CASE("is any same of") {
-    CHECK(is_any_same_of_v<int, double, int>);
-    CHECK(!is_any_same_of_v<char, double, int>);
-}
-
-TEST_CASE("overload") {
-    struct TO1 { int operator()(int) { return 1; } };
-    struct TO2 { int operator()(double) { return 2; } };
-    struct TO3 { int operator()(bool) { return 3; } };
-    auto test_op = overload(TO1{}, TO2{}, TO3{});
-    CHECK(test_op(0) == 1);
-    CHECK(test_op(0.) == 2);
-    CHECK(test_op(true) == 3);
-}
 
 namespace{
 template <typename T, typename T2 = int>
@@ -63,6 +29,39 @@ template <typename T, typename T2 = int>
 struct TestTmplB {};
 template <int>
 struct TestTmplC {};
+}
+
+TEST_CASE("is spec of") {
+    CHECK(is_spec_of_v<TestTmpl<int>, TestTmpl>);
+    CHECK(is_spec_of_v<TestTmpl<int>, Tmpl1>);
+    CHECK(!is_spec_of_v<TestTmpl<int>, Tmpl2>);
+
+    CHECK(is_spec_of_v<Tmpl1<int>, TestTmpl>);
+    CHECK(is_spec_of_v<Tmpl1<int>, Tmpl1>);
+    CHECK(!is_spec_of_v<Tmpl1<int>, Tmpl2>);
+
+    CHECK(is_spec_of_v<Tmpl2<int>, TestTmpl>);
+    CHECK(is_spec_of_v<Tmpl2<int>, Tmpl1>);
+    CHECK(!is_spec_of_v<Tmpl2<int>, Tmpl2>);
+
+    CHECK(!is_spec_of_v<int, TestTmpl>);
+    CHECK(!is_spec_of_v<Tmpl1<int>, TestTmplB>);
+}
+
+namespace{
+template <auto...>
+struct TestVTmpl {};
+template <auto... Args>
+using TmplV1 = TestVTmpl<Args...>;
+}
+
+TEST_CASE("is value spec of") {
+    CHECK(is_value_spec_of_v<TestVTmpl<1, 2, 3>, TestVTmpl>);
+    CHECK(is_value_spec_of_v<TestVTmpl<1, 2, 3>, TmplV1>);
+    CHECK(is_value_spec_of_v<TmplV1<1, 2, 3>, TestVTmpl>);
+    CHECK(is_value_spec_of_v<TmplV1<1, 2, 3>, TmplV1>);
+
+    CHECK(!is_value_spec_of_v<int, TestVTmpl>);
 }
 
 TEST_CASE("wrap tmpl") {

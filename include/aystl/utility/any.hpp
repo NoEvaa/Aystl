@@ -25,6 +25,13 @@
 #include "aystl/core/type_traits/template.hpp"
 #include "aystl/core/arch/compare.hpp"
 #include "aystl/core/arch/allocator.hpp"
+#include "aystl/core/arch/copy.hpp"
+
+#define _AY_ANY_METHOD_TEMPLATE() template <typename ATp, ValueTType MemSz>
+#define _AY_ANY_METHOD_NAME(func_name) AyBasicAny<ATp, MemSz>::func_name
+#define _AY_ANY_DECL_METHOD(ret_tp, func_name)                                                     \
+    _AY_ANY_METHOD_TEMPLATE()                                                                      \
+    ret_tp _AY_ANY_METHOD_NAME(func_name)
 
 namespace iin {
 namespace _any_impl {
@@ -247,7 +254,7 @@ template <typename T, typename AnyT>
 struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
     static void * call(AnyT & _src, AnyT & _dst) noexcept {
         if constexpr (_is_inp_value_v<T>) {
-            if constexpr (std::is_trivially_copy_assignable_v<T>) {
+            if constexpr (std::is_trivially_copyable_v<T>) {
                 std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
             } else {
                 std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
@@ -276,8 +283,7 @@ struct _AyAnyHandler<_Action::kEqualTo, T, AnyT> {
 };
 }
 
-template <typename ATp, ValueTType MemSz>
-bool AyBasicAny<ATp, MemSz>::operator==(_self_type const & rhs) const noexcept {
+_AY_ANY_DECL_METHOD(bool, operator==)(_self_type const & rhs) const noexcept {
     if (this == &rhs) [[unlikely]] { return true; }
     if (!this->hasValue()) {
         return !rhs.hasValue();
@@ -290,9 +296,9 @@ bool AyBasicAny<ATp, MemSz>::operator==(_self_type const & rhs) const noexcept {
     return bool(this->__callAct(_Action::kEqualTo, &rhs._getSelf()));
 }
 
-template <typename ATp, ValueTType MemSz>
+_AY_ANY_METHOD_TEMPLATE()
 template <typename _Tp, typename... _Args>
-_Tp & AyBasicAny<ATp, MemSz>::setValue(_Args &&... _args) {
+_Tp & _AY_ANY_METHOD_NAME(setValue)(_Args &&... _args) {
     using _type = std::decay_t<_Tp>;
     this->reset();
     this->_initAct<_type>();
@@ -300,8 +306,7 @@ _Tp & AyBasicAny<ATp, MemSz>::setValue(_Args &&... _args) {
         *this, std::forward<_Args>(_args)...);
 }
 
-template <typename ATp, ValueTType MemSz>
-void AyBasicAny<ATp, MemSz>::swap(_self_type & _ot) noexcept
+_AY_ANY_DECL_METHOD(void, swap)(_self_type & _ot) noexcept
 {
     if (this == &_ot) [[unlikely]] { return; }
     if (this->hasValue() && _ot.hasValue()) {
@@ -316,9 +321,9 @@ void AyBasicAny<ATp, MemSz>::swap(_self_type & _ot) noexcept
     }
 }
 
-template <typename ATp, ValueTType MemSz>
+_AY_ANY_METHOD_TEMPLATE()
 template <typename _Tp>
-void AyBasicAny<ATp, MemSz>::_initAct() noexcept {
+void _AY_ANY_METHOD_NAME(_initAct)() noexcept {
     m_act = [](_Action _a, _self_type const * _this, _self_type * _ot) -> void * {
         switch (_a) {
         case _Action::kTypeInfo:
@@ -339,33 +344,30 @@ void AyBasicAny<ATp, MemSz>::_initAct() noexcept {
     };
 }
 
-template <typename ATp, ValueTType MemSz>
-void * AyBasicAny<ATp, MemSz>::_callAct(_Action _action, _self_type * _other) const {
+_AY_ANY_DECL_METHOD(void *, _callAct)(_Action _action, _self_type * _other) const {
     if (this->hasValue()) {
         return this->__callAct(_action, _other);
     }
     return nullptr;
 }
 
-template <typename ATp, ValueTType MemSz>
-void * AyBasicAny<ATp, MemSz>::__callAct(_Action _action, _self_type * _other) const {
+_AY_ANY_DECL_METHOD(void *, __callAct)(_Action _action, _self_type * _other) const {
     return this->m_act(_action, this, _other);
 }
 
-template <typename ATp, ValueTType MemSz>
+_AY_ANY_METHOD_TEMPLATE()
 template <typename _Tp>
-_Tp * AyBasicAny<ATp, MemSz>::__toPtr() const noexcept {
+_Tp * _AY_ANY_METHOD_NAME(__toPtr)() const noexcept {
     return static_cast<_Tp *>(this->__callAct(_Action::kGet));
 }
 
-template <typename ATp, ValueTType MemSz>
+_AY_ANY_METHOD_TEMPLATE()
 template <typename _Tp>
-_Tp AyBasicAny<ATp, MemSz>::__toValue() const noexcept {
+_Tp _AY_ANY_METHOD_NAME(__toValue)() const noexcept {
     return static_cast<_Tp>(*__toPtr<std::remove_reference_t<_Tp>>());
 }
 
-template <typename ATp, ValueTType MemSz>
-void AyBasicAny<ATp, MemSz>::_copyTo(_self_type * _dst) const {
+_AY_ANY_DECL_METHOD(void, _copyTo)(_self_type * _dst) const {
     if (this->hasValue()) {
         this->__copyTo(_dst);
     } else {
@@ -373,14 +375,12 @@ void AyBasicAny<ATp, MemSz>::_copyTo(_self_type * _dst) const {
     }
 }
 
-template <typename ATp, ValueTType MemSz>
-void AyBasicAny<ATp, MemSz>::__copyTo(_self_type * _dst) const {
+_AY_ANY_DECL_METHOD(void, __copyTo)(_self_type * _dst) const {
     this->__callAct(_Action::kCopyTo, _dst);
     _dst->m_act = this->m_act;
 }
 
-template <typename ATp, ValueTType MemSz>
-void AyBasicAny<ATp, MemSz>::_moveTo(_self_type * _dst) noexcept {
+_AY_ANY_DECL_METHOD(void, _moveTo)(_self_type * _dst) noexcept {
     if (this->hasValue()) {
         this->__moveTo(_dst);
     } else {
@@ -388,10 +388,13 @@ void AyBasicAny<ATp, MemSz>::_moveTo(_self_type * _dst) noexcept {
     }
 }
 
-template <typename ATp, ValueTType MemSz>
-void AyBasicAny<ATp, MemSz>::__moveTo(_self_type * _dst) noexcept {
+_AY_ANY_DECL_METHOD(void, __moveTo)(_self_type * _dst) noexcept {
     this->__callAct(_Action::kMoveTo, _dst);
     _dst->m_act = std::exchange(m_act, nullptr);
 }
 }
+
+#undef _AY_ANY_DECL_METHOD
+#undef _AY_ANY_METHOD_TEMPLATE
+#undef _AY_ANY_METHOD_NAME
 

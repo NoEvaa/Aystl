@@ -22,12 +22,13 @@
 #include <type_traits>
 #include <utility>
 
+#include "aystl/core/type_traits/common.hpp"
 #include "aystl/core/type_traits/template.hpp"
 #include "aystl/core/arch/compare.hpp"
 #include "aystl/core/arch/allocator.hpp"
 #include "aystl/core/arch/copy.hpp"
 
-#define _AY_ANY_METHOD_TEMPLATE() template <typename ATp, ValueTType MemSz>
+#define _AY_ANY_METHOD_TEMPLATE() template <typename ATp, ConstantTType<std::size_t> MemSz>
 #define _AY_ANY_METHOD_NAME(func_name) AyBasicAny<ATp, MemSz>::func_name
 #define _AY_ANY_DECL_METHOD(ret_tp, func_name)                                                     \
     _AY_ANY_METHOD_TEMPLATE()                                                                      \
@@ -48,11 +49,11 @@ enum class _Action {
     kEqualTo,
 };
 
-template <_Action, typename...> struct _AyAnyHandler;
+template <_Action, typename...> struct AyAnyHandler;
 }
 
 template <class AllocT = AyAlloc<void>,
-    ValueTType MemSizeVT = constant_t<std::size_t, 32U>>
+    ConstantTType<std::size_t> MemSizeVT = constant_t<std::size_t, 32U>>
 class AyBasicAny {
     using _self_type = AyBasicAny<AllocT, MemSizeVT>;
     using _Action    = _any_impl::_Action;
@@ -61,7 +62,10 @@ class AyBasicAny {
     template <typename _ATp, typename _MemSz>
     using _self_tmpl = AyBasicAny<_ATp, _MemSz>;
     template <_Action _action, typename... _Tps>
-    using _hnd_tmpl = _any_impl::_AyAnyHandler<_action, _Tps...>;
+    using _hnd_tmpl = _any_impl::AyAnyHandler<_action, _Tps...>;
+
+    template <_Action, typename ...>
+    friend struct _any_impl::AyAnyHandler;
 
 public:
     using size_type  = std::size_t;
@@ -171,9 +175,6 @@ private:
 private:
     _act_type m_act = nullptr;
     void *    m_buf[kBufSize] = {};
-
-    template <_Action, typename ...>
-    friend struct _any_impl::_AyAnyHandler;
 };
 using AyAny = AyBasicAny<>;
 
@@ -182,14 +183,14 @@ template <typename T>
 inline constexpr bool _is_inp_value_v = value_t<(sizeof(T) <= AyAny::kBufByteSize)>::value;
 
 template <typename T>
-struct _AyAnyHandler<_Action::kTypeInfo, T> {
+struct AyAnyHandler<_Action::kTypeInfo, T> {
     static void * call() noexcept {
         return const_cast<void *>(static_cast<void const *>(&typeid(T)));
     }
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kGet, T, AnyT> {
+struct AyAnyHandler<_Action::kGet, T, AnyT> {
     static void * call(AnyT & _self) noexcept { 
         if constexpr (_is_inp_value_v<T>) {
             return static_cast<void *>(&_self.m_buf);
@@ -200,7 +201,7 @@ struct _AyAnyHandler<_Action::kGet, T, AnyT> {
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kCreate, T, AnyT> {
+struct AyAnyHandler<_Action::kCreate, T, AnyT> {
     using alloc_type = replace_tmpl_args_t<typename AnyT::alloc_type, T>;
     using atraits_type = AyAllocTraits<alloc_type>;
 
@@ -221,7 +222,7 @@ struct _AyAnyHandler<_Action::kCreate, T, AnyT> {
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kDestroy, T, AnyT> {
+struct AyAnyHandler<_Action::kDestroy, T, AnyT> {
     using alloc_type = replace_tmpl_args_t<typename AnyT::alloc_type, T>;
     using atraits_type = AyAllocTraits<alloc_type>;
 
@@ -241,27 +242,35 @@ struct _AyAnyHandler<_Action::kDestroy, T, AnyT> {
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kCopyTo, T, AnyT> {
+struct AyAnyHandler<_Action::kCopyTo, T, AnyT> {
+    using clref_type = add_clref_t<T>;
+
     static void * call(AnyT const & _src, AnyT & _dst) {
-        using _lref_type = std::add_lvalue_reference_t<T>;
-        _AyAnyHandler<_Action::kCreate, T, AnyT>::call(
-            _dst, _src.template __toValue<_lref_type>());
+        AyAnyHandler<_Action::kCreate, T, AnyT>::call(
+            _dst, _src.template __toValue<clref_type>());
         return nullptr;
     }
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
+struct AyAnyHandler<_Action::kMoveTo, T, AnyT> {
+    using memcpy_type = AyCpy<CpyOp::kMemory, T>;
+    using move_type = AyCpy<CpyOp::kMove, T>;
+
     static void * call(AnyT & _src, AnyT & _dst) noexcept {
         if constexpr (_is_inp_value_v<T>) {
-            if constexpr (std::is_trivially_copyable_v<T>) {
+            if constexpr (memcpy_type::value) {
                 std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
+                /*memcpy_type{}(
+                    _dst.template __toValue<T &>(), 
+                    _src.template __toValue<T const &>()
+                );*/
             } else {
                 std::memcpy(&_dst.m_buf, &_src.m_buf, sizeof(T));
-                //using _rref_type = std::add_rvalue_reference_t<T>;
-                //_AyAnyHandler<_Action::kCreate, T, AnyT>::call(
-                //    _dst, _src.template __toValue<_rref_type>());
-                //_AyAnyHandler<_Action::kDestroy, T, AnyT>::call(_src);
+                /*move_type{}(
+                    _dst.template __toValue<T &>(), 
+                    _src.template __toValue<T &&>()
+                );*/
             }
         } else {
             std::memcpy(&_dst.m_buf, &_src.m_buf, AnyT::kPtrSize);
@@ -271,8 +280,8 @@ struct _AyAnyHandler<_Action::kMoveTo, T, AnyT> {
 };
 
 template <typename T, typename AnyT>
-struct _AyAnyHandler<_Action::kEqualTo, T, AnyT> {
-    static void * call(AnyT const & lhs, AnyT const & rhs) {
+struct AyAnyHandler<_Action::kEqualTo, T, AnyT> {
+    static void * call(AnyT const & lhs, AnyT const & rhs) noexcept {
         if (AyCmp<CmpOp::kEQ, T>{}(
             lhs.template __toValue<T const &>(),
             rhs.template __toValue<T const &>())) {
@@ -306,8 +315,7 @@ _Tp & _AY_ANY_METHOD_NAME(setValue)(_Args &&... _args) {
         *this, std::forward<_Args>(_args)...);
 }
 
-_AY_ANY_DECL_METHOD(void, swap)(_self_type & _ot) noexcept
-{
+_AY_ANY_DECL_METHOD(void, swap)(_self_type & _ot) noexcept {
     if (this == &_ot) [[unlikely]] { return; }
     if (this->hasValue() && _ot.hasValue()) {
         _self_type temp;

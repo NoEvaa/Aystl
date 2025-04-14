@@ -60,6 +60,8 @@
 #define AY_DISABLE_COPY(_class) AY_DECL_CLASS_COPY(_class, delete)
 #define AY_DISABLE_MOVE(_class) AY_DECL_CLASS_MOVE(_class, delete)
 
+#define AY_FORWARD(_v) std::forward<decltype(_v)>(_v)
+
 namespace iin {
 // compare operation
 enum class CmpOp : std::uint8_t {

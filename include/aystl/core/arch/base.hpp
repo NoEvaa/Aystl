@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include "aystl/global/common.hpp"
 #include "aystl/core/type_traits/template.hpp"
 
 namespace iin {
@@ -27,7 +28,7 @@ using build_arch_t = typename ArchT::template build<Ts...>;
 
 template <typename ArchT, typename... Ts>
 decltype(auto) ayArchCall(auto &&... _args) {
-    return build_arch_t<ArchT, Ts...>{}(std::forward<decltype(_args)>(_args)...);
+    return build_arch_t<ArchT, Ts...>{}(AY_FORWARD(_args)...);
 }
 
 template <template <typename...> typename Tmpl>

@@ -19,6 +19,7 @@
 using namespace iin;
 
 TEST_CASE("AyAny") {
+    CHECK(sizeof(AyBasicAny<AyAlloc<void>, value_t<std::size_t{16U}>>) == 16);
     CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 32U>>) == 32);
     CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 64U>>) == 64);
     CHECK(sizeof(AyBasicAny<AyAlloc<void>, constant_t<std::size_t, 128U>>) == 128);
@@ -79,7 +80,7 @@ struct _TestC {
     _TestC() { v_ = 1; }
     _TestC(int) { v_ = 2; }
     _TestC(int, int) { v_ = 3; }
-    ~_TestC() { w_ = 1; };
+    ~_TestC() { ++w_; };
 
     _TestC(_TestC const &) { v_ = 5; }
     _TestC(_TestC &&) { v_ = 6; }
@@ -92,32 +93,59 @@ int _TestC::w_ = 0;
 }
 
 TEST_CASE("AyAny class") {
-    CHECK(_TestC::v_ == 0);
+    _TestC::v_ = 0;
+    _TestC::w_ = 0;
     
     AyAny a = _TestC{};
     CHECK(_TestC::v_ == 6);
-    auto t = _TestC{1};
-    CHECK(_TestC::v_ == 2);
-    a = t;
-    CHECK(_TestC::v_ == 5);
-    a.setValue<_TestC>();
-    CHECK(_TestC::v_ == 1);
-    a.setValue<_TestC>(1, 2);
-    CHECK(_TestC::v_ == 3);
-
-    _TestC::v_ = 0;
-    AyAny b = a;
-    CHECK(_TestC::v_ == 5);
-
-    _TestC::v_ = 0;
-    b = std::move(a);
-    CHECK(_TestC::v_ == 0);
-
-    {
-        AyAny c = _TestC{};
-        _TestC::w_ = 0;
-    }
     CHECK(_TestC::w_ == 1);
+
+    SECTION("s1") {
+        auto t = _TestC{1};
+        CHECK(_TestC::v_ == 2);
+        CHECK(_TestC::w_ == 1);
+
+        auto b = t;
+        CHECK(_TestC::v_ == 5);
+        CHECK(_TestC::w_ == 1);
+
+        a.setValue<_TestC>();
+        CHECK(_TestC::v_ == 1);
+        CHECK(_TestC::w_ == 2);
+        a.setValue<_TestC>(1, 2);
+        CHECK(_TestC::v_ == 3);
+        CHECK(_TestC::w_ == 3);
+    }
+
+    SECTION("s2") {
+        AyAny a1 = a;
+        CHECK(_TestC::v_ == 5);
+        CHECK(_TestC::w_ == 1);
+
+        AyAny a2 = std::move(a);
+        CHECK(_TestC::v_ == 6);
+        CHECK(_TestC::w_ == 1);
+        CHECK(!a.hasValue());
+
+        a1 = a2;
+        CHECK(_TestC::v_ == 5);
+        CHECK(_TestC::w_ == 2);
+
+        a1 = std::move(a2);
+        CHECK(_TestC::v_ == 6);
+        CHECK(_TestC::w_ == 3);
+    }
+
+    SECTION("s3") {
+        {
+            AyAny c = _TestC{};
+            _TestC::w_ = 0;
+        }
+        CHECK(_TestC::w_ == 1);
+
+        a.reset();
+        CHECK(_TestC::w_ == 2);
+    }
 }
 
 TEST_CASE("AyAny shared_ptr") {

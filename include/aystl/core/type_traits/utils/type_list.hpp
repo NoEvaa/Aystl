@@ -66,6 +66,21 @@ struct type_list {
 
     template <IntSeqType RangeT>
     using slice = decltype(__sliceImpl(std::declval<RangeT>()));
+    template <auto lpos, auto rpos>
+    using slice_range = slice<ct_range_t<
+        static_cast<int>(lpos), static_cast<int>(rpos)>>;
+
+    template <typename... _Ts> using push_back = type_list<Ts..., _Ts...>;
+    template <typename... _Ts> using push_front = type_list<_Ts..., Ts...>;
+
+    template <std::size_t pos, typename... _Ts>
+    requires CtCmp<CmpOp::kLE, pos, size()>
+    using insert = type_list_cat_t<
+        slice_range<0, pos>, type_list<_Ts...>, slice_range<pos, size()>>;
+
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
+    using erase = type_list_cat_t<
+        slice_range<0, pos>, slice_range<pos + 1, size()>>;
 };
 }
 

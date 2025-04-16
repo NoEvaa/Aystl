@@ -41,6 +41,9 @@ struct template_t {
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;
 
+template <std::size_t pos>
+struct placeholder_t : value_t<pos> {};
+
 template <typename T>
 concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
 template <typename T>

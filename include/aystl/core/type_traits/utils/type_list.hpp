@@ -23,17 +23,6 @@
 #include "aystl/core/type_traits/utils/int_seq.hpp"
 
 namespace iin {
-template <typename... Ts>
-struct type_list {
-    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
-
-    template <template <typename...> class Tmpl>
-    using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
-
-    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
-};
-
 template <typename T>
 inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>
@@ -54,15 +43,29 @@ struct type_list_cat<T1, T2, Ts...> {
         Ts...
     >::type;
 };
-
-template <TypeListType T, std::integral IntT, IntT... Is>
-auto _type_list_slice(int_seq<IntT, Is...>)
-    -> type_list<typename T::template get<static_cast<std::size_t>(Is)>...>; 
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
 
-template <TypeListType T, IntSeqType RangeT>
-using type_list_slice_t = decltype(detail::_type_list_slice<T>(std::declval<RangeT>()));
+template <typename... Ts>
+struct type_list {
+    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
+
+    template <template <typename...> class Tmpl>
+    using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
+
+    template <template <typename...> class Tmpl>
+    using map = type_list<Tmpl<Ts>...>;
+
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
+    using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
+
+    template <std::integral IntT, IntT... Is>
+    static auto __sliceImpl(int_seq<IntT, Is...>)
+        -> type_list<get<static_cast<std::size_t>(Is)>...>; 
+
+    template <IntSeqType RangeT>
+    using slice = decltype(__sliceImpl(std::declval<RangeT>()));
+};
 }
 

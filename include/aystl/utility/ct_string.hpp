@@ -58,8 +58,7 @@ struct ct_str {
     constexpr auto cbegin() const noexcept { return value.cbegin(); }
     constexpr auto cend() const noexcept { return value.cend(); }
 
-    constexpr std::basic_string_view<CharT> view() const noexcept
-    {
+    constexpr std::basic_string_view<CharT> view() const noexcept {
         return std::basic_string_view<CharT>(*this);
     }
 

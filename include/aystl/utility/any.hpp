@@ -89,6 +89,7 @@ public:
     AyBasicAny(_ValT && _v) noexcept { this->setValue<_Tp>(AY_FORWARD(_v)); }
 
     template <typename _ValT, typename... _Args>
+    requires std::is_same_v<_ValT, std::decay_t<_ValT>>
     explicit AyBasicAny(std::in_place_type_t<_ValT>, _Args &&... _args) noexcept {
         this->setValue<_ValT>(AY_FORWARD(_args)...);
     }
@@ -151,7 +152,7 @@ public:
     template <typename _Tp, typename... _Args>
     _Tp & setValue(_Args &&...);
 
-    void swap(_self_type &) noexcept;
+    void swap(_self_type &&) noexcept;
     
 private:
     _self_type & _getSelf() const noexcept { return const_cast<_self_type &>(*this); }
@@ -318,9 +319,9 @@ _Tp & _AY_ANY_METHOD_NAME(setValue)(_Args &&... _args) {
     return _create_type::call(*this, AY_FORWARD(_args)...);
 }
 
-_AY_ANY_DECL_METHOD(void, swap)(_self_type & _ot) noexcept {
+_AY_ANY_DECL_METHOD(void, swap)(_self_type && _ot) noexcept {
     if (this == &_ot) [[unlikely]] { return; }
-    _ot = std::exchange(*this, _ot);
+    _ot = std::exchange(*this, std::move(_ot));
 }
 
 _AY_ANY_METHOD_TEMPLATE()

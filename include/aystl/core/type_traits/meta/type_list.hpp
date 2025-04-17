@@ -24,20 +24,8 @@
 
 namespace iin {
 namespace detail {
-template <typename... Ts, typename... Ts2>
-auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)
-    -> type_list<Ts..., Ts2...>;
-
 template <TypeListType T, TypeListType... Ts>
 struct type_list_cat : type_t<T> {};
-
-template <TypeListType T1, TypeListType T2, TypeListType... Ts>
-struct type_list_cat<T1, T2, Ts...> {
-    using type = typename type_list_cat<
-        decltype(_concat_two_type_list(std::declval<T1>(), std::declval<T2>())),
-        Ts...
-    >::type;
-};
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
@@ -77,5 +65,19 @@ struct type_list {
     using erase = type_list_cat_t<
         slice_range<0, pos>, slice_range<pos + 1>>;
 };
+
+namespace detail {
+template <typename... Ts, typename... Ts2>
+auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)
+    -> type_list<Ts..., Ts2...>;
+
+template <TypeListType T1, TypeListType T2, TypeListType... Ts>
+struct type_list_cat<T1, T2, Ts...> {
+    using type = typename type_list_cat<
+        decltype(_concat_two_type_list(std::declval<T1>(), std::declval<T2>())),
+        Ts...
+    >::type;
+};
+}
 }
 

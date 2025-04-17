@@ -41,5 +41,9 @@ constexpr bool is_type_v = std::is_void_v<std::void_t<T>>;
 
 template <typename T>
 using add_clref_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
+
+// T == TgtT ? RepT : T
+template <typename T, typename TgtT, typename RepT>
+using replace_if_same_as_t = std::conditional_t<std::is_same_v<T, TgtT>, RepT, T>;
 }
 

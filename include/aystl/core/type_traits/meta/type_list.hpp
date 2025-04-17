@@ -17,6 +17,7 @@
 
 #include <tuple>
 
+#include "aystl/core/type_traits/common.hpp"
 #include "aystl/core/type_traits/meta/meta.hpp"
 #include "aystl/core/type_traits/meta/template.hpp"
 #include "aystl/core/type_traits/utils/compare.hpp"
@@ -71,6 +72,9 @@ struct type_list {
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using erase = type_list_cat_t<
         slice_range<0, pos>, slice_range<pos + 1>>;
+
+    template <typename OldT, typename NewT>
+    using replace = map<replace_if_same_as_t, OldT, NewT>;
 };
 
 namespace detail {

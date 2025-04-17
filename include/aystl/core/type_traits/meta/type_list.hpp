@@ -20,8 +20,8 @@
 #include "aystl/core/type_traits/common.hpp"
 #include "aystl/core/type_traits/meta/meta.hpp"
 #include "aystl/core/type_traits/meta/template.hpp"
+#include "aystl/core/type_traits/meta/int_seq.hpp"
 #include "aystl/core/type_traits/utils/compare.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
 
 namespace iin {
 namespace detail {
@@ -41,9 +41,9 @@ using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
 
 template <typename... Ts>
 struct type_list {
-    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
-
     using type = type_list<Ts...>;
+
+    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
 
     template <template <typename...> class Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;

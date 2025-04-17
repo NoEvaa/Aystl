@@ -17,5 +17,7 @@
 
 #include "aystl/core/type_traits/utils/enum.hpp"
 #include "aystl/core/type_traits/utils/compare.hpp"
-#include "aystl/core/type_traits/utils/int_seq.hpp"
+
+#include "aystl/core/type_traits/utils/memory.hpp"
+#include "aystl/core/type_traits/utils/optional.hpp"
 

@@ -58,6 +58,7 @@ concept TemplateTType = detail::is_template_tp<T>::value;
 
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;
+template <typename T, T... Vs> struct constant_list;
 template <typename T>
 inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>

@@ -19,7 +19,7 @@
 
 namespace iin {
 template<typename T, T... Vs>
-struct ct_basic_seq {
+struct constant_list {
     using value_type = T;
     using type       = value_list<Vs...>;
 

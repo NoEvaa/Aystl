@@ -15,11 +15,11 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/utils/basic_seq.hpp"
+#include "aystl/core/type_traits/meta/constant_list.hpp"
 
 namespace iin {
 template<typename CharT, CharT... Cs>
-struct char_seq : ct_basic_seq<CharT, Cs...> {};
+struct char_seq : constant_list<CharT, Cs...> {};
 
 namespace detail {
 template <typename T>

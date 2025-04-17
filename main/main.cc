@@ -56,11 +56,6 @@ void foo(auto &&... args) {
 
 int main()
 {
-
-    using xxxx = type_list<int, char, bool>::filter<value_t_list<false, true>>;
-    std::cout << getTypeName<xxxx>() << std::endl;
-    return 0;
-
     int i = 3;
     foo(1, i, std::move(i));
 

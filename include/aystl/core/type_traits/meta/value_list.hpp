@@ -20,6 +20,8 @@
 namespace iin {
 template <auto... Vs>
 struct value_list {
+    using type = value_list<Vs...>;
+
     static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
 
     template <template <auto...> class Tmpl>

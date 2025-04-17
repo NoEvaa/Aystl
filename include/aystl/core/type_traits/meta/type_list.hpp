@@ -26,6 +26,10 @@ namespace iin {
 namespace detail {
 template <TypeListType T, TypeListType... Ts>
 struct type_list_cat : type_t<T> {};
+
+template <TypeListType OutT, TypeListType InT,
+    template <typename...> typename Tmpl, typename... TmplArgs>
+struct type_list_map;
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
@@ -34,11 +38,14 @@ template <typename... Ts>
 struct type_list {
     static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
 
+    using type = type_list<Ts...>;
+
     template <template <typename...> class Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
 
-    template <template <typename...> class Tmpl>
-    using map = type_list<Tmpl<Ts>...>;
+    template <template <typename...> class Tmpl, typename... TmplArgs>
+    using map = typename detail::type_list_map<
+        type_list<>, type, Tmpl, TmplArgs...>::type;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
@@ -77,6 +84,24 @@ struct type_list_cat<T1, T2, Ts...> {
         decltype(_concat_two_type_list(std::declval<T1>(), std::declval<T2>())),
         Ts...
     >::type;
+};
+
+template <typename... Ts, template <typename...> typename Tmpl>
+struct type_list_map<type_list<>, type_list<Ts...>, Tmpl>
+    : type_t<type_list<Tmpl<Ts>...>> {};
+
+template <TypeListType OutT, template <typename...> typename Tmpl, typename... TmplArgs>
+requires CtCmp<CmpOp::kGT, sizeof...(TmplArgs), 0>
+struct type_list_map<OutT, type_list<>, Tmpl, TmplArgs...> : type_t<OutT> {};
+
+template <typename FirstT, typename... RestTs, typename... OutTs,
+    template <typename...> typename Tmpl, typename... TmplArgs>
+requires CtCmp<CmpOp::kGT, sizeof...(TmplArgs), 0>
+struct type_list_map<type_list<OutTs...>,
+    type_list<FirstT, RestTs...>, Tmpl, TmplArgs...> {
+    using _in_type  = type_list<RestTs...>;
+    using _out_type = type_list<OutTs..., Tmpl<FirstT, TmplArgs...>>;
+    using type = typename type_list_map<_out_type, _in_type, Tmpl, TmplArgs...>::type;
 };
 }
 }

@@ -34,13 +34,6 @@ TEST_CASE("type list cat") {
     CHECK(std::is_same_v<type_list_cat_t<_test_list_1, _test_list_1>, _test_list_11>);
 }
 
-TEST_CASE("type list get") {
-    using _test_list_1 = type_list<int, double, char>;
-    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
-    CHECK(std::is_same_v<_test_list_1::get<1>, double>);
-    CHECK(std::is_same_v<_test_list_1::get<2>, char>);
-}
-
 TEST_CASE("type list slice") {
     using _test_list_1 = type_list<int, double, char, float>;
     CHECK(std::is_same_v<_test_list_1::slice<ct_range_t<1, 1>>, type_list<>>);
@@ -85,5 +78,15 @@ TEST_CASE("type list erase") {
     CHECK(std::is_same_v<_test_list_1::erase<0>, type_list<double, char>>);
     CHECK(std::is_same_v<_test_list_1::erase<1>, type_list<int, char>>);
     CHECK(std::is_same_v<_test_list_1::erase<2>, type_list<int, double>>);
+}
+
+TEST_CASE("type list wrapped & map") {
+    using _test_list_1 = type_list<int, double, char>;
+
+    CHECK(std::is_same_v<_test_list_1::wrapped<std::tuple>, std::tuple<int, double, char>>);
+
+    CHECK(std::is_same_v<_test_list_1::map<type_t>, type_list<type_t<int>, type_t<double>, type_t<char>>>);
+    CHECK(std::is_same_v<_test_list_1::map<std::tuple, float, bool>, type_list<
+          std::tuple<int, float, bool>, std::tuple<double, float, bool>, std::tuple<char, float, bool>>>);
 }
 

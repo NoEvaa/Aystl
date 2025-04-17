@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/template.hpp"
+#include "aystl/core/type_traits/meta/template.hpp"
 
 using namespace iin;
 

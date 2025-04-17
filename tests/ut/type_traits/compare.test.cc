@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/compare.hpp"
+#include "aystl/core/type_traits/utils/compare.hpp"
 
 using namespace iin;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/core/type_traits/meta.hpp"
+#include "aystl/core/type_traits/meta/meta.hpp"
 
 using namespace iin;
 
@@ -39,7 +39,7 @@ TEST_CASE("value_t") {
 }
 
 TEST_CASE("constant_t") {
-    CHECK(std::is_same_v<constant_t<int, 6>::type, int>);
+    CHECK(std::is_same_v<constant_t<int, 6>::value_type, int>);
     CHECK(constant_t<int, 6>::value == 6);
 
     CHECK(ConstantTType<value_t<int(1)>, int>);

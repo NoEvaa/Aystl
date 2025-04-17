@@ -15,8 +15,8 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
+#include "aystl/core/type_traits/meta/meta.hpp"
+#include "aystl/core/type_traits/utils/compare.hpp"
 
 namespace iin {
 template <std::integral T, T... Is>

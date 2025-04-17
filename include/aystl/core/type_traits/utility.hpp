@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,7 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/meta.hpp"
-
-namespace iin {
-/*
-template <typename... Ts>
-decltype(auto) invokeTmplFunc(auto _fn, auto... args) {
-    using ret_type = decltype(_fn.template operator()<take_off<Ts>::magic...>(args...));
-    if constexpr (std::is_void_v<ret_type>) {
-        _fn.template operator()<take_off<Ts>::magic...>(args...);
-        return;
-    } else {
-        return _fn.template operator()<take_off<Ts>::magic...>(args...);
-    }
-}
-*/
-}
+#include "aystl/core/type_traits/utils/enum.hpp"
+#include "aystl/core/type_traits/utils/compare.hpp"
+#include "aystl/core/type_traits/utils/int_seq.hpp"
 

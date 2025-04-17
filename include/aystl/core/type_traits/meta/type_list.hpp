@@ -17,17 +17,12 @@
 
 #include <tuple>
 
-#include "aystl/core/type_traits/meta.hpp"
-#include "aystl/core/type_traits/compare.hpp"
-#include "aystl/core/type_traits/template.hpp"
+#include "aystl/core/type_traits/meta/meta.hpp"
+#include "aystl/core/type_traits/meta/template.hpp"
+#include "aystl/core/type_traits/utils/compare.hpp"
 #include "aystl/core/type_traits/utils/int_seq.hpp"
 
 namespace iin {
-template <typename T>
-inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
-template <typename T>
-concept TypeListType = is_type_list_v<T>;
-
 namespace detail {
 template <typename... Ts, typename... Ts2>
 auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)
@@ -66,7 +61,7 @@ struct type_list {
 
     template <IntSeqType RangeT>
     using slice = decltype(__sliceImpl(std::declval<RangeT>()));
-    template <auto lpos, auto rpos>
+    template <auto lpos, auto rpos = size()>
     using slice_range = slice<ct_range_t<
         static_cast<int>(lpos), static_cast<int>(rpos)>>;
 
@@ -76,11 +71,11 @@ struct type_list {
     template <std::size_t pos, typename... _Ts>
     requires CtCmp<CmpOp::kLE, pos, size()>
     using insert = type_list_cat_t<
-        slice_range<0, pos>, type_list<_Ts...>, slice_range<pos, size()>>;
+        slice_range<0, pos>, type_list<_Ts...>, slice_range<pos>>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using erase = type_list_cat_t<
-        slice_range<0, pos>, slice_range<pos + 1, size()>>;
+        slice_range<0, pos>, slice_range<pos + 1>>;
 };
 }
 

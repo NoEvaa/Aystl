@@ -49,16 +49,15 @@ struct template_t {
 };
 namespace detail {
 template <typename T>
-struct is_template_t : std::false_type {};
+struct is_template_tp : std::false_type {};
 template <template <typename...> class Tmpl>
-struct is_template_t<template_t<Tmpl>> : std::true_type {};
+struct is_template_tp<template_t<Tmpl>> : std::true_type {};
 }
 template <typename T>
-concept TemplateTType = detail::is_template_t<T>::value;
+concept TemplateTType = detail::is_template_tp<T>::value;
 
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;
-
 template <typename T>
 inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
 template <typename T>
@@ -72,6 +71,8 @@ template <std::size_t pos>
 struct placeholder_t : value_t<pos> {};
 template <std::size_t pos>
 using plh_t = placeholder_t<pos>;
+template <typename T>
+inline constexpr bool is_placeholder_v = is_value_spec_of_v<T, placeholder_t>;
 
 template <typename T>
 struct take_off { using magic = T; };

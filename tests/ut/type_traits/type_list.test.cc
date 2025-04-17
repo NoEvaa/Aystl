@@ -15,6 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/core/type_traits/meta/type_list.hpp"
+#include "aystl/core/type_traits/meta/value_list.hpp"
 
 using namespace iin;
 
@@ -95,5 +96,33 @@ TEST_CASE("type list replace") {
 
     CHECK(std::is_same_v<_test_list_1::replace<double, float>, type_list<int, float, int, char>>);
     CHECK(std::is_same_v<_test_list_1::replace<int, bool>, type_list<bool, double, bool, char>>);
+
+    CHECK(std::is_same_v<type_list<plh_t<1>, plh_t<3>, plh_t<1>>::replace<plh_t<1>, int>,
+          type_list<int, plh_t<3>, int>>);
+}
+
+TEST_CASE("type list filter") {
+    using _test_list_1 = type_list<int, bool, char>;
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true>>, type_list<int>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false>>, type_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true>>, type_list<bool>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, false>>, type_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, false>>, type_list<bool>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, true>>, type_list<char>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, true>>, type_list<int, char>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, true>>, type_list<bool, char>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true>>, type_list<int, bool, char>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true, true>>, type_list<int, bool, char>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false, true>>, type_list<int, bool>>);
 }
 

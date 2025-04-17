@@ -31,6 +31,10 @@ struct type_list_cat : type_t<T> {};
 template <TypeListType OutT, TypeListType InT,
     template <typename...> typename Tmpl, typename... TmplArgs>
 struct type_list_map;
+
+template <TypeListType InT, TypeListType FilterT,
+    TypeListType OutT = type_list<>, std::size_t pos = 0>
+struct type_list_filter : type_t<OutT> {};
 }
 template <TypeListType... Ts>
 using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
@@ -75,6 +79,9 @@ struct type_list {
 
     template <typename OldT, typename NewT>
     using replace = map<replace_if_same_as_t, OldT, NewT>;
+
+    template <TypeListType FilterT>
+    using filter = typename detail::type_list_filter<type, FilterT>::type;
 };
 
 namespace detail {
@@ -105,7 +112,20 @@ struct type_list_map<type_list<OutTs...>,
     type_list<FirstT, RestTs...>, Tmpl, TmplArgs...> {
     using _in_type  = type_list<RestTs...>;
     using _out_type = type_list<OutTs..., Tmpl<FirstT, TmplArgs...>>;
+
     using type = typename type_list_map<_out_type, _in_type, Tmpl, TmplArgs...>::type;
+};
+
+template <TypeListType InT, TypeListType FilterT, TypeListType OutT, std::size_t pos>
+requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, FilterT::size()>
+struct type_list_filter<InT, FilterT, OutT, pos> {
+    using _elem_type  = typename InT::template get<pos>;
+    using _filt_type  = typename FilterT::template get<pos>;
+    using _t_out_type = typename OutT::template push_back<_elem_type>;
+    using _f_out_type = OutT;
+    using _out_type   = std::conditional_t<_filt_type::value, _t_out_type, _f_out_type>;
+
+    using type = typename type_list_filter<InT, FilterT, _out_type, pos + 1>::type;
 };
 }
 }

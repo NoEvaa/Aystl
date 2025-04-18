@@ -32,6 +32,9 @@ template <TypeListType OutT, TypeListType InT,
     template <typename...> typename Tmpl, typename... TmplArgs>
 struct type_list_map;
 
+template <TypeListType T, std::size_t pos, typename DefaultT>
+struct type_list_get : type_t<DefaultT> {};
+
 template <TypeListType InT, TypeListType MaskT,
     TypeListType OutT = type_list<>, std::size_t pos = 0>
 struct type_list_filter : type_t<OutT> {};
@@ -54,6 +57,8 @@ struct type_list {
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<std::tuple>>;
+    template <std::size_t pos, typename DefaultT = null_t>
+    using get = typename detail::type_list_get<type, pos, DefaultT>::type;
 
     template <std::integral IntT, IntT... Is>
     static auto __sliceImpl(int_seq<IntT, Is...>)
@@ -115,6 +120,10 @@ struct type_list_map<type_list<OutTs...>,
 
     using type = typename type_list_map<_out_type, _in_type, Tmpl, TmplArgs...>::type;
 };
+
+template <TypeListType T, std::size_t pos, typename DefaultT>
+requires CtCmp<CmpOp::kLT, pos, T::size()>
+struct type_list_get<T, pos, DefaultT> : type_t<typename T::template at<pos>> {};
 
 template <TypeListType InT, TypeListType MaskT, TypeListType OutT, std::size_t pos>
 requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>

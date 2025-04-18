@@ -54,8 +54,20 @@ void foo(auto &&... args) {
     (ppp(std::forward<decltype(args)>(args)), ...);
 }
 
+template <typename... Ts>
+using to_value_list = value_list<Ts::value...>;
+
 int main()
 {
+    using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
+    using xxx2 = xxx1::map<is_placeholder>;
+    using xxx3 = xxx1::filter<xxx2>;
+    std::cout << getTypeName<xxx3>() << std::endl;
+    using xxx4 = xxx3::wrapped<to_value_list>;
+    std::cout << getTypeName<xxx4>() << std::endl;
+
+    return 0;
+
     int i = 3;
     foo(1, i, std::move(i));
 

@@ -47,6 +47,11 @@ TEST_CASE("type list at & get") {
     CHECK(std::is_same_v<_test_list_1::at<0>, int>);
     CHECK(std::is_same_v<_test_list_1::at<1>, double>);
     CHECK(std::is_same_v<_test_list_1::at<2>, char const &>);
+
+    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
+    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
+    CHECK(std::is_same_v<_test_list_1::get<3>, null_t>);
+    CHECK(std::is_same_v<_test_list_1::get<10, void>, void>);
 }
 
 TEST_CASE("type list slice") {

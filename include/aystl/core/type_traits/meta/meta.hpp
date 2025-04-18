@@ -73,7 +73,7 @@ struct placeholder_t : value_t<pos> {};
 template <std::size_t pos>
 using plh_t = placeholder_t<pos>;
 template <typename T>
-inline constexpr bool is_placeholder_v = is_value_spec_of_v<T, placeholder_t>;
+using is_placeholder = is_value_spec_of<T, placeholder_t>;
 
 template <typename T>
 struct take_off { using magic = T; };

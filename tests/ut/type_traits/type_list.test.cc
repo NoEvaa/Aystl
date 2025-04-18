@@ -20,13 +20,10 @@
 using namespace iin;
 
 TEST_CASE("type list") {
-    using _test_list_1 = type_list<int, double, char const &>;
+    using _test_list_1 = type_list<int, double, char>;
     CHECK(type_list<>::size() == 0);
     CHECK(_test_list_1::size() == 3);
     CHECK(is_type_list_v<type_list<>>);
-    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
-    CHECK(std::is_same_v<_test_list_1::get<1>, double>);
-    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
 }
 
 TEST_CASE("type list cat") {
@@ -43,6 +40,13 @@ TEST_CASE("type list wrapped & map") {
     CHECK(std::is_same_v<_test_list_1::map<type_t>, type_list<type_t<int>, type_t<double>, type_t<char>>>);
     CHECK(std::is_same_v<_test_list_1::map<std::tuple, float, bool>, type_list<
           std::tuple<int, float, bool>, std::tuple<double, float, bool>, std::tuple<char, float, bool>>>);
+}
+
+TEST_CASE("type list at & get") {
+    using _test_list_1 = type_list<int, double, char const &>;
+    CHECK(std::is_same_v<_test_list_1::at<0>, int>);
+    CHECK(std::is_same_v<_test_list_1::at<1>, double>);
+    CHECK(std::is_same_v<_test_list_1::at<2>, char const &>);
 }
 
 TEST_CASE("type list slice") {

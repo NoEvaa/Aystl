@@ -32,7 +32,7 @@ template <TypeListType OutT, TypeListType InT,
     template <typename...> typename Tmpl, typename... TmplArgs>
 struct type_list_map;
 
-template <TypeListType InT, TypeListType FilterT,
+template <TypeListType InT, TypeListType MaskT,
     TypeListType OutT = type_list<>, std::size_t pos = 0>
 struct type_list_filter : type_t<OutT> {};
 }
@@ -41,7 +41,7 @@ using type_list_cat_t = typename detail::type_list_cat<Ts...>::type;
 
 template <typename... Ts>
 struct type_list {
-    using type = type_list<Ts...>;
+    using type = type_list;
 
     static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
 
@@ -53,11 +53,11 @@ struct type_list {
         type_list<>, type, Tmpl, TmplArgs...>::type;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using get = std::tuple_element_t<pos, wrapped<std::tuple>>;
+    using at = std::tuple_element_t<pos, wrapped<std::tuple>>;
 
     template <std::integral IntT, IntT... Is>
     static auto __sliceImpl(int_seq<IntT, Is...>)
-        -> type_list<get<static_cast<std::size_t>(Is)>...>; 
+        -> type_list<at<static_cast<std::size_t>(Is)>...>; 
 
     template <IntSeqType RangeT>
     using slice = decltype(__sliceImpl(std::declval<RangeT>()));
@@ -80,8 +80,8 @@ struct type_list {
     template <typename OldT, typename NewT>
     using replace = map<replace_if_same_as_t, OldT, NewT>;
 
-    template <TypeListType FilterT>
-    using filter = typename detail::type_list_filter<type, FilterT>::type;
+    template <TypeListType MaskT>
+    using filter = typename detail::type_list_filter<type, MaskT>::type;
 };
 
 namespace detail {
@@ -116,16 +116,17 @@ struct type_list_map<type_list<OutTs...>,
     using type = typename type_list_map<_out_type, _in_type, Tmpl, TmplArgs...>::type;
 };
 
-template <TypeListType InT, TypeListType FilterT, TypeListType OutT, std::size_t pos>
-requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, FilterT::size()>
-struct type_list_filter<InT, FilterT, OutT, pos> {
-    using _elem_type  = typename InT::template get<pos>;
-    using _filt_type  = typename FilterT::template get<pos>;
+template <TypeListType InT, TypeListType MaskT, TypeListType OutT, std::size_t pos>
+requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>
+struct type_list_filter<InT, MaskT, OutT, pos> {
+    using _elem_type  = typename InT::template at<pos>;
+    using _filt_type  = typename MaskT::template at<pos>;
     using _t_out_type = typename OutT::template push_back<_elem_type>;
     using _f_out_type = OutT;
-    using _out_type   = std::conditional_t<_filt_type::value, _t_out_type, _f_out_type>;
+    using _out_type   = std::conditional_t<
+        static_cast<bool>(_filt_type::value), _t_out_type, _f_out_type>;
 
-    using type = typename type_list_filter<InT, FilterT, _out_type, pos + 1>::type;
+    using type = typename type_list_filter<InT, MaskT, _out_type, pos + 1>::type;
 };
 }
 }

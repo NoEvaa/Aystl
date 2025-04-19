@@ -20,6 +20,7 @@
 
 namespace iin {
 template <std::integral T, T... Is>
+//using int_seq = constant_list<T, Is...>;
 using int_seq = std::integer_sequence<T, Is...>;
 
 namespace detail {

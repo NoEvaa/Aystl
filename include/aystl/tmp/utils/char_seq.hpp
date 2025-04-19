@@ -19,15 +19,11 @@
 
 namespace iin {
 template<typename CharT, CharT... Cs>
-struct char_seq : constant_list<CharT, Cs...> {};
+requires is_any_same_of_v<CharT, char, wchar_t,
+    char8_t, char16_t, char32_t>
+using char_seq = constant_list<CharT, Cs...>;
 
-namespace detail {
 template <typename T>
-struct is_char_seq : std::false_type {};
-template<typename CharT, CharT... Cs>
-struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
-}
-template <typename T>
-concept CharSeqType = detail::is_char_seq<T>::value;
+concept CharSeqType = is_constant_spec_of_v<T, char_seq>;
 }
 

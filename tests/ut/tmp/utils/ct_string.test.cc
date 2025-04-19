@@ -65,12 +65,12 @@ TEST_CASE("ct_str: template specialization") {
 
 TEST_CASE("char_seq: basic") {
     using test_cs_1 = char_seq_t<test_str_1::value>;
-    CHECK(detail::is_char_seq<test_cs_1>::value);
+    CHECK(CharSeqType<test_cs_1>);
     CHECK(test_cs_1::size() == 11);
     CHECK(std::is_same_v<test_cs_1, char_seq<char,
           'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
-    CHECK(std::is_same_v<test_cs_1::type,
+    CHECK(std::is_same_v<test_cs_1::value_wrapped<value_list>,
           value_list<'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
     CHECK(char_seq_t<test_str_2::value>::size() == 0);

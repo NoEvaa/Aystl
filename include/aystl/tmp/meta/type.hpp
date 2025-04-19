@@ -32,6 +32,9 @@ template <typename T, T _v>
 struct constant_t {
     using value_type = T;
     static constexpr value_type value = _v;
+
+    template <typename _Tp>
+    using cast = constant_t<_Tp, static_cast<_Tp>(_v)>;
 };
 template <auto _v>
 struct value_t : constant_t<decltype(_v), _v> {};
@@ -41,7 +44,8 @@ concept TypeTType = requires { detail::is_type_v<type_t<typename T::type>>; };
 template <typename T>
 concept ValueTType = requires { detail::is_type_v<value_t<T::value>>; };
 template <typename T, typename VT>
-concept ConstantTType = ValueTType<T> && std::is_same_v<typename T::value_type, VT>;
+concept ConstantTType = ValueTType<T>
+    && std::is_same_v<typename T::value_type, VT>;
 
 template <template <typename...> class Tmpl>
 struct template_t {
@@ -66,6 +70,9 @@ template <typename T>
 concept ValueListType = is_value_spec_of_v<T, value_list>;
 template <typename T>
 concept ConstantListType = is_constant_spec_of_v<T, constant_list>;
+template <typename T, typename VT>
+concept ConstantListTType = ConstantListType<T>
+    && std::is_same_v<typename T::value_type, VT>;
 
 template <std::size_t pos>
 struct placeholder_t : value_t<pos> {};

@@ -22,15 +22,22 @@ namespace detail {
 template <ConstantListType T, ConstantListType... Ts>
 struct constant_list_cat : type_t<T> {};
 }
-template <ConstantListType... Ts>
-using constant_list_cat_t = typename detail::constant_list_cat<Ts...>::type;
 
 template<typename T, T... Vs>
 struct constant_list {
+    using type       = constant_list;
     using value_type = T;
-    using type       = value_list<Vs...>;
 
     static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+
+    template <typename _Tp>
+    using cast = constant_list<_Tp, static_cast<_Tp>(Vs)...>;
+
+    template <template <auto...> class Tmpl>
+    using value_wrapped = Tmpl<Vs...>;
+
+    template <ConstantListTType<T>... _Ts>
+    using concat = typename detail::constant_list_cat<type, _Ts...>::type;
 };
 
 namespace detail {

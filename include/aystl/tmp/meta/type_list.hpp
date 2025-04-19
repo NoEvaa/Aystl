@@ -60,12 +60,11 @@ struct type_list {
     template <std::size_t pos, typename DefaultT = null_t>
     using get = typename detail::type_list_get<type, pos, DefaultT>::type;
 
-    template <std::integral IntT, IntT... Is>
-    static auto __sliceImpl(int_seq<IntT, Is...>)
-        -> type_list<at<static_cast<std::size_t>(Is)>...>; 
+    template <TypeListType... _Ts>
+    using concat = type_list_cat_t<type, _Ts...>;
 
     template <IntSeqType RangeT>
-    using slice = decltype(__sliceImpl(std::declval<RangeT>()));
+    using slice = typename RangeT::template map<at>;
     template <auto lpos, auto rpos = size()>
     using slice_range = slice<ct_range_t<
         static_cast<int>(lpos), static_cast<int>(rpos)>>;
@@ -79,8 +78,7 @@ struct type_list {
         slice_range<0, pos>, type_list<_Ts...>, slice_range<pos>>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using erase = type_list_cat_t<
-        slice_range<0, pos>, slice_range<pos + 1>>;
+    using erase = type_list_cat_t<slice_range<0, pos>, slice_range<pos + 1>>;
 
     template <typename OldT, typename NewT>
     using replace = map<replace_if_same_as_t, OldT, NewT>;

@@ -20,36 +20,20 @@
 
 namespace iin {
 template <std::integral T, T... Is>
-//using int_seq = constant_list<T, Is...>;
-using int_seq = std::integer_sequence<T, Is...>;
+using int_seq = constant_list<T, Is...>;
 
-namespace detail {
 template <typename T>
-struct is_int_seq : std::false_type {};
-template <std::integral T, T... Is>
-struct is_int_seq<int_seq<T, Is...>> : std::true_type {};
-}
-template <typename T>
-concept IntSeqType = detail::is_int_seq<T>::value;
+concept IntSeqType = is_constant_spec_of_v<T, int_seq>;
 
 template <std::size_t... Is>
 using index_seq = int_seq<std::size_t, Is...>;
 
+template <typename T>
+concept IndexSeqType = ConstantListTType<T, std::size_t>;
+
 namespace detail {
-template <std::integral T, T... Is, std::integral T2, T2... Is2>
-auto _concat_two_int_seqs(int_seq<T, Is...>, int_seq<T2, Is2...>)
-    -> int_seq<T, Is..., Is2...>;
-
-template <IntSeqType T, IntSeqType... Ts>
-struct int_seq_cat : type_t<T> {};
-
-template <IntSeqType T1, IntSeqType T2, IntSeqType... Ts>
-struct int_seq_cat<T1, T2, Ts...> {
-    using type = typename int_seq_cat<
-        decltype(_concat_two_int_seqs(std::declval<T1>(), std::declval<T2>())),
-        Ts...
-    >::type;
-};
+template <typename T, T... Is>
+auto _toIntSeq(std::integer_sequence<T, Is...>) -> int_seq<T, Is...>;
 
 template <std::integral T, T _start, T _stop, T _step, T... Is>
 struct monotone_int_seq : type_t<int_seq<T, Is...>> {};
@@ -63,17 +47,14 @@ struct monotone_int_seq<T, _start, _stop, _step, Is...> {
         _start + _step, _stop, _step, Is..., _start>::type;
 };
 }
-
-template <IntSeqType... Ts>
-using int_seq_cat_t = typename detail::int_seq_cat<Ts...>::type;
+template<size_t N>
+using make_index_seq = decltype(detail::_toIntSeq(
+    std::declval<std::make_index_sequence<N>>()));
 
 template <std::integral T, T... Is>
 using monotone_int_seq_t = typename detail::monotone_int_seq<T, Is...>::type;
 
 template <int _start, int _stop, int _step = 1>
 using ct_range_t = monotone_int_seq_t<int, _start, _stop, _step>;
-
-template <IntSeqType... Ts>
-struct int_seq_list : type_list<Ts...> {};
 }
 

@@ -34,7 +34,10 @@ struct constant_list {
     using cast = constant_list<_Tp, static_cast<_Tp>(Vs)...>;
 
     template <template <auto...> class Tmpl>
-    using value_wrapped = Tmpl<Vs...>;
+    using wrapped = Tmpl<Vs...>;
+
+    template <template <auto> class Tmpl>
+    using map = type_list<Tmpl<Vs>...>;
 
     template <ConstantListTType<T>... _Ts>
     using concat = typename detail::constant_list_cat<type, _Ts...>::type;

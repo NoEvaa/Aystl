@@ -25,10 +25,13 @@ TEST_CASE("type list") {
     CHECK(TypeListType<type_list<>>);
 }
 
-TEST_CASE("type list cat") {
+TEST_CASE("type list concat") {
     using _test_list_1 = type_list<int, double>;
     using _test_list_11 = type_list<int, double, int, double>;
+    using _test_list_111 = type_list<int, double, int, double, int, double>;
     CHECK(std::is_same_v<type_list_cat_t<_test_list_1, _test_list_1>, _test_list_11>);
+    CHECK(std::is_same_v<_test_list_1::concat<_test_list_1>, _test_list_11>);
+    CHECK(std::is_same_v<_test_list_1::concat<_test_list_1, _test_list_1>, _test_list_111>);
 }
 
 TEST_CASE("type list wrapped & map") {

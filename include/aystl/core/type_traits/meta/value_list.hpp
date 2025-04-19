@@ -20,7 +20,7 @@
 namespace iin {
 template <auto... Vs>
 struct value_list {
-    using type = value_list<Vs...>;
+    using type = value_list;
 
     static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
 

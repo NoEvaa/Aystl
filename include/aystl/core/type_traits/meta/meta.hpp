@@ -59,14 +59,11 @@ concept TemplateTType = detail::is_template_tp<T>::value;
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;
 template <typename T, T... Vs> struct constant_list;
+
 template <typename T>
-inline constexpr bool is_type_list_v = is_spec_of_v<T, type_list>;
+concept TypeListType = is_spec_of_v<T, type_list>;
 template <typename T>
-concept TypeListType = is_type_list_v<T>;
-template <typename T>
-inline constexpr bool is_value_list_v = is_value_spec_of_v<T, value_list>;
-template <typename T>
-concept ValueListType = is_value_list_v<T>;
+concept ValueListType = is_value_spec_of_v<T, value_list>;
 
 template <std::size_t pos>
 struct placeholder_t : value_t<pos> {};

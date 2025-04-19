@@ -18,6 +18,13 @@
 #include "aystl/tmp/meta/type.hpp"
 
 namespace iin {
+namespace detail {
+template <ConstantListType T, ConstantListType... Ts>
+struct constant_list_cat : type_t<T> {};
+}
+template <ConstantListType... Ts>
+using constant_list_cat_t = typename detail::constant_list_cat<Ts...>::type;
+
 template<typename T, T... Vs>
 struct constant_list {
     using value_type = T;
@@ -25,5 +32,19 @@ struct constant_list {
 
     static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
 };
+
+namespace detail {
+template <typename T, T... Vs1, T... Vs2>
+auto _concat_two_constant_list( constant_list<T, Vs1...>, constant_list<T, Vs2...>)
+    -> constant_list<T, Vs1..., Vs2...>;
+
+template <ConstantListType T1, ConstantListType T2, ConstantListType... Ts>
+struct constant_list_cat<T1, T2, Ts...> {
+    using type = typename constant_list_cat<
+        decltype(_concat_two_constant_list(std::declval<T1>(), std::declval<T2>())),
+        Ts...
+    >::type;
+};
+}
 }
 

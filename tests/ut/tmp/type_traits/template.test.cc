@@ -21,8 +21,8 @@ using namespace iin;
 namespace{
 template <typename T, typename T2 = int>
 struct TestTmpl {};
-template <typename... Args>
-using Tmpl1 = TestTmpl<Args...>;
+template <typename... Ts>
+using Tmpl1 = TestTmpl<Ts...>;
 template <typename T>
 using Tmpl2 = TestTmpl<T>;
 template <typename T, typename T2 = int>
@@ -51,8 +51,8 @@ TEST_CASE("is spec of") {
 namespace{
 template <auto...>
 struct TestVTmpl {};
-template <auto... Args>
-using TmplV1 = TestVTmpl<Args...>;
+template <auto... Vs>
+using TmplV1 = TestVTmpl<Vs...>;
 }
 
 TEST_CASE("is value spec of") {
@@ -62,6 +62,22 @@ TEST_CASE("is value spec of") {
     CHECK(is_value_spec_of_v<TmplV1<1, 2, 3>, TmplV1>);
 
     CHECK(!is_value_spec_of_v<int, TestVTmpl>);
+}
+
+namespace{
+template <typename T, T...>
+struct TestCTmpl {};
+template <typename T, T... Vs>
+using TmplC1 = TestCTmpl<T, Vs...>;
+}
+
+TEST_CASE("is constant spec of") {
+    CHECK(is_constant_spec_of_v<TestCTmpl<int, 1, 2, 3>, TestCTmpl>);
+    CHECK(is_constant_spec_of_v<TestCTmpl<int, 1, 2, 3>, TmplC1>);
+    CHECK(is_constant_spec_of_v<TmplC1<int, 1, 2, 3>, TestCTmpl>);
+    CHECK(is_constant_spec_of_v<TmplC1<int, 1, 2, 3>, TmplC1>);
+
+    CHECK(!is_constant_spec_of_v<int, TestCTmpl>);
 }
 
 TEST_CASE("wrap tmpl") {

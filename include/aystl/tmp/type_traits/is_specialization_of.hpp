@@ -46,5 +46,18 @@ struct is_value_spec_of<Tmpl1<args...>, Tmpl2> : std::true_type {};
 
 template <typename T, template <auto...> typename Tmpl>
 inline constexpr bool is_value_spec_of_v = is_value_spec_of<T, Tmpl>::value;
+
+template <typename T, template <typename _Tp, _Tp...> typename Tmpl>
+struct is_constant_spec_of : std::false_type {};
+
+template <
+    template <typename _Tp1, _Tp1...> typename Tmpl1,
+    template <typename _Tp2, _Tp2...> typename Tmpl2,
+    typename ArgT, ArgT... args>
+requires std::same_as<Tmpl1<ArgT, args...>, Tmpl2<ArgT, args...>>
+struct is_constant_spec_of<Tmpl1<ArgT, args...>, Tmpl2> : std::true_type {};
+
+template <typename T, template <typename _Tp, _Tp...> typename Tmpl>
+inline constexpr bool is_constant_spec_of_v = is_constant_spec_of<T, Tmpl>::value;
 }
 

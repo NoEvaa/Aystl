@@ -57,8 +57,17 @@ void foo(auto &&... args) {
 template <typename... Ts>
 using to_value_list = value_list<Ts::value...>;
 
+template <std::integral T, T... Is>
+using i_seq = constant_list<T, Is...>;
+
+
+
 int main()
 {
+    auto vvv1 = is_constant_spec_of_v<i_seq<int, 1, 2>, constant_list>;
+    auto vvv2 = is_constant_spec_of_v<constant_list<int, 1, 2>, i_seq>;
+    std::cout << vvv1 << "  " << vvv2 << std::endl;
+
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
     using xxx2 = xxx1::map<is_placeholder>;
     using xxx3 = xxx1::filter<xxx2>;

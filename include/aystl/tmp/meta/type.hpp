@@ -64,6 +64,8 @@ template <typename T>
 concept TypeListType = is_spec_of_v<T, type_list>;
 template <typename T>
 concept ValueListType = is_value_spec_of_v<T, value_list>;
+template <typename T>
+concept ConstantListType = is_constant_spec_of_v<T, constant_list>;
 
 template <std::size_t pos>
 struct placeholder_t : value_t<pos> {};

@@ -55,25 +55,49 @@ void foo(auto &&... args) {
 }
 
 template <typename... Ts>
-using to_value_list = value_list<Ts::value...>;
+using to_index_seq = index_seq<Ts::value...>;
 
-template <std::integral T, T... Is>
-using i_seq = constant_list<T, Is...>;
+template <typename _Cmp, typename T, T... Vs>
+struct ct_sorted_array {
+    using element_type = T;
+    using value_type   = std::array<element_type, sizeof...(Vs)>;
 
+    static constexpr value_type value = [] {
+        value_type temp = { Vs... };
+        std::sort(temp.begin(), temp.end(), _Cmp{});
+        return temp;
+    }();
 
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
+    static constexpr element_type at = std::get<pos>(value);
+};
+
+template <typename _Cmp, typename T, T... Vs>
+auto _constantListSortImpl(constant_list<T, Vs...>) {
+    using sorted_type = ct_sorted_array<_Cmp, T, Vs...>;
+    //make_index_seq<sizeof...(Vs)>::template map<sorted_type::template at>;
+    return []<auto... Is>(index_seq<Is...>) {
+        return constant_list<T, sorted_type::template at<Is>...>{};
+    }(make_index_seq<sizeof...(Vs)>{});
+}
+
+template <ConstantListType T, typename _Cmp = std::less<>>
+using constant_list_sort_t = decltype(_constantListSortImpl<_Cmp>(std::declval<T>()));
 
 int main()
 {
-    auto vvv1 = is_constant_spec_of_v<i_seq<int, 1, 2>, constant_list>;
-    auto vvv2 = is_constant_spec_of_v<constant_list<int, 1, 2>, i_seq>;
-    std::cout << vvv1 << "  " << vvv2 << std::endl;
-
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
     using xxx2 = xxx1::map<is_placeholder>;
     using xxx3 = xxx1::filter<xxx2>;
     std::cout << getTypeName<xxx3>() << std::endl;
-    using xxx4 = xxx3::wrapped<to_value_list>;
+    using xxx4 = xxx3::wrapped<to_index_seq>;
     std::cout << getTypeName<xxx4>() << std::endl;
+    using xxx5 = constant_list_sort_t<xxx4>;
+    std::cout << getTypeName<xxx5>() << std::endl;
+    using xxx6 = xxx5::type_map<plh_t>;
+    std::cout << getTypeName<xxx6>() << std::endl;
 
     return 0;
 

@@ -39,9 +39,11 @@ struct constant_list {
     template <template <auto> class Tmpl>
     requires ConstantTType<Tmpl<value_type{}>, value_type>
     using map = constant_list<value_type, Tmpl<Vs>::value...>;
-
     template <template <auto> class Tmpl>
     using type_map = type_list<Tmpl<Vs>...>;
+    template <template <auto> class Tmpl>
+    requires ValueTType<Tmpl<value_type{}>>
+    using value_map = value_list<Tmpl<Vs>::value...>;
 
     template <ConstantListTType<value_type>... _Ts>
     using concat = typename detail::constant_list_cat<type, _Ts...>::type;

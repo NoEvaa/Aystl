@@ -22,6 +22,7 @@
 #include <algorithm>
 
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/utils/char_seq.hpp"
 
 namespace iin {
 template <typename CharT, std::size_t N>

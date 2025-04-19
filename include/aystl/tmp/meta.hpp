@@ -20,5 +20,4 @@
 #include "aystl/tmp/meta/value_list.hpp"
 #include "aystl/tmp/meta/constant_list.hpp"
 #include "aystl/tmp/meta/int_seq.hpp"
-#include "aystl/tmp/meta/char_seq.hpp"
 

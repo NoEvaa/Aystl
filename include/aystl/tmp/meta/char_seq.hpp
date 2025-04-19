@@ -15,9 +15,19 @@
  */
 #pragma once
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+#include "aystl/tmp/meta/constant_list.hpp"
+
+namespace iin {
+template<typename CharT, CharT... Cs>
+struct char_seq : constant_list<CharT, Cs...> {};
+
+namespace detail {
+template <typename T>
+struct is_char_seq : std::false_type {};
+template<typename CharT, CharT... Cs>
+struct is_char_seq<char_seq<CharT, Cs...>> : std::true_type {};
+}
+template <typename T>
+concept CharSeqType = detail::is_char_seq<T>::value;
+}
 

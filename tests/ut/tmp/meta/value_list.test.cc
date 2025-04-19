@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/tmp/meta.hpp"
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+using namespace iin;
+
+TEST_CASE("value list") {
+    CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(!TypeListType<value_list<>>);
+    CHECK(!ValueListType<type_list<>>);
+    CHECK(ValueListType<value_list<>>);
+}
 

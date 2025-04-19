@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,15 @@
  */
 #pragma once
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+#include "aystl/tmp/meta/type.hpp"
+
+namespace iin {
+template<typename T, T... Vs>
+struct constant_list {
+    using value_type = T;
+    using type       = value_list<Vs...>;
+
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+};
+}
 

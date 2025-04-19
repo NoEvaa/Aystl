@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/tmp/type_traits.hpp"
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+using namespace iin;
+
+namespace {
+enum class _TestEnumClass {};
+enum _TestEnum {};
+}
+
+TEST_CASE("is enum") {
+    CHECK(std::is_enum_v<_TestEnumClass>);
+    CHECK(std::is_enum_v<_TestEnum>);
+}
+
+TEST_CASE("is enum class") {
+    CHECK(is_enum_class_v<_TestEnumClass>);
+    CHECK(!is_enum_class_v<_TestEnum>);
+}
 

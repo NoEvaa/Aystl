@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <memory>
 
-#include "aystl/core/type_traits/meta.hpp"
+#include "aystl/tmp/meta.hpp"
 #include "aystl/core/arch/base.hpp"
 
 namespace iin {

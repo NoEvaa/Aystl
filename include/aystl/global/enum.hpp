@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include "aystl/core/type_traits/utils/enum.hpp"
+#include "aystl/tmp/type_traits/enum.hpp"
 
 namespace iin {
 template <EnumClassType T>

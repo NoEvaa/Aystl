@@ -17,7 +17,7 @@
 
 #include <type_traits>
 
-#include "aystl/core/type_traits/utils/enum.hpp"
+#include "aystl/tmp/type_traits/enum.hpp"
 
 namespace iin {
 template <EnumType Ty, typename RetTy = Ty>

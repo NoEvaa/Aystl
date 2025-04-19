@@ -15,9 +15,12 @@
  */
 #pragma once
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+#include <optional>
+
+#include "aystl/tmp/meta.hpp"
+
+namespace iin {
+template <typename T>
+using wrap_optional_t = wrap_tmpl_t<std::optional, T>;
+}
 

@@ -64,7 +64,7 @@ struct type_list {
     using concat = type_list_cat_t<type, _Ts...>;
 
     template <IntSeqType RangeT>
-    using slice = typename RangeT::template map<at>;
+    using slice = typename RangeT::template type_map<at>;
     template <auto lpos, auto rpos = size()>
     using slice_range = slice<ct_range_t<
         static_cast<int>(lpos), static_cast<int>(rpos)>>;

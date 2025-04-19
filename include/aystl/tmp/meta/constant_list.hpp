@@ -37,15 +37,19 @@ struct constant_list {
     using wrapped = Tmpl<Vs...>;
 
     template <template <auto> class Tmpl>
-    using map = type_list<Tmpl<Vs>...>;
+    requires ConstantTType<Tmpl<value_type{}>, value_type>
+    using map = constant_list<value_type, Tmpl<Vs>::value...>;
 
-    template <ConstantListTType<T>... _Ts>
+    template <template <auto> class Tmpl>
+    using type_map = type_list<Tmpl<Vs>...>;
+
+    template <ConstantListTType<value_type>... _Ts>
     using concat = typename detail::constant_list_cat<type, _Ts...>::type;
 };
 
 namespace detail {
 template <typename T, T... Vs1, T... Vs2>
-auto _concat_two_constant_list( constant_list<T, Vs1...>, constant_list<T, Vs2...>)
+auto _concat_two_constant_list(constant_list<T, Vs1...>, constant_list<T, Vs2...>)
     -> constant_list<T, Vs1..., Vs2...>;
 
 template <ConstantListType T1, ConstantListType T2, ConstantListType... Ts>

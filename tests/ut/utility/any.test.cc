@@ -16,6 +16,8 @@
 #include "testlib.h"
 #include "aystl/utility/any.hpp"
 
+#include <array>
+
 using namespace iin;
 
 TEST_CASE("AyAny") {

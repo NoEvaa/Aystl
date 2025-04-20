@@ -9,6 +9,7 @@
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
+#include "aystl/tmp/utils/ct_sorted_array.hpp"
 
 
 using namespace iin;
@@ -54,9 +55,23 @@ void foo(auto &&... args) {
     (ppp(std::forward<decltype(args)>(args)), ...);
 }
 
+template <typename... Ts>
+using to_index_seq = index_seq<Ts::value...>;
+
 int main()
 {
-    using xxxx = template_t<std::vector>::template wrap<any_t>;
+    using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
+    using xxx2 = xxx1::map<is_placeholder>;
+    using xxx3 = xxx1::filter<xxx2>;
+    std::cout << getTypeName<xxx3>() << std::endl;
+    using xxx4 = xxx3::wrapped<to_index_seq>;
+    std::cout << getTypeName<xxx4>() << std::endl;
+    using xxx5 = xxx4::sort<>;
+    std::cout << getTypeName<xxx5>() << std::endl;
+    using xxx6 = xxx5::type_map<plh_t>;
+    std::cout << getTypeName<xxx6>() << std::endl;
+
+    return 0;
 
     int i = 3;
     foo(1, i, std::move(i));

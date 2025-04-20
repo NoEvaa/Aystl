@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/tmp/utils/ct_sorted_array.hpp"
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+using namespace iin;
+
+TEST_CASE("ct_sorted_array") {
+    CHECK(std::is_same_v<ct_sorted_array<std::less<>, int, 1, 5, 2, 0>::to_constant_list,
+          int_seq<int, 0, 1, 2, 5>>);
+    CHECK(std::is_same_v<ct_sorted_array<std::greater<>, int, 1, 5, 2, 0>::to_constant_list,
+          int_seq<int, 5, 2, 1, 0>>);
+}
 

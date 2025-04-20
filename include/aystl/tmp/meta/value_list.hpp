@@ -15,9 +15,23 @@
  */
 #pragma once
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+#include "aystl/tmp/meta/type.hpp"
+
+namespace iin {
+template <auto... Vs>
+struct value_list {
+    using type = value_list;
+
+    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+
+    template <template <auto...> class Tmpl>
+    using wrapped = Tmpl<Vs...>;
+
+    template <template <typename...> class Tmpl>
+    using type_wrapped = Tmpl<value_t<Vs>...>;
+};
+
+template <auto... Vs>
+using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
+}
 

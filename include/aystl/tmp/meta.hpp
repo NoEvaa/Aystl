@@ -15,9 +15,9 @@
  */
 #pragma once
 
-#include "aystl/config.hpp"
-#include "aystl/global.hpp"
-#include "aystl/tmp.hpp"
-#include "aystl/arch.hpp"
-#include "aystl/math.hpp"
+#include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/meta/type_list.hpp"
+#include "aystl/tmp/meta/value_list.hpp"
+#include "aystl/tmp/meta/constant_list.hpp"
+#include "aystl/tmp/meta/int_seq.hpp"
 

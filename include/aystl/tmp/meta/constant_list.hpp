@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include <algorithm>
+#include <functional>
 
 #include "aystl/tmp/meta/type.hpp"
 
@@ -50,7 +50,7 @@ struct constant_list {
     requires ValueTType<Tmpl<value_type{}>>
     using value_map = value_list<Tmpl<Vs>::value...>;
     template <typename _Tp, template <auto> class Tmpl>
-    requires ConstantTType<Tmpl<_Tp{}>, _Tp>
+    requires ConstantTType<Tmpl<value_type{}>, _Tp>
     using constant_map = constant_list<_Tp, Tmpl<Vs>::value...>;
 
     template <ConstantListTType<value_type>... _Ts>

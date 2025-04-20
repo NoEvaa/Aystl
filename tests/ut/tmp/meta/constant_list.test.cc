@@ -15,6 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/utils/ct_sorted_array.hpp"
 
 using namespace iin;
 
@@ -45,19 +46,28 @@ TEST_CASE("constant list cast") {
 
 template <int _v>
 using _test_pow = value_t<_v * _v>;
+template <int _v>
+using _test_to_char = constant_t<char, _v>;
 
 TEST_CASE("constant list wrapped & map") {
     CHECK(std::is_same_v<test_seq_1::wrapped<value_list>, value_list<1, 2, 3>>);
 
     CHECK(std::is_same_v<test_seq_1::map<_test_pow>, constant_list<int, 1, 4, 9>>);
-
-    CHECK(std::is_same_v<test_seq_1::type_map<value_t>,
-          type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(std::is_same_v<test_seq_1::type_map<value_t>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(std::is_same_v<test_seq_1::value_map<_test_pow>, value_list<1, 4, 9>>);
+    CHECK(std::is_same_v<test_seq_1::constant_map<char, _test_to_char>, constant_list<char, 1, 2, 3>>);
 }
 
 TEST_CASE("constant list concat") {
     CHECK(std::is_same_v<test_seq_0::concat<test_seq_1>, test_seq_1>);
     CHECK(std::is_same_v<test_seq_1::concat<test_seq_2>, test_seq_1_2>);
     CHECK(std::is_same_v<test_seq_3::concat<test_seq_3>, test_seq_3_3>);
+}
+
+TEST_CASE("constant list sort") {
+    using _test_seq_1 = constant_list<int, 2, 5, 1, -1, 0>;
+
+    CHECK(std::is_same_v<_test_seq_1::sort<>, constant_list<int, -1, 0, 1, 2, 5>>);
+    CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
 }
 

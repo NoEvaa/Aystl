@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <algorithm>
+
 #include "aystl/tmp/meta/type.hpp"
 
 namespace iin {
@@ -22,6 +24,9 @@ namespace detail {
 template <ConstantListType T, ConstantListType... Ts>
 struct constant_list_cat : type_t<T> {};
 }
+
+template <typename _Cmp, typename T, T... Vs>
+struct ct_sorted_array;
 
 template<typename T, T... Vs>
 struct constant_list {
@@ -50,6 +55,9 @@ struct constant_list {
 
     template <ConstantListTType<value_type>... _Ts>
     using concat = typename detail::constant_list_cat<type, _Ts...>::type;
+ 
+    template <typename _Cmp = std::less<>>
+    using sort = typename ct_sorted_array<_Cmp, value_type, Vs...>::to_constant_list;
 };
 
 namespace detail {

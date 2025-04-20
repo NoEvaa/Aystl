@@ -9,6 +9,7 @@
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
+#include "aystl/tmp/utils/ct_sorted_array.hpp"
 
 
 using namespace iin;
@@ -57,35 +58,6 @@ void foo(auto &&... args) {
 template <typename... Ts>
 using to_index_seq = index_seq<Ts::value...>;
 
-template <typename _Cmp, typename T, T... Vs>
-struct ct_sorted_array {
-    using element_type = T;
-    using value_type   = std::array<element_type, sizeof...(Vs)>;
-
-    static constexpr value_type value = [] {
-        value_type temp = { Vs... };
-        std::sort(temp.begin(), temp.end(), _Cmp{});
-        return temp;
-    }();
-
-    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
-
-    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    static constexpr element_type at = std::get<pos>(value);
-    template <std::size_t pos>
-    using at_t = constant_t<element_type, at<pos>>;
-
-    using to_constant_list = typename make_index_seq<size()>
-        ::template constant_map<element_type, at_t>;
-};
-
-template <typename _Cmp, typename T, T... Vs>
-auto _constantListSortImpl(constant_list<T, Vs...>)
-    -> typename ct_sorted_array<_Cmp, T, Vs...>::to_constant_list;
-
-template <ConstantListType T, typename _Cmp = std::less<>>
-using constant_list_sort_t = decltype(_constantListSortImpl<_Cmp>(std::declval<T>()));
-
 int main()
 {
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
@@ -94,7 +66,7 @@ int main()
     std::cout << getTypeName<xxx3>() << std::endl;
     using xxx4 = xxx3::wrapped<to_index_seq>;
     std::cout << getTypeName<xxx4>() << std::endl;
-    using xxx5 = constant_list_sort_t<xxx4>;
+    using xxx5 = xxx4::sort<>;
     std::cout << getTypeName<xxx5>() << std::endl;
     using xxx6 = xxx5::type_map<plh_t>;
     std::cout << getTypeName<xxx6>() << std::endl;

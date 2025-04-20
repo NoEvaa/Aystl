@@ -72,16 +72,16 @@ struct ct_sorted_array {
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     static constexpr element_type at = std::get<pos>(value);
+    template <std::size_t pos>
+    using at_t = constant_t<element_type, at<pos>>;
+
+    using to_constant_list = typename make_index_seq<size()>
+        ::template constant_map<element_type, at_t>;
 };
 
 template <typename _Cmp, typename T, T... Vs>
-auto _constantListSortImpl(constant_list<T, Vs...>) {
-    using sorted_type = ct_sorted_array<_Cmp, T, Vs...>;
-    //make_index_seq<sizeof...(Vs)>::template map<sorted_type::template at>;
-    return []<auto... Is>(index_seq<Is...>) {
-        return constant_list<T, sorted_type::template at<Is>...>{};
-    }(make_index_seq<sizeof...(Vs)>{});
-}
+auto _constantListSortImpl(constant_list<T, Vs...>)
+    -> typename ct_sorted_array<_Cmp, T, Vs...>::to_constant_list;
 
 template <ConstantListType T, typename _Cmp = std::less<>>
 using constant_list_sort_t = decltype(_constantListSortImpl<_Cmp>(std::declval<T>()));

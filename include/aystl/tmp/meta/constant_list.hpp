@@ -38,8 +38,10 @@ struct constant_list {
     template <typename _Tp>
     using cast = constant_list<_Tp, static_cast<_Tp>(Vs)...>;
 
+    template <template <typename _Tp, _Tp...> class Tmpl>
+    using wrapped = Tmpl<T, Vs...>;
     template <template <auto...> class Tmpl>
-    using wrapped = Tmpl<Vs...>;
+    using value_wrapped = Tmpl<Vs...>;
 
     template <template <auto> class Tmpl>
     requires ConstantTType<Tmpl<value_type{}>, value_type>

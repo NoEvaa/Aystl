@@ -50,7 +50,7 @@ template <int _v>
 using _test_to_char = constant_t<char, _v>;
 
 TEST_CASE("constant list wrapped & map") {
-    CHECK(std::is_same_v<test_seq_1::wrapped<value_list>, value_list<1, 2, 3>>);
+    CHECK(std::is_same_v<test_seq_1::value_wrapped<value_list>, value_list<1, 2, 3>>);
 
     CHECK(std::is_same_v<test_seq_1::map<_test_pow>, constant_list<int, 1, 4, 9>>);
     CHECK(std::is_same_v<test_seq_1::type_map<value_t>, type_list<value_t<1>, value_t<2>, value_t<3>>>);

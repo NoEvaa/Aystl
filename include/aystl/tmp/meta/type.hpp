@@ -74,15 +74,6 @@ template <typename T, typename VT>
 concept ConstantListTType = ConstantListType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
-template <std::size_t pos>
-struct placeholder_t : value_t<pos> {};
-template <std::size_t pos>
-using plh_t = placeholder_t<pos>;
-template <typename T>
-using is_placeholder = is_value_spec_of<T, placeholder_t>;
-template <typename T>
-concept PlaceholderType = is_placeholder<T>::value;
-
 template <typename T>
 struct take_off { using magic = T; };
 template <TypeTType T> 

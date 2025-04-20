@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,14 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/transfer.hpp"
-#include "aystl/tmp/meta/type_list.hpp"
-#include "aystl/tmp/meta/value_list.hpp"
-#include "aystl/tmp/meta/constant_list.hpp"
-#include "aystl/tmp/meta/int_seq.hpp"
+
+namespace iin {
+template <ValueTType T>
+struct transfer_value_t : value_t<T::value> {};
+
+template <typename T>
+struct transfer_type_t : type_t<T> {};
+template <TypeTType T>
+struct transfer_type_t<T> : type_t<typename T::type> {};
+}
 

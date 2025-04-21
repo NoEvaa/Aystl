@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include <array>
 #include <algorithm>
 
 #include "aystl/tmp/meta/constant_list.hpp"

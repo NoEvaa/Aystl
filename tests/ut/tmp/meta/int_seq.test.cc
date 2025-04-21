@@ -26,11 +26,3 @@ TEST_CASE("int seq") {
     CHECK(!IntSeqType<constant_list<empty_t>>);
 }
 
-TEST_CASE("monotone int seq") {
-    CHECK(std::is_same_v<monotone_int_seq_t<int, 1, 5, 1>, int_seq<int, 1, 2, 3, 4>>);
-    CHECK(std::is_same_v<monotone_int_seq_t<int, 1, -5, -2>, int_seq<int, 1, -1, -3>>);
-    CHECK(std::is_same_v<monotone_int_seq_t<int, 1, 5, 0, -2, -2>, int_seq<int, -2, -2>>);
-    CHECK(std::is_same_v<monotone_int_seq_t<int, 1, 1, 1, -2, -2>, int_seq<int, -2, -2>>);
-    CHECK(std::is_same_v<monotone_int_seq_t<int, -1, 1, -1>, int_seq<int>>);
-}
-

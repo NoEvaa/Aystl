@@ -26,3 +26,7 @@ TEST_CASE("int seq") {
     CHECK(!IntSeqType<constant_list<empty_t>>);
 }
 
+TEST_CASE("make_index_seq") {
+    CHECK(std::is_same_v<make_index_seq<3>, index_seq<0, 1, 2>>);
+}
+

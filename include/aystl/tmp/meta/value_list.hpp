@@ -16,6 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/utils/compare.hpp"
 
 namespace iin {
 template <auto... Vs>
@@ -26,9 +27,22 @@ struct value_list {
 
     template <template <auto...> class Tmpl>
     using wrapped = Tmpl<Vs...>;
-
     template <template <typename...> class Tmpl>
     using type_wrapped = Tmpl<value_t<Vs>...>;
+
+    template <template <auto> class Tmpl>
+    requires is_all_of_v<constant_t<bool, ValueTType<Tmpl<Vs>>>...>
+    using map = value_list<Tmpl<Vs>::value...>;
+    template <template <auto> class Tmpl>
+    using type_map = type_list<Tmpl<Vs>...>;
+    template <typename _Tp, template <auto> class Tmpl>
+    requires is_all_of_v<constant_t<bool, ConstantTType<Tmpl<Vs>, _Tp>>...>
+    using constant_map = constant_list<_Tp, Tmpl<Vs>::value...>;
+
+    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
+    using at_t = typename type_wrapped<type_list>::template at<pos>;
+    template <std::size_t pos>
+    static constexpr auto at = at_t<pos>::value;
 };
 
 template <auto... Vs>

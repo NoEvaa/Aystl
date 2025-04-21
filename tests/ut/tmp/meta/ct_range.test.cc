@@ -24,3 +24,8 @@ TEST_CASE("ct_range") {
     CHECK(std::is_same_v<ct_range<int, -1, 1, -1>::type, int_seq<int>>);
 }
 
+TEST_CASE("ct_range_t") {
+    CHECK(std::is_same_v<ct_range_t<1, 5>, int_seq<int, 1, 2, 3, 4>>);
+    CHECK(std::is_same_v<ct_range_t<1, -5, -2>, int_seq<int, 1, -1, -3>>);
+}
+

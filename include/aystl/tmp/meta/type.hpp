@@ -88,7 +88,6 @@ struct ct_range;
 template <int _start, int _stop, int _step = 1>
 using ct_range_t = typename ct_range<int, _start, _stop, _step>::type;
 
-
 template <typename T>
 struct take_off { using magic = T; };
 template <TypeTType T> 

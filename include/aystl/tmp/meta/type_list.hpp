@@ -18,6 +18,7 @@
 #include <tuple>
 
 #include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/meta/int_seq.hpp"
 #include "aystl/tmp/type_traits/template.hpp"
 #include "aystl/tmp/utils/compare.hpp"
 
@@ -44,7 +45,7 @@ template <typename... Ts>
 struct type_list {
     using type = type_list;
 
-    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
+    static constexpr index_constant<sizeof...(Ts)> size;
 
     template <template <typename...> typename Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
@@ -89,6 +90,7 @@ struct type_list {
 
     template <TypeListType MaskT>
     using filter = typename detail::type_list_filter<type, MaskT>::type;
+    //using filter = slice<typename make_index_seq<size()>::template filter<MaskT>>;
 };
 
 namespace detail {

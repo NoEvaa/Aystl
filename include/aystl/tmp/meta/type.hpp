@@ -35,6 +35,9 @@ struct constant_t {
 
     template <typename _Tp>
     using cast = constant_t<_Tp, static_cast<_Tp>(_v)>;
+
+    constexpr operator value_type() const noexcept { return value; }
+    constexpr value_type operator ()() const noexcept { return value; }
 };
 template <auto _v>
 struct value_t : constant_t<decltype(_v), _v> {};
@@ -59,6 +62,16 @@ struct is_template_tp<template_t<Tmpl>> : std::true_type {};
 }
 template <typename T>
 concept TemplateTType = detail::is_template_tp<T>::value;
+
+template <std::size_t _v>
+using index_constant = constant_t<std::size_t, _v>;
+
+template <typename T1, typename T2>
+struct type_pair {
+    using first_type  = T1;
+    using second_type = T2;
+};
+
 
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;

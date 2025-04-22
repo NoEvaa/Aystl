@@ -71,3 +71,27 @@ TEST_CASE("constant list sort") {
     CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
 }
 
+TEST_CASE("constant list filter") {
+    using _test_list_1 = constant_list<int, 1, 2, 3>;
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<>>, constant_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false>>, constant_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true>>, constant_list<int, 1>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false>>, constant_list<int, 1>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true>>, constant_list<int, 2>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true>>, constant_list<int, 1, 2>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, false>>, constant_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, false>>, constant_list<int, 1>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, false>>, constant_list<int, 2>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, true>>, constant_list<int, 3>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false>>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, true>>, constant_list<int, 1, 3>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, true>>, constant_list<int, 2, 3>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true>>, constant_list<int, 1, 2, 3>>);
+
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true, true>>, constant_list<int, 1, 2, 3>>);
+    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false, true>>, constant_list<int, 1, 2>>);
+}
+

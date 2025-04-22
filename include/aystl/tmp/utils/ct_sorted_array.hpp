@@ -18,9 +18,7 @@
 #include <array>
 #include <algorithm>
 
-#include "aystl/tmp/meta/constant_list.hpp"
-#include "aystl/tmp/meta/int_seq.hpp"
-#include "aystl/tmp/utils/compare.hpp"
+#include "aystl/tmp/meta.hpp"
 
 namespace iin {
 template <typename _Cmp, typename T, T... Vs>
@@ -37,12 +35,12 @@ struct ct_sorted_array {
     static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    static constexpr element_type at = std::get<pos>(value);
+    static constexpr element_type at_v = std::get<pos>(value);
     template <std::size_t pos>
-    using at_t = constant_t<element_type, at<pos>>;
+    using at = constant_t<element_type, at_v<pos>>;
 
     using to_constant_list = typename make_index_seq<size()>
-        ::template constant_map<element_type, at_t>;
+        ::template constant_map<element_type, at>;
 };
 }
 

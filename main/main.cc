@@ -11,6 +11,7 @@
 #include "aystl/utility/hash.hpp"
 #include "aystl/tmp/utils/ct_sorted_array.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
+#include "aystl/tmp.hpp"
 
 
 using namespace iin;
@@ -69,6 +70,9 @@ struct currying_template : template_t<Tmpl> {
 int main()
 {
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
+    using xxx2 = xxx1::slice<make_index_seq<xxx1::size()>::template filter<value_t_list<true, false>>>;
+    std::cout << getTypeName<xxx2>() << std::endl;
+
     using xxx7 = sorted_placeholders_t<xxx1>;
     std::cout << getTypeName<xxx7::type>() << std::endl;
 

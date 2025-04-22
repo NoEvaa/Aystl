@@ -23,7 +23,7 @@ template <auto... Vs>
 struct value_list {
     using type = value_list;
 
-    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+    static constexpr index_constant<sizeof...(Vs)> size;
 
     template <template <auto...> class Tmpl>
     using wrapped = Tmpl<Vs...>;
@@ -40,9 +40,13 @@ struct value_list {
     using constant_map = constant_list<_Tp, Tmpl<Vs>::value...>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using at_t = typename type_wrapped<type_list>::template at<pos>;
+    using at = typename type_wrapped<type_list>::template at<pos>;
     template <std::size_t pos>
-    static constexpr auto at = at_t<pos>::value;
+    static constexpr auto at_v = at<pos>::value;
+    template <std::size_t pos, auto _default = empty_t{}>
+    using get = typename type_wrapped<type_list>::template get<pos, value_t<_default>>;
+    template <std::size_t pos>
+    static constexpr auto get_v = get<pos>::value;
 };
 
 template <auto... Vs>

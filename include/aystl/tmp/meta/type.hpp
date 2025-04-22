@@ -50,9 +50,21 @@ template <typename T, typename VT>
 concept ConstantTType = ValueTType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
+template <std::size_t _v>
+using index_constant = constant_t<std::size_t, _v>;
+
 template <template <typename...> class Tmpl>
 struct template_t {
-    template <typename... Ts> using wrap = Tmpl<Ts...>;
+    template <typename... _Ts> using wrap = Tmpl<_Ts...>;
+};
+template <template <auto...> class Tmpl>
+struct value_template_t {
+    template <auto... _Vs> using wrap = Tmpl<_Vs...>;
+};
+template <template <typename T, T...> class Tmpl>
+struct constant_template_t {
+    template <typename _Tp, _Tp... _Vs>
+    using wrap = Tmpl<_Tp, _Vs...>;
 };
 namespace detail {
 template <typename T>
@@ -62,9 +74,6 @@ struct is_template_tp<template_t<Tmpl>> : std::true_type {};
 }
 template <typename T>
 concept TemplateTType = detail::is_template_tp<T>::value;
-
-template <std::size_t _v>
-using index_constant = constant_t<std::size_t, _v>;
 
 template <typename T1, typename T2>
 struct type_pair {

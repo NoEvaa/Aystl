@@ -33,8 +33,8 @@ struct value_list {
     template <template <auto> class Tmpl>
     requires is_all_of_v<constant_t<bool, ValueTType<Tmpl<Vs>>>...>
     using map = value_list<Tmpl<Vs>::value...>;
-    template <template <auto> class Tmpl>
-    using type_map = type_list<Tmpl<Vs>...>;
+    //template <template <auto> class Tmpl>
+    //using type_map = type_list<Tmpl<Vs>...>;
     template <typename _Tp, template <auto> class Tmpl>
     requires is_all_of_v<constant_t<bool, ConstantTType<Tmpl<Vs>, _Tp>>...>
     using constant_map = constant_list<_Tp, Tmpl<Vs>::value...>;

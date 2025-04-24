@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#include "testlib.h"
+#include "aystl/tmp/meta.hpp"
 
-#include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/transfer.hpp"
-#include "aystl/tmp/meta/type_list.hpp"
-#include "aystl/tmp/meta/value_list.hpp"
-#include "aystl/tmp/meta/constant_list.hpp"
-#include "aystl/tmp/meta/int_seq.hpp"
-#include "aystl/tmp/meta/ct_range.hpp"
+using namespace iin;
+
+TEST_CASE("ct_range") {
+    CHECK(std::is_same_v<ct_range<int, 1, 5, 1>::type, int_seq<int, 1, 2, 3, 4>>);
+    CHECK(std::is_same_v<ct_range<int, 1, -5, -2>::type, int_seq<int, 1, -1, -3>>);
+    CHECK(std::is_same_v<ct_range<int, -1, 1, -1>::type, int_seq<int>>);
+}
+
+TEST_CASE("ct_range_t") {
+    CHECK(std::is_same_v<ct_range_t<1, 5>, int_seq<int, 1, 2, 3, 4>>);
+    CHECK(std::is_same_v<ct_range_t<1, -5, -2>, int_seq<int, 1, -1, -3>>);
+}
 

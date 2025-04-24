@@ -35,6 +35,9 @@ struct constant_t {
 
     template <typename _Tp>
     using cast = constant_t<_Tp, static_cast<_Tp>(_v)>;
+
+    constexpr operator value_type() const noexcept { return value; }
+    constexpr value_type operator ()() const noexcept { return value; }
 };
 template <auto _v>
 struct value_t : constant_t<decltype(_v), _v> {};
@@ -47,9 +50,21 @@ template <typename T, typename VT>
 concept ConstantTType = ValueTType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
+template <std::size_t _v>
+using index_constant = constant_t<std::size_t, _v>;
+
 template <template <typename...> class Tmpl>
 struct template_t {
-    template <typename... Ts> using wrap = Tmpl<Ts...>;
+    template <typename... _Ts> using wrap = Tmpl<_Ts...>;
+};
+template <template <auto...> class Tmpl>
+struct value_template_t {
+    template <auto... _Vs> using wrap = Tmpl<_Vs...>;
+};
+template <template <typename T, T...> class Tmpl>
+struct constant_template_t {
+    template <typename _Tp, _Tp... _Vs>
+    using wrap = Tmpl<_Tp, _Vs...>;
 };
 namespace detail {
 template <typename T>
@@ -59,6 +74,13 @@ struct is_template_tp<template_t<Tmpl>> : std::true_type {};
 }
 template <typename T>
 concept TemplateTType = detail::is_template_tp<T>::value;
+
+template <typename T1, typename T2>
+struct type_pair {
+    using first_type  = T1;
+    using second_type = T2;
+};
+
 
 template <typename... Ts> struct type_list;
 template <auto... Vs> struct value_list;
@@ -74,14 +96,19 @@ template <typename T, typename VT>
 concept ConstantListTType = ConstantListType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
-template <std::size_t pos>
-struct placeholder_t : value_t<pos> {};
-template <std::size_t pos>
-using plh_t = placeholder_t<pos>;
+template <std::integral T, T... Is>
+using int_seq = constant_list<T, Is...>;
 template <typename T>
-using is_placeholder = is_value_spec_of<T, placeholder_t>;
+concept IntSeqType = is_constant_spec_of_v<T, int_seq>;
+template <std::size_t... Is>
+using index_seq = int_seq<std::size_t, Is...>;
 template <typename T>
-concept PlaceholderType = is_placeholder<T>::value;
+concept IndexSeqType = ConstantListTType<T, std::size_t>;
+
+template <std::integral T, T _start, T _stop, T _step = 1>
+struct ct_range;
+template <int _start, int _stop, int _step = 1>
+using ct_range_t = typename ct_range<int, _start, _stop, _step>::type;
 
 template <typename T>
 struct take_off { using magic = T; };

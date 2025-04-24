@@ -18,9 +18,8 @@
 #include <tuple>
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/type_traits/common.hpp"
-#include "aystl/tmp/type_traits/template.hpp"
 #include "aystl/tmp/meta/int_seq.hpp"
+#include "aystl/tmp/type_traits/template.hpp"
 #include "aystl/tmp/utils/compare.hpp"
 
 namespace iin {
@@ -46,14 +45,20 @@ template <typename... Ts>
 struct type_list {
     using type = type_list;
 
-    static constexpr std::size_t size() noexcept { return sizeof...(Ts); }
+    static constexpr index_constant<sizeof...(Ts)> size;
 
-    template <template <typename...> class Tmpl>
+    template <template <typename...> typename Tmpl>
     using wrapped = wrap_tmpl_t<Tmpl, Ts...>;
 
-    template <template <typename...> class Tmpl, typename... TmplArgs>
+    template <template <typename...> typename Tmpl, typename... TmplArgs>
     using map = typename detail::type_list_map<
         type_list<>, type, Tmpl, TmplArgs...>::type;
+    template <template <typename> typename Tmpl>
+    requires is_all_of_v<constant_t<bool, ValueTType<Tmpl<Ts>>>...>
+    using value_map = value_list<Tmpl<Ts>::value...>;
+    template <typename _Tp, template <typename> class Tmpl>
+    requires is_all_of_v<constant_t<bool, ConstantTType<Tmpl<Ts>, _Tp>>...>
+    using constant_map = constant_list<_Tp, Tmpl<Ts>::value...>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<std::tuple>>;
@@ -85,6 +90,7 @@ struct type_list {
 
     template <TypeListType MaskT>
     using filter = typename detail::type_list_filter<type, MaskT>::type;
+    //using filter = slice<typename make_index_seq<size()>::template filter<MaskT>>;
 };
 
 namespace detail {

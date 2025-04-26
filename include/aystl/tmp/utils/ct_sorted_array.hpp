@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include "aystl/tmp/meta.hpp"
-
+#if 0
 namespace iin {
 template <typename _Cmp, typename T, T... Vs>
 struct ct_sorted_array {
@@ -43,4 +43,5 @@ struct ct_sorted_array {
         ::template constant_map<element_type, at>;
 };
 }
+#endif
 

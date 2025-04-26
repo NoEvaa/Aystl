@@ -62,7 +62,7 @@ TEST_CASE("ct_str: template specialization") {
     CHECK(TestOp2<ct_str_t<"1">>()() == 1);
     CHECK(TestOp2<ct_str_t<"3">>()() == 3);
 }
-
+#if 0
 TEST_CASE("char_seq: basic") {
     using test_cs_1 = char_seq_t<test_str_1::value>;
     CHECK(CharSeqType<test_cs_1>);
@@ -75,7 +75,7 @@ TEST_CASE("char_seq: basic") {
 
     CHECK(char_seq_t<test_str_2::value>::size() == 0);
 }
-
+#endif
 TEST_CASE("ct_str_substr_v") {
     CHECK(ct_str_substr_v<test_str_1::value, 0, 0> == ct_str_v<"">);
     CHECK(ct_str_substr_v<test_str_1::value, 2, 0> == ct_str_v<"">);

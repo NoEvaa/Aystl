@@ -51,8 +51,8 @@ TEST_CASE("template_t") {
     CHECK(std::is_same_v<template_t<type_t>::wrap<int>, type_t<int>>);
     CHECK(std::is_same_v<template_t<type_list>::wrap<int, int, double>, type_list<int, int, double>>);
 
-    CHECK(TemplateTType<template_t<type_t>>);
-    CHECK(!TemplateTType<int>);
+    CHECK(TyTmplType<template_t<type_t>>);
+    CHECK(!TyTmplType<int>);
 }
 
 TEST_CASE("take off") {

@@ -19,7 +19,7 @@
 
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/utils/compare.hpp"
-
+#if 0
 namespace iin {
 namespace detail {
 template <ConstantListType T, ConstantListType... Ts>
@@ -116,4 +116,5 @@ struct constant_list_filter<InT, MaskT, OutT, pos> {
 };
 }
 }
+#endif
 

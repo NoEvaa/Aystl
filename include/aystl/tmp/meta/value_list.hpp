@@ -17,7 +17,7 @@
 
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/utils/compare.hpp"
-
+#if 0
 namespace iin {
 template <auto... Vs>
 struct value_list {
@@ -52,4 +52,4 @@ struct value_list {
 template <auto... Vs>
 using value_t_list = value_list<Vs...>::template type_wrapped<type_list>;
 }
-
+#endif

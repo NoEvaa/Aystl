@@ -19,24 +19,13 @@
 
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/meta/template.hpp"
+#include "aystl/tmp/meta/meta_decl.hpp"
 #include "aystl/tmp/utils/compare.hpp"
 
 namespace iin {
 namespace _tmp_impl {
 template <TyListType T, TyListType... Ts>
 struct type_list_cat : type_t<T> {};
-
-template <TyListType InT, TyTmplType TmplT,
-    TyListType OutT = type_list<>, typename... TmplArgs>
-struct type_list_map;
-
-template <TyListType InT, VaTmplType TmplT,
-    TyListType OutT = type_list<>>
-struct type_list_va_map;
-
-template <TyListType InT, CoTmplType TmplT, typename VT,
-    TyListType OutT = type_list<>>
-struct type_list_co_map;
 
 template <TyListType T, std::size_t pos, typename DefaultT>
 struct type_list_get : type_t<DefaultT> {};
@@ -59,19 +48,18 @@ struct type_list {
     using wrapped = ty_wrap_t<TmplT, Ts...>;
 
     template <TyTmplType TmplT, typename... TmplArgs>
-    using map = typename _tmp_impl::type_list_map<type, TmplT,
-        type_list<>, TmplArgs...>::type;
+    using map = typename _tmp_impl::meta_list_map<
+        type, type_list<>, TmplT, TmplArgs...>::type;
     template <TyTmplType TmplT>
-    using ty_map = typename _tmp_impl::type_list_map<type, TmplT>::type;
-    #if 0
-    template <VaTmplType TmplT>
-    using va_map = typename _tmp_impl::type_list_va_map<type, TmplT>::type;
-    //requires is_all_of_v<constant_t<bool, ValueTType< typename TmplT::template wrap<Ts>>>...>
-    //using va_map = value_list<TmplT::template wrap<Ts>::value...>;
-    template <typename _Tp, template <typename> class Tmpl>
-    requires is_all_of_v<constant_t<bool, ConstantTType<Tmpl<Ts>, _Tp>>...>
-    using co_map = constant_list<_Tp, Tmpl<Ts>::value...>;
-    #endif
+    using ty_map = typename _tmp_impl::meta_list_map<
+        type, type_list<>, TmplT>::type;
+    template <TyTmplType TmplT>
+    using va_map = typename _tmp_impl::meta_list_map<
+        type, value_list<>, TmplT>::type;
+    template <TyTmplType TmplT, typename _Tp>
+    using co_map = typename _tmp_impl::meta_list_map<
+        type, constant_list<_Tp>, TmplT>::type;
+
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;
     template <std::size_t pos, typename DefaultT = null_t>

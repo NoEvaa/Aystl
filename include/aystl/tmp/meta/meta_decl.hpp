@@ -19,7 +19,7 @@
 
 namespace iin {
 namespace _tmp_impl {
-template <MetaListType, typename> struct meta_list_push_back;
+template <MetaListType, typename...> struct meta_list_push_back;
 
 template <MetaListType InT, MetaListType OutT,
     MetaTmplType TmplT, typename... TmplArgs>

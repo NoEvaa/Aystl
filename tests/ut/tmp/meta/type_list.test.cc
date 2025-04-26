@@ -15,6 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/meta/transfer.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
 
 using namespace iin;
@@ -56,6 +57,7 @@ TEST_CASE("type list at & get") {
 
 TEST_CASE("type list wrapped & map") {
     using _test_list_1 = type_list<int, double, char>;
+    using _test_list_2 = type_list<value_t<1>, value_t<2>, value_t<3>>;
 
     CHECK(std::is_same_v<_test_list_1::wrapped<ty_tmpl_t<std::tuple>>, std::tuple<int, double, char>>);
 
@@ -63,6 +65,10 @@ TEST_CASE("type list wrapped & map") {
           type_list<type_t<int>, type_t<double>, type_t<char>>>);
     CHECK(std::is_same_v<_test_list_1::map<ty_tmpl_t<std::tuple>, float, bool>,
           type_list<std::tuple<int, float, bool>, std::tuple<double, float, bool>, std::tuple<char, float, bool>>>);
+    CHECK(std::is_same_v<_test_list_1::ty_map<ty_tmpl_t<type_t>>,
+          type_list<type_t<int>, type_t<double>, type_t<char>>>);
+    //CHECK(std::is_same_v<_test_list_2::va_map<ty_tmpl_t<transfer_value_t>>,
+    //      type_list<type_t<int>, type_t<double>, type_t<char>>>);
 }
 
 #if 0

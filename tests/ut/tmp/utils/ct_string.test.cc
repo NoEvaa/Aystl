@@ -70,7 +70,7 @@ TEST_CASE("char_seq: basic") {
     CHECK(std::is_same_v<test_cs_1, char_seq<char,
           'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
-    CHECK(std::is_same_v<test_cs_1::value_wrapped<value_list>,
+    CHECK(std::is_same_v<test_cs_1::wrapped<va_list_tmpl_t>,
           value_list<'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'>>);
 
     CHECK(char_seq_t<test_str_2::value>::size() == 0);

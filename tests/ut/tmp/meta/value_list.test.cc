@@ -20,8 +20,8 @@ using namespace iin;
 
 TEST_CASE("value list") {
     CHECK(std::is_same_v<value_t_list<1, 2, 3>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
-    CHECK(!TypeListType<value_list<>>);
-    CHECK(!ValueListType<type_list<>>);
-    CHECK(ValueListType<value_list<>>);
+    CHECK(!TyListType<value_list<>>);
+    CHECK(!VaListType<type_list<>>);
+    CHECK(VaListType<value_list<>>);
 }
 

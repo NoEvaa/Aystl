@@ -18,15 +18,21 @@
 #include <functional>
 
 #include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/meta/meta_decl.hpp"
 #include "aystl/tmp/utils/compare.hpp"
 
 namespace iin {
-namespace detail {
-template <ConstantListType T, ConstantListType... Ts>
+namespace _tmp_impl {
+template <CoListType T, CoListType... Ts>
 struct constant_list_cat : type_t<T> {};
 
-template <ConstantListType InT, TypeListType MaskT,
-    ConstantListType OutT, std::size_t pos = 0>
+template <CoListType T, std::size_t pos>
+struct constant_list_at;
+template <CoListType T, std::size_t pos, typename DefaultT>
+struct constant_list_get;
+
+template <CoListType InT, TyListType MaskT,
+    CoListType OutT, std::size_t pos = 0>
 struct constant_list_filter : type_t<OutT> {};
 }
 
@@ -43,44 +49,39 @@ struct constant_list {
     template <typename _Tp>
     using cast = constant_list<_Tp, static_cast<_Tp>(Vs)...>;
 
-    template <template <typename _Tp, _Tp...> typename Tmpl>
-    using wrapped = Tmpl<value_type, Vs...>;
-    template <template <auto...> typename Tmpl>
-    using value_wrapped = Tmpl<Vs...>;
-    template <template <typename...> typename Tmpl>
-    using type_wrapped = Tmpl<constant_t<value_type, Vs>...>;
+    template <MetaTmplType TmplT>
+    using wrapped = meta_wrap_t<TmplT, type>;
 
-    template <template <auto> class Tmpl>
-    requires ConstantTType<Tmpl<value_type{}>, value_type>
-    using map = constant_list<value_type, Tmpl<Vs>::value...>;
-    template <template <auto> class Tmpl>
-    using type_map = type_list<Tmpl<Vs>...>;
-    template <template <auto> class Tmpl>
-    requires ValueTType<Tmpl<value_type{}>>
-    using value_map = value_list<Tmpl<Vs>::value...>;
-    template <typename _Tp, template <auto> class Tmpl>
-    requires ConstantTType<Tmpl<value_type{}>, _Tp>
-    using constant_map = constant_list<_Tp, Tmpl<Vs>::value...>;
+    template <MetaTmplType TmplT>
+    using map = typename _tmp_impl::meta_list_map<
+        type, constant_list<value_type>, TmplT>::type;
+    template <MetaTmplType TmplT>
+    using ty_map = typename _tmp_impl::meta_list_map<
+        type, type_list<>, TmplT>::type;
+    template <MetaTmplType TmplT>
+    using va_map = typename _tmp_impl::meta_list_map<
+        type, value_list<>, TmplT>::type;
+    template <MetaTmplType TmplT, typename _VTp>
+    using co_map = typename _tmp_impl::meta_list_map<
+        type, constant_list<_VTp>, TmplT>::type;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using at = typename type_wrapped<type_list>::template at<pos>;
+    using at = typename _tmp_impl::constant_list_at<type, pos>::type;
     template <std::size_t pos>
     static constexpr auto at_v = at<pos>::value;
-    template <std::size_t pos, auto _default = empty_t{}>
-    using get = typename type_wrapped<type_list>::template get<pos, value_t<_default>>;
-    template <std::size_t pos>
-    static constexpr auto get_v = get<pos>::value;
+    template <std::size_t pos, typename DefaultT = null_t>
+    using get = typename _tmp_impl::constant_list_get<type, pos, DefaultT>::type;
 
-    template <ConstantListTType<value_type>... _Ts>
-    using concat = typename detail::constant_list_cat<type, _Ts...>::type;
+    template <CoListTType<value_type>... _Ts>
+    using concat = typename _tmp_impl::constant_list_cat<type, _Ts...>::type;
 
     template <value_type... _Vs>
-    using push_back = constant_list<value_type, Vs..., _Vs...>;
+    using push_back  = constant_list<value_type, Vs..., _Vs...>;
     template <value_type... _Vs>
     using push_front = constant_list<value_type, _Vs..., Vs...>;
 
-    template <TypeListType MaskT>
-    using filter = typename detail::constant_list_filter<
+    template <TyListType MaskT>
+    using filter = typename _tmp_impl::constant_list_filter<
         type, MaskT, constant_list<value_type>>::type;
 
     template <typename _Cmp = std::less<>>
@@ -90,30 +91,7 @@ struct constant_list {
 };
 
 namespace detail {
-template <typename T, T... Vs1, T... Vs2>
-auto _concat_two_constant_list(constant_list<T, Vs1...>, constant_list<T, Vs2...>)
-    -> constant_list<T, Vs1..., Vs2...>;
 
-template <ConstantListType T1, ConstantListType T2, ConstantListType... Ts>
-struct constant_list_cat<T1, T2, Ts...> {
-    using type = typename constant_list_cat<
-        decltype(_concat_two_constant_list(std::declval<T1>(), std::declval<T2>())),
-        Ts...
-    >::type;
-};
-
-template <ConstantListType InT, TypeListType MaskT, ConstantListType OutT, std::size_t pos>
-requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>
-struct constant_list_filter<InT, MaskT, OutT, pos> {
-    using _elem_type  = typename InT::template at<pos>;
-    using _filt_type  = typename MaskT::template at<pos>;
-    using _t_out_type = typename OutT::template push_back<_elem_type::value>;
-    using _f_out_type = OutT;
-    using _out_type   = std::conditional_t<
-        static_cast<bool>(_filt_type::value), _t_out_type, _f_out_type>;
-
-    using type = typename constant_list_filter<InT, MaskT, _out_type, pos + 1>::type;
-};
 }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/meta_decl.hpp"
-#include "aystl/tmp/meta/transfer.hpp"
 #include "aystl/tmp/meta/template.hpp"
-#include "aystl/tmp/meta/type_list.hpp"
-#include "aystl/tmp/meta/value_list.hpp"
-#include "aystl/tmp/meta/constant_list.hpp"
-#include "aystl/tmp/meta/int_seq.hpp"
-#include "aystl/tmp/meta/ct_range.hpp"
-#include "aystl/tmp/meta/meta_impl.hpp"
+
+namespace iin {
+namespace _tmp_impl {
+template <MetaListType, typename...> struct meta_list_push_back;
+
+template <MetaListType InT, MetaListType OutT,
+    MetaTmplType TmplT, typename... TmplArgs>
+struct meta_list_map;
+}
+}
 

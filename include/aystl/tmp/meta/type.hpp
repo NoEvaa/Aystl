@@ -55,25 +55,69 @@ using index_constant = constant_t<std::size_t, _v>;
 
 template <template <typename...> class Tmpl>
 struct template_t {
-    template <typename... _Ts> using wrap = Tmpl<_Ts...>;
+    template <typename... _Ts>
+    struct __TmplPkg : type_t<Tmpl<_Ts...>> {};
+
+    template <typename... _Ts>
+    using wrap = typename __TmplPkg<_Ts...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_spec_of<_Tp, Tmpl>;
 };
 template <template <auto...> class Tmpl>
 struct value_template_t {
-    template <auto... _Vs> using wrap = Tmpl<_Vs...>;
+    template <auto... _Vs>
+    struct __TmplPkg : type_t<Tmpl<_Vs...>> {};
+
+    template <auto... _Vs>
+    using wrap = typename __TmplPkg<_Vs...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_value_spec_of<_Tp, Tmpl>;
 };
 template <template <typename T, T...> class Tmpl>
 struct constant_template_t {
     template <typename _Tp, _Tp... _Vs>
-    using wrap = Tmpl<_Tp, _Vs...>;
+    struct __TmplPkg : type_t<Tmpl<_Tp, _Vs...>> {};
+
+    template <typename _Tp, _Tp... _Vs>
+    using wrap = typename __TmplPkg<_Tp, _Vs...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_constant_spec_of<_Tp, Tmpl>;
 };
+
+template <template <typename...> class Tmpl>
+using ty_tmpl_t = template_t<Tmpl>;
+template <template <auto...> class Tmpl>
+using va_tmpl_t = value_template_t<Tmpl>;
+template <template <typename T, T...> class Tmpl>
+using co_tmpl_t = constant_template_t<Tmpl>;
+
 namespace detail {
 template <typename T>
-struct is_template_tp : std::false_type {};
+struct is_ty_tmpl : std::false_type {};
 template <template <typename...> class Tmpl>
-struct is_template_tp<template_t<Tmpl>> : std::true_type {};
+struct is_ty_tmpl<ty_tmpl_t<Tmpl>> : std::true_type {};
+
+template <typename T>
+struct is_va_tmpl : std::false_type {};
+template <template <auto...> class Tmpl>
+struct is_va_tmpl<va_tmpl_t<Tmpl>> : std::true_type {};
+
+template <typename T>
+struct is_co_tmpl : std::false_type {};
+template <template <typename T, T...> class Tmpl>
+struct is_co_tmpl<co_tmpl_t<Tmpl>> : std::true_type {};
 }
 template <typename T>
-concept TemplateTType = detail::is_template_tp<T>::value;
+concept TyTmplType = detail::is_ty_tmpl<T>::value;
+template <typename T>
+concept VaTmplType = detail::is_va_tmpl<T>::value;
+template <typename T>
+concept CoTmplType = detail::is_co_tmpl<T>::value;
+template <typename T>
+concept MetaTmplType = TyTmplType<T> || VaTmplType<T> || CoTmplType<T>;
 
 template <typename T1, typename T2>
 struct type_pair {
@@ -81,20 +125,24 @@ struct type_pair {
     using second_type = T2;
 };
 
-
-template <typename... Ts> struct type_list;
-template <auto... Vs> struct value_list;
+template <typename... Ts>      struct type_list;
+template <auto... Vs>          struct value_list;
 template <typename T, T... Vs> struct constant_list;
 
 template <typename T>
-concept TypeListType = is_spec_of_v<T, type_list>;
+concept TyListType = is_spec_of_v<T, type_list>;
 template <typename T>
-concept ValueListType = is_value_spec_of_v<T, value_list>;
+concept VaListType = is_value_spec_of_v<T, value_list>;
 template <typename T>
-concept ConstantListType = is_constant_spec_of_v<T, constant_list>;
+concept CoListType = is_constant_spec_of_v<T, constant_list>;
 template <typename T, typename VT>
-concept ConstantListTType = ConstantListType<T>
+concept CoListTType = CoListType<T>
     && std::is_same_v<typename T::value_type, VT>;
+template <typename T>
+concept MetaListType = TyListType<T> || VaListType<T> || CoListType<T>;
+
+template <auto... Vs>
+using value_t_list = type_list<value_t<Vs>...>;
 
 template <std::integral T, T... Is>
 using int_seq = constant_list<T, Is...>;
@@ -103,7 +151,7 @@ concept IntSeqType = is_constant_spec_of_v<T, int_seq>;
 template <std::size_t... Is>
 using index_seq = int_seq<std::size_t, Is...>;
 template <typename T>
-concept IndexSeqType = ConstantListTType<T, std::size_t>;
+concept IndexSeqType = CoListTType<T, std::size_t>;
 
 template <std::integral T, T _start, T _stop, T _step = 1>
 struct ct_range;

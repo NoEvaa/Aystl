@@ -15,6 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/meta/transfer.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
 
 using namespace iin;
@@ -23,7 +24,7 @@ TEST_CASE("type list") {
     using _test_list_1 = type_list<int, double, char>;
     CHECK(type_list<>::size() == 0);
     CHECK(_test_list_1::size() == 3);
-    CHECK(TypeListType<type_list<>>);
+    CHECK(TyListType<type_list<>>);
 }
 
 TEST_CASE("type list concat") {
@@ -35,14 +36,11 @@ TEST_CASE("type list concat") {
     CHECK(std::is_same_v<_test_list_1::concat<_test_list_1, _test_list_1>, _test_list_111>);
 }
 
-TEST_CASE("type list wrapped & map") {
-    using _test_list_1 = type_list<int, double, char>;
+TEST_CASE("type list push front & back") {
+    using _test_list_1 = type_list<float, double>;
 
-    CHECK(std::is_same_v<_test_list_1::wrapped<std::tuple>, std::tuple<int, double, char>>);
-
-    CHECK(std::is_same_v<_test_list_1::map<type_t>, type_list<type_t<int>, type_t<double>, type_t<char>>>);
-    CHECK(std::is_same_v<_test_list_1::map<std::tuple, float, bool>, type_list<
-          std::tuple<int, float, bool>, std::tuple<double, float, bool>, std::tuple<char, float, bool>>>);
+    CHECK(std::is_same_v<_test_list_1::push_front<int, char>, type_list<int, char, float, double>>);
+    CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
 }
 
 TEST_CASE("type list at & get") {
@@ -55,6 +53,27 @@ TEST_CASE("type list at & get") {
     CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
     CHECK(std::is_same_v<_test_list_1::get<3>, null_t>);
     CHECK(std::is_same_v<_test_list_1::get<10, void>, void>);
+}
+
+TEST_CASE("type list wrapped & map") {
+    using _test_list_1 = type_list<int, double, char>;
+    using _test_list_2 = type_list<value_t<1>, value_t<2>, value_t<3>>;
+
+    CHECK(std::is_same_v<_test_list_1::wrapped<ty_tmpl_t<std::tuple>>, std::tuple<int, double, char>>);
+
+    CHECK(std::is_same_v<_test_list_1::map<ty_tmpl_t<type_t>>,
+          type_list<type_t<int>, type_t<double>, type_t<char>>>);
+    CHECK(std::is_same_v<_test_list_1::map<ty_tmpl_t<std::tuple>, float, bool>,
+          type_list<std::tuple<int, float, bool>, std::tuple<double, float, bool>, std::tuple<char, float, bool>>>);
+
+    CHECK(std::is_same_v<_test_list_1::ty_map<ty_tmpl_t<type_t>>,
+          type_list<type_t<int>, type_t<double>, type_t<char>>>);
+    CHECK(std::is_same_v<_test_list_2::ty_map<va_tmpl_t<value_t>>,
+          type_list<value_t<1>, value_t<2>, value_t<3>>>);
+    CHECK(std::is_same_v<_test_list_2::ty_map<co_tmpl_t<constant_t>>,
+          type_list<constant_t<int, 1>, constant_t<int, 2>, constant_t<int, 3>>>);
+
+    CHECK(std::is_same_v<_test_list_2::va_map<ty_tmpl_t<transfer_value_t>>, value_list<1, 2, 3>>);
 }
 
 TEST_CASE("type list slice") {
@@ -78,13 +97,6 @@ TEST_CASE("type list slice") {
     CHECK(std::is_same_v<_test_list_1::slice_range<0>, _test_list_1>);
     CHECK(std::is_same_v<_test_list_1::slice_range<2>, type_list<char, float>>);
     CHECK(std::is_same_v<_test_list_1::slice_range<4>, type_list<>>);
-}
-
-TEST_CASE("type list push front & back") {
-    using _test_list_1 = type_list<float, double>;
-
-    CHECK(std::is_same_v<_test_list_1::push_front<int, char>, type_list<int, char, float, double>>);
-    CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
 }
 
 TEST_CASE("type list insert") {

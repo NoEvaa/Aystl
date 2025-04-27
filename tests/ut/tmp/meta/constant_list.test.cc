@@ -28,16 +28,16 @@ using test_seq_1_2 = constant_list<int, 1, 2, 3, 7, 8, 9>;
 using test_seq_3_3 = constant_list<std::size_t, 7, 8, 9, 7, 8, 9>;
 
 TEST_CASE("constant list") {
-    CHECK(ConstantListType<test_seq_0>);
-    CHECK(ConstantListType<test_seq_1>);
-    CHECK(ConstantListType<test_seq_3>);
-    CHECK(!ConstantListType<int>);
-    CHECK(!ConstantListType<type_list<>>);
-    CHECK(!ConstantListType<value_list<>>);
+    CHECK(CoListType<test_seq_0>);
+    CHECK(CoListType<test_seq_1>);
+    CHECK(CoListType<test_seq_3>);
+    CHECK(!CoListType<int>);
+    CHECK(!CoListType<type_list<>>);
+    CHECK(!CoListType<value_list<>>);
 
-    CHECK(ConstantListTType<test_seq_1, int>);
-    CHECK(ConstantListTType<test_seq_3, std::size_t>);
-    CHECK(!ConstantListTType<test_seq_3, int>);
+    CHECK(CoListTType<test_seq_1, int>);
+    CHECK(CoListTType<test_seq_3, std::size_t>);
+    CHECK(!CoListTType<test_seq_3, int>);
 }
 
 TEST_CASE("constant list cast") {
@@ -45,30 +45,35 @@ TEST_CASE("constant list cast") {
 }
 
 template <int _v>
-using _test_pow = value_t<_v * _v>;
+struct _test_pow : value_t<_v * _v> {};
 template <int _v>
-using _test_to_char = constant_t<char, _v>;
+struct _test_to_char : constant_t<char, _v> {};
 
 TEST_CASE("constant list wrapped & map") {
-    CHECK(std::is_same_v<test_seq_1::value_wrapped<value_list>, value_list<1, 2, 3>>);
+    CHECK(std::is_same_v<test_seq_1::wrapped<va_list_tmpl_t>, value_list<1, 2, 3>>);
+    
+    CHECK(std::is_same_v<test_seq_1::map<va_tmpl_t<_test_pow>>, constant_list<int, 1, 4, 9>>);
+    CHECK(std::is_same_v<test_seq_1::co_map<va_tmpl_t<_test_to_char>, char>, constant_list<char, 1, 2, 3>>);
+    CHECK(std::is_same_v<test_seq_1::ty_map<co_tmpl_t<constant_t>>,
+          type_list<constant_t<int, 1>, constant_t<int, 2>, constant_t<int, 3>>>);
+    CHECK(std::is_same_v<test_seq_1::va_map<va_tmpl_t<_test_pow>>, value_list<1, 4, 9>>);
+}
 
-    CHECK(std::is_same_v<test_seq_1::map<_test_pow>, constant_list<int, 1, 4, 9>>);
-    CHECK(std::is_same_v<test_seq_1::type_map<value_t>, type_list<value_t<1>, value_t<2>, value_t<3>>>);
-    CHECK(std::is_same_v<test_seq_1::value_map<_test_pow>, value_list<1, 4, 9>>);
-    CHECK(std::is_same_v<test_seq_1::constant_map<char, _test_to_char>, constant_list<char, 1, 2, 3>>);
+TEST_CASE("constant list at & get") {
+    CHECK(std::is_same_v<test_seq_2::at<0>, constant_t<int, 7>>);
+    CHECK(std::is_same_v<test_seq_2::at<1>, constant_t<int, 8>>);
+    CHECK(std::is_same_v<test_seq_2::at<2>, constant_t<int, 9>>);
+
+    CHECK(std::is_same_v<test_seq_2::get<0>, constant_t<int, 7>>);
+    CHECK(std::is_same_v<test_seq_2::get<2>, constant_t<int, 9>>);
+    CHECK(std::is_same_v<test_seq_2::get<3>, null_t>);
+    CHECK(std::is_same_v<test_seq_2::get<10>, null_t>);
 }
 
 TEST_CASE("constant list concat") {
     CHECK(std::is_same_v<test_seq_0::concat<test_seq_1>, test_seq_1>);
     CHECK(std::is_same_v<test_seq_1::concat<test_seq_2>, test_seq_1_2>);
     CHECK(std::is_same_v<test_seq_3::concat<test_seq_3>, test_seq_3_3>);
-}
-
-TEST_CASE("constant list sort") {
-    using _test_seq_1 = constant_list<int, 2, 5, 1, -1, 0>;
-
-    CHECK(std::is_same_v<_test_seq_1::sort<>, constant_list<int, -1, 0, 1, 2, 5>>);
-    CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
 }
 
 TEST_CASE("constant list filter") {
@@ -93,5 +98,12 @@ TEST_CASE("constant list filter") {
 
     CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true, true>>, constant_list<int, 1, 2, 3>>);
     CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false, true>>, constant_list<int, 1, 2>>);
+}
+
+TEST_CASE("constant list sort") {
+    using _test_seq_1 = constant_list<int, 2, 5, 1, -1, 0>;
+
+    CHECK(std::is_same_v<_test_seq_1::sort<>, constant_list<int, -1, 0, 1, 2, 5>>);
+    CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
 }
 

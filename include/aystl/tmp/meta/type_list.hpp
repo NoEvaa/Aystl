@@ -30,9 +30,11 @@ struct type_list_cat : type_t<T> {};
 template <TyListType T, std::size_t pos, typename DefaultT>
 struct type_list_get : type_t<DefaultT> {};
 
-template <TyListType InT, TyListType MaskT,
-    TyListType OutT = type_list<>, std::size_t pos = 0>
-struct type_list_filter : type_t<OutT> {};
+template <TyListType T, IntSeqType RangeT>
+struct type_list_slice;
+
+template <TyListType T, TyListType MaskT>
+struct type_list_filter;
 }
 
 template <TyListType... Ts>
@@ -44,21 +46,21 @@ struct type_list {
 
     static constexpr index_constant<sizeof...(Ts)> size;
 
-    template <TyTmplType TmplT>
-    using wrapped = ty_wrap_t<TmplT, Ts...>;
+    template <MetaTmplType TmplT>
+    using wrapped = meta_wrap_t<TmplT, type>;
 
     template <TyTmplType TmplT, typename... TmplArgs>
     using map = typename _tmp_impl::meta_list_map<
         type, type_list<>, TmplT, TmplArgs...>::type;
-    template <TyTmplType TmplT>
+    template <MetaTmplType TmplT>
     using ty_map = typename _tmp_impl::meta_list_map<
         type, type_list<>, TmplT>::type;
-    template <TyTmplType TmplT>
+    template <MetaTmplType TmplT>
     using va_map = typename _tmp_impl::meta_list_map<
         type, value_list<>, TmplT>::type;
-    template <TyTmplType TmplT, typename _Tp>
+    template <MetaTmplType TmplT, typename _VTp>
     using co_map = typename _tmp_impl::meta_list_map<
-        type, constant_list<_Tp>, TmplT>::type;
+        type, constant_list<_VTp>, TmplT>::type;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;
@@ -68,12 +70,11 @@ struct type_list {
     template <TyListType... _Ts>
     using concat = type_list_cat_t<type, _Ts...>;
 
-    template <typename... _Ts> using push_back = type_list<Ts..., _Ts...>;
+    template <typename... _Ts> using push_back  = type_list<Ts..., _Ts...>;
     template <typename... _Ts> using push_front = type_list<_Ts..., Ts...>;
 
-    #if 0
     template <IntSeqType RangeT>
-    using slice = typename RangeT::template type_map<at>;
+    using slice = typename _tmp_impl::type_list_slice<type, RangeT>::type;
     template <auto lpos, auto rpos = size()>
     using slice_range = slice<ct_range_t<
         static_cast<int>(lpos), static_cast<int>(rpos)>>;
@@ -87,12 +88,10 @@ struct type_list {
     using erase = type_list_cat_t<slice_range<0, pos>, slice_range<pos + 1>>;
 
     template <typename OldT, typename NewT>
-    using replace = map<replace_if_same_as_t, OldT, NewT>;
+    using replace = map<ty_tmpl_t<replace_if_same_as_t>, OldT, NewT>;
 
-    template <TypeListType MaskT>
-    using filter = typename detail::type_list_filter<type, MaskT>::type;
-    //using filter = slice<typename make_index_seq<size()>::template filter<MaskT>>;
-#endif
+    template <TyListType MaskT>
+    using filter = typename _tmp_impl::type_list_filter<type, MaskT>::type;
 };
 }
 

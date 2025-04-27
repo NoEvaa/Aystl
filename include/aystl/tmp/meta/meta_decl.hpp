@@ -16,6 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/meta/template.hpp"
 
 namespace iin {
 namespace _tmp_impl {

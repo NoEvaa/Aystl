@@ -19,11 +19,15 @@
 
 namespace iin {
 template <ValueTType T>
-struct transfer_value_t : value_t<T::value> {};
+using transfer_value_t = value_t<T::value>;
 
+namespace detail {
 template <typename T>
-struct transfer_type_t : type_t<T> {};
+struct transfer_type : type_t<T> {};
 template <TypeTType T>
-struct transfer_type_t<T> : type_t<typename T::type> {};
+struct transfer_type<T> : type_t<typename T::type> {};
+}
+template <typename T>
+using transfer_type_t = type_t<typename detail::transfer_type<T>::type>;
 }
 

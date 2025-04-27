@@ -67,8 +67,15 @@ struct currying_template : template_t<Tmpl> {
 
 };
 #endif
+
 int main()
 {
+    using ts1 = type_list<int, bool, char>;
+    using r = ct_range_t<0, 1>;
+    using ss = va_tmpl_t<ts1::at>;
+    using dd = r::ty_map<ss>;
+
+
 #if 0
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
     using xxx2 = xxx1::slice<make_index_seq<xxx1::size()>::template filter<value_t_list<true, false>>>;

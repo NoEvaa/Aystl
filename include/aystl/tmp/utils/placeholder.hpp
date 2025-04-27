@@ -16,10 +16,12 @@
 #pragma once
 
 #include "aystl/tmp/meta.hpp"
-#if 0
+
 namespace iin {
-template <std::size_t pos>
-struct placeholder_t : value_t<pos> {};
+template <std::size_t _pos, std::size_t _gen = 0>
+struct placeholder_t : value_t<_pos> {
+    static constexpr index_constant<_gen> generation;
+};
 template <std::size_t pos>
 using plh_t = placeholder_t<pos>;
 template <typename T>
@@ -27,6 +29,7 @@ using is_placeholder = is_value_spec_of<T, placeholder_t>;
 template <typename T>
 concept PlaceholderType = is_placeholder<T>::value;
 
+#if 0
 namespace detail {
 template <TypeListType T>
 struct sorted_placeholders {
@@ -43,6 +46,6 @@ struct sorted_placeholders {
 }
 template <TypeListType T>
 using sorted_placeholders_t = typename detail::sorted_placeholders<T>::type;
-}
 #endif
+}
 

@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include "aystl/tmp/meta.hpp"
-#if 0
+
 namespace iin {
 template <typename _Cmp, typename T, T... Vs>
 struct ct_sorted_array {
@@ -32,7 +32,7 @@ struct ct_sorted_array {
         return temp;
     }();
 
-    static constexpr std::size_t size() noexcept { return sizeof...(Vs); }
+    static constexpr index_constant<sizeof...(Vs)> size;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     static constexpr element_type at_v = std::get<pos>(value);
@@ -40,8 +40,7 @@ struct ct_sorted_array {
     using at = constant_t<element_type, at_v<pos>>;
 
     using to_constant_list = typename make_index_seq<size()>
-        ::template constant_map<element_type, at>;
+        ::template co_map<va_tmpl_t<at>, element_type>;
 };
 }
-#endif
 

@@ -30,11 +30,12 @@ requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
 struct ty_wrap<T, Ts...> {
     using type = typename T::template wrap<Ts::value...>;
 };
-template <CoTmplType T, typename VT, typename... Ts>
-requires is_all_of_v<constant_t<bool, ConstantTType<Ts, VT>>...>
+/*template <CoTmplType T, typename VT, typename... Ts>
+requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
 struct ty_wrap<T, VT, Ts...> {
-    using type = typename T::template wrap<VT, Ts::value...>;
-};
+    using type = typename T::template wrap<
+        VT, static_cast<VT>(Ts::value)...>;
+};*/
 
 template <MetaTmplType T, auto... Vs> struct va_wrap;
 template <VaTmplType T, auto... Vs>

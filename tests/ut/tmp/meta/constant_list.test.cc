@@ -100,12 +100,10 @@ TEST_CASE("constant list filter") {
     CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false, true>>, constant_list<int, 1, 2>>);
 }
 
-#if 0
 TEST_CASE("constant list sort") {
     using _test_seq_1 = constant_list<int, 2, 5, 1, -1, 0>;
 
     CHECK(std::is_same_v<_test_seq_1::sort<>, constant_list<int, -1, 0, 1, 2, 5>>);
     CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
 }
-#endif
 

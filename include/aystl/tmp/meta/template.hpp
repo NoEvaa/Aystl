@@ -19,49 +19,48 @@
 #include "aystl/tmp/type_traits/template.hpp"
 
 namespace iin {
-namespace detail {
-template <MetaTmplType T, typename... Ts> struct ty_wrap;
-template <TyTmplType T, typename... Ts>
-struct ty_wrap<T, Ts...> {
-    using type = typename T::template wrap<Ts...>;
-};
-template <VaTmplType T, typename... Ts>
-requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
-struct ty_wrap<T, Ts...> {
-    using type = typename T::template wrap<Ts::value...>;
-};
-/*template <CoTmplType T, typename VT, typename... Ts>
-requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
-struct ty_wrap<T, VT, Ts...> {
-    using type = typename T::template wrap<
-        VT, static_cast<VT>(Ts::value)...>;
-};*/
+template <template <typename...> class Tmpl>
+struct template_t {
+    template <typename... _Ts>
+    struct __tmpl_pkg : type_t<Tmpl<_Ts...>> {};
 
-template <MetaTmplType T, auto... Vs> struct va_wrap;
-template <VaTmplType T, auto... Vs>
-struct va_wrap<T, Vs...> {
-    using type = typename T::template wrap<Vs...>;
-};
-template <TyTmplType T, auto... Vs>
-struct va_wrap<T, Vs...> {
-    using type = typename T::template wrap<value_t<Vs>...>;
+    template <typename... _Ts>
+    using wrap = typename __tmpl_pkg<_Ts...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_spec_of<_Tp, Tmpl>;
 };
 
+template <template <auto...> class Tmpl>
+struct value_template_t {
+    template <auto... _Vs>
+    struct __tmpl_pkg : type_t<Tmpl<_Vs...>> {};
+
+    template <auto... _Vs>
+    using wrap = typename __tmpl_pkg<_Vs...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_value_spec_of<_Tp, Tmpl>;
+};
+
+template <template <typename T, T...> class Tmpl>
+struct constant_template_t {
+    template <typename _Tp, _Tp... _Vs>
+    struct __tmpl_pkg : type_t<Tmpl<_Tp, _Vs...>> {};
+
+    template <typename _Tp, _Tp... _Vs>
+    using wrap = typename __tmpl_pkg<_Tp, _Vs...>::type;
+
+    template <typename _Tp>
+    using is_wrapped_to = is_constant_spec_of<_Tp, Tmpl>;
+};
+
+namespace _tmp_impl {
+template <MetaTmplType T, typename... Ts>        struct ty_wrap;
+template <MetaTmplType T, auto... Vs>            struct va_wrap;
 template <MetaTmplType T, typename VT, VT... Vs> struct co_wrap;
-template <CoTmplType T, typename VT, VT... Vs>
-struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<VT, Vs...>;
-};
-template <VaTmplType T, typename VT, VT... Vs>
-struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<Vs...>;
-};
-template <TyTmplType T, typename VT, VT... Vs>
-struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<constant_t<VT, Vs>...>;
-};
+template <MetaTmplType TmplT, MetaListType T>    struct meta_wrap;
 
-template <MetaTmplType TmplT, MetaListType T> struct meta_wrap;
 template <MetaTmplType TmplT, typename... Ts>
 struct meta_wrap<TmplT, type_list<Ts...>> {
     using type = typename ty_wrap<TmplT, Ts...>::type;
@@ -105,18 +104,18 @@ struct meta_rewrap<T, constant_list<VT, Vs...>> {
 }
 
 template <MetaTmplType T, typename... Ts>
-using ty_wrap_t = typename detail::ty_wrap<T, Ts...>::type;
+using ty_wrap_t = typename _tmp_impl::ty_wrap<T, Ts...>::type;
 template <MetaTmplType T, auto... Vs>
-using va_wrap_t = typename detail::va_wrap<T, Vs...>::type;
+using va_wrap_t = typename _tmp_impl::va_wrap<T, Vs...>::type;
 template <MetaTmplType T, typename VT, VT... Vs>
-using co_wrap_t = typename detail::co_wrap<T, VT, Vs...>::type;
+using co_wrap_t = typename _tmp_impl::co_wrap<T, VT, Vs...>::type;
 template <MetaTmplType TmplT, MetaListType T>
-using meta_wrap_t = typename detail::meta_wrap<TmplT, T>::type;
+using meta_wrap_t = typename _tmp_impl::meta_wrap<TmplT, T>::type;
 
 template <typename T, MetaTmplType TmplT>
-using meta_rewrapped_t = typename detail::meta_rewrapped<T, TmplT>::type;
+using meta_rewrapped_t = typename _tmp_impl::meta_rewrapped<T, TmplT>::type;
 template <typename T, MetaListType ArgsT>
-using meta_rewrap_t = typename detail::meta_rewrap<T, ArgsT>::type;
+using meta_rewrap_t = typename _tmp_impl::meta_rewrap<T, ArgsT>::type;
 
 using ty_list_tmpl_t = ty_tmpl_t<type_list>;
 using va_list_tmpl_t = va_tmpl_t<value_list>;

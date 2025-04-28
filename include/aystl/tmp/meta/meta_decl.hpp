@@ -26,5 +26,9 @@ template <MetaListType InT, MetaListType OutT,
     MetaTmplType TmplT, typename... TmplArgs>
 struct meta_list_map;
 }
+template <MetaListType InT, MetaListType OutT,
+    MetaTmplType TmplT, typename... TmplArgs>
+using meta_list_map_t = typename _tmp_impl::meta_list_map<
+    InT, OutT, TmplT, TmplArgs...>::type;
 }
 

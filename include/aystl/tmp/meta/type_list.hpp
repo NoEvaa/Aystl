@@ -20,7 +20,7 @@
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/meta/template.hpp"
 #include "aystl/tmp/meta/meta_decl.hpp"
-#include "aystl/tmp/utils/compare.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -50,17 +50,13 @@ struct type_list {
     using wrapped = meta_wrap_t<TmplT, type>;
 
     template <TyTmplType TmplT, typename... TmplArgs>
-    using map = typename _tmp_impl::meta_list_map<
-        type, type_list<>, TmplT, TmplArgs...>::type;
+    using map = meta_list_map_t<type, type_list<>, TmplT, TmplArgs...>;
     template <MetaTmplType TmplT>
-    using ty_map = typename _tmp_impl::meta_list_map<
-        type, type_list<>, TmplT>::type;
+    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
     template <MetaTmplType TmplT>
-    using va_map = typename _tmp_impl::meta_list_map<
-        type, value_list<>, TmplT>::type;
+    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
     template <MetaTmplType TmplT, typename _VTp>
-    using co_map = typename _tmp_impl::meta_list_map<
-        type, constant_list<_VTp>, TmplT>::type;
+    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;

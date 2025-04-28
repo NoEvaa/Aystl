@@ -50,42 +50,14 @@ template <typename T, typename VT>
 concept ConstantTType = ValueTType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
-template <std::size_t _v>
-using index_constant = constant_t<std::size_t, _v>;
+template <std::size_t _i>
+using index_constant = constant_t<std::size_t, _i>;
+template <bool _b>
+using bool_constant = constant_t<bool, _b>;
 
-template <template <typename...> class Tmpl>
-struct template_t {
-    template <typename... _Ts>
-    struct __TmplPkg : type_t<Tmpl<_Ts...>> {};
-
-    template <typename... _Ts>
-    using wrap = typename __TmplPkg<_Ts...>::type;
-
-    template <typename _Tp>
-    using is_wrapped_to = is_spec_of<_Tp, Tmpl>;
-};
-template <template <auto...> class Tmpl>
-struct value_template_t {
-    template <auto... _Vs>
-    struct __TmplPkg : type_t<Tmpl<_Vs...>> {};
-
-    template <auto... _Vs>
-    using wrap = typename __TmplPkg<_Vs...>::type;
-
-    template <typename _Tp>
-    using is_wrapped_to = is_value_spec_of<_Tp, Tmpl>;
-};
-template <template <typename T, T...> class Tmpl>
-struct constant_template_t {
-    template <typename _Tp, _Tp... _Vs>
-    struct __TmplPkg : type_t<Tmpl<_Tp, _Vs...>> {};
-
-    template <typename _Tp, _Tp... _Vs>
-    using wrap = typename __TmplPkg<_Tp, _Vs...>::type;
-
-    template <typename _Tp>
-    using is_wrapped_to = is_constant_spec_of<_Tp, Tmpl>;
-};
+template <template <typename...> class Tmpl>      struct template_t;
+template <template <auto...> class Tmpl>          struct value_template_t;
+template <template <typename T, T...> class Tmpl> struct constant_template_t;
 
 template <template <typename...> class Tmpl>
 using ty_tmpl_t = template_t<Tmpl>;

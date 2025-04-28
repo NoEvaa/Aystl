@@ -16,7 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/utils/compare.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
 
 namespace iin {
 namespace detail {

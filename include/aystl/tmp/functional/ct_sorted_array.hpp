@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 #pragma once
-/**
- * Template Metaprogramming
- */
 
-#include "aystl/tmp/type_traits.hpp"
-#include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/functional.hpp"
-#include "aystl/tmp/utility.hpp"
+namespace iin {
+template <typename _Cmp, typename T, T... Vs>
+struct ct_sorted_array;
+}
 

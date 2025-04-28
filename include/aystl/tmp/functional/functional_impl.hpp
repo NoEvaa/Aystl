@@ -18,6 +18,10 @@
 #include <array>
 #include <algorithm>
 
+#include "aystl/tmp/functional/ct_sorted_array.hpp"
+#include "aystl/tmp/functional/comparator.hpp"
+
+#include "aystl/tmp/type_traits.hpp"
 #include "aystl/tmp/meta.hpp"
 
 namespace iin {
@@ -41,6 +45,28 @@ struct ct_sorted_array {
 
     using to_constant_list = typename make_index_seq<size()>
         ::template co_map<va_tmpl_t<at>, element_type>;
+};
+
+/**
+ * TmplT<pos> ${_cmp_op} TmplT<pos - 1>
+ */
+template <VaTmplType TmplT, std::size_t _max_pos,
+    CmpOp _cmp_op, bool _default, bool _first>
+struct ct_pos_forward_comparator {
+    template <std::size_t lpos, std::size_t rpos>
+    static constexpr bool __cmp_v = ct_cmp_v<_cmp_op,
+        va_wrap_t<TmplT, lpos>::value, va_wrap_t<TmplT, rpos>::value>;
+
+    template <std::size_t pos>
+    struct __forward_cmp : constant_t<bool, _default> {};
+    template <std::size_t pos>
+    requires CtCmp<CmpOp::kEQ, pos, 0> && CtCmp<CmpOp::kLT, 0, _max_pos>
+    struct __forward_cmp<pos> : constant_t<bool, _first> {};
+    template <std::size_t pos>
+    requires CtCmp<CmpOp::kLT, 0, pos> && CtCmp<CmpOp::kLT, pos, _max_pos>
+    struct __forward_cmp<pos> : constant_t<bool, __cmp_v<pos, pos - 1>> {};
+
+    using type = va_tmpl_t<__forward_cmp>;
 };
 }
 

@@ -21,6 +21,7 @@
 #include "aystl/tmp/meta/value_list.hpp"
 #include "aystl/tmp/meta/constant_list.hpp"
 #include "aystl/tmp/meta/int_seq.hpp"
+#include "aystl/tmp/functional/comparator.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -206,6 +207,15 @@ template <TyListType T, TyListType MaskT>
 struct type_list_filter {
     using _range_type = typename make_index_seq<T::size()>::template filter<MaskT>;
     using type = T::template slice<_range_type>;
+};
+
+template <CoListType T>
+struct constant_list_sorted_unique {
+    using _tmpl_type = typename ct_pos_forward_comparator<
+        va_tmpl_t<T::template at>, T::size()>::type;
+    using _filt_type = typename make_index_seq<T::size()>
+        ::template ty_map<_tmpl_type>;
+    using type = typename T::template filter<_filt_type>;
 };
 }
 }

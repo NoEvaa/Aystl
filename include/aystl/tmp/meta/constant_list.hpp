@@ -20,6 +20,7 @@
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/meta/meta_decl.hpp"
 #include "aystl/tmp/type_traits/compare.hpp"
+#include "aystl/tmp/functional/ct_sorted_array.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -34,10 +35,10 @@ struct constant_list_get;
 template <CoListType InT, TyListType MaskT,
     CoListType OutT, std::size_t pos = 0>
 struct constant_list_filter : type_t<OutT> {};
-}
 
-template <typename _Cmp, typename T, T... Vs>
-struct ct_sorted_array;
+template <CoListType T>
+struct constant_list_sorted_unique;
+}
 
 template<typename T, T... Vs>
 struct constant_list {
@@ -51,6 +52,11 @@ struct constant_list {
 
     template <MetaTmplType TmplT>
     using wrapped = meta_wrap_t<TmplT, type>;
+
+    template <TyTmplType TmplT>
+    using transform = ty_wrap_t<TmplT, type>;
+    template <TyTmplType TmplT>
+    using transform_t = typename transform<TmplT>::type;
 
     template <MetaTmplType TmplT>
     using map = meta_list_map_t<type, constant_list<value_type>, TmplT>;
@@ -83,7 +89,8 @@ struct constant_list {
     template <typename _Cmp = std::less<>>
     using sort = typename ct_sorted_array<_Cmp, value_type, Vs...>::to_constant_list;
 
-    //using unique_sort;
+    template <typename _Cmp = std::less<>>
+    using unique_sort = typename _tmp_impl::constant_list_sorted_unique<sort<_Cmp>>::type;
 };
 }
 

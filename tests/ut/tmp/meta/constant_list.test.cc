@@ -15,7 +15,7 @@
  */
 #include "testlib.h"
 #include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/utils/ct_sorted_array.hpp"
+#include "aystl/tmp/functional.hpp"
 
 using namespace iin;
 

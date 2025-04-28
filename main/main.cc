@@ -5,11 +5,12 @@
 #include <string_view>
 #include <utility>
 #include "aystl/aystl.hpp"
+#include "aystl/tmp/meta/transfer.hpp"
 #include "aystl/utility.hpp"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
-#include "aystl/tmp/utils/ct_sorted_array.hpp"
+#include "aystl/tmp/functional.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
 #include "aystl/tmp.hpp"
 
@@ -70,12 +71,21 @@ struct currying_template : template_t<Tmpl> {
 
 int main()
 {
-    using ts1 = type_list<int, bool, char>;
-    using r = ct_range_t<0, 1>;
-    using ss = va_tmpl_t<ts1::at>;
-    using dd = r::ty_map<ss>;
+    using uuu1 = constant_list<int, 1,3,1,5,2,3,0,0>;
+    using uuu2 = uuu1::sort<>;
+    std::cout << getTypeName<uuu2>() << std::endl;
 
-
+    using _cmp_type = ct_pos_forward_comparator<va_tmpl_t<uuu2::at>, uuu2::size()>;
+    std::cout << (_cmp_type::__cmp_v<1, 0>) << std::endl;
+    std::cout << (_cmp_type::__cmp_v<2, 1>) << std::endl;
+    std::cout << _cmp_type::__forward_cmp<0>::value << std::endl;
+    std::cout << _cmp_type::__forward_cmp<1>::value << std::endl;
+    std::cout << _cmp_type::__forward_cmp<2>::value << std::endl;
+    using _tmpl_type = ct_pos_forward_comparator<va_tmpl_t<uuu2::at>, uuu2::size()>::type;
+    
+    using uuu3 = uuu1::unique_sort<>;
+    std::cout << getTypeName<uuu3>() << std::endl;
+    return 0;
 #if 0
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
     using xxx2 = xxx1::slice<make_index_seq<xxx1::size()>::template filter<value_t_list<true, false>>>;

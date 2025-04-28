@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-/**
- * Template Metaprogramming
- */
-
-#include "aystl/tmp/type_traits.hpp"
-#include "aystl/tmp/meta.hpp"
+#include "testlib.h"
 #include "aystl/tmp/functional.hpp"
-#include "aystl/tmp/utility.hpp"
+
+using namespace iin;
+
+TEST_CASE("ct_sorted_array") {
+    CHECK(std::is_same_v<ct_sorted_array<std::less<>, int, 1, 5, 2, 0>::to_constant_list,
+          int_seq<int, 0, 1, 2, 5>>);
+    CHECK(std::is_same_v<ct_sorted_array<std::greater<>, int, 1, 5, 2, 0>::to_constant_list,
+          int_seq<int, 5, 2, 1, 0>>);
+}
 

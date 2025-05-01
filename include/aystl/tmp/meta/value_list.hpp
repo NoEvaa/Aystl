@@ -33,6 +33,8 @@ struct value_list {
     using transform = ty_wrap_t<TmplT, type>;
     template <TyTmplType TmplT>
     using transform_t = typename transform<TmplT>::type;
+    template <TyTmplType TmplT>
+    using transform_tt = typename transform<TmplT>::ttype;
 
     template <MetaTmplType TmplT>
     using ty_map = meta_list_map_t<type, type_list<>, TmplT>;

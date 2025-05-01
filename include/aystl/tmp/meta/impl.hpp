@@ -210,9 +210,9 @@ struct type_list_filter {
 
 template <CoListType T>
 struct constant_list_sorted_unique {
-    using _tmpl_type = typename ct_pos_forward_comparator<
-        va_tmpl_t<T::template at>, T::size()>::ttype;
-    using _filt_type = make_index_seq<T::size()>::template ty_map<_tmpl_type>;
+    using _cmp_2v_ttype = ct_pos_value_cmp_tt<va_tmpl_t<T::template at>, CmpOp::kNE>;
+    using _cmp_1f_ttype = ct_pos_forward_cmp_tt<_cmp_2v_ttype, T::size()>;
+    using _filt_type = make_index_seq<T::size()>::template ty_map<_cmp_1f_ttype>;
     using type = T::template filter<_filt_type>;
 };
 }

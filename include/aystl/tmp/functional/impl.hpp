@@ -47,16 +47,18 @@ struct ct_sorted_array {
         ::template co_map<va_tmpl_t<at>, element_type>;
 };
 
-/**
- * TmplT<pos> ${_cmp_op} TmplT<pos - 1>
- */
-template <VaTmplType TmplT, std::size_t _max_pos,
-    CmpOp _cmp_op, bool _default, bool _first>
-struct ct_pos_forward_comparator {
+namespace _tmp_impl {
+template <VaTmplType TmplT, CmpOp _cmp_op>
+struct ct_pos_value_comparator {
     template <std::size_t lpos, std::size_t rpos>
-    static constexpr bool __cmp_v = ct_cmp_v<_cmp_op,
+    using __impl = ct_cmp<_cmp_op, 
         va_wrap_t<TmplT, lpos>::value, va_wrap_t<TmplT, rpos>::value>;
+    using ttype = va_tmpl_t<__impl>;
+};
 
+template <VaTmplType TmplT, std::size_t _max_pos,
+    bool _default, bool _first>
+struct ct_pos_forward_comparator {
     template <std::size_t pos>
     struct __impl : constant_t<bool, _default> {};
     template <std::size_t pos>
@@ -64,9 +66,10 @@ struct ct_pos_forward_comparator {
     struct __impl<pos> : constant_t<bool, _first> {};
     template <std::size_t pos>
     requires CtCmp<CmpOp::kLT, 0, pos> && CtCmp<CmpOp::kLT, pos, _max_pos>
-    struct __impl<pos> : constant_t<bool, __cmp_v<pos, pos - 1>> {};
+    struct __impl<pos> : constant_t<bool, va_wrap_t<TmplT, pos, pos - 1>::value> {};
 
     using ttype = va_tmpl_t<__impl>;
 };
+}
 }
 

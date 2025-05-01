@@ -19,8 +19,26 @@
 #include "aystl/global/common.hpp"
 
 namespace iin {
-template <VaTmplType TmplT, std::size_t _max_pos,
-    CmpOp _cmp_op = CmpOp::kNE, bool _default = false, bool _first = !_default>
+namespace _tmp_impl {
+template <VaTmplType, CmpOp>
+struct ct_pos_value_comparator;
+
+template <VaTmplType, std::size_t, bool, bool>
 struct ct_pos_forward_comparator;
+}
+/**
+ * TmplT<lpos>::value ${_cmp_op} TmplT<rpos>::value
+ */
+template <VaTmplType TmplT, CmpOp _cmp_op>
+using ct_pos_value_cmp_tt = typename _tmp_impl::ct_pos_value_comparator<
+    TmplT, _cmp_op>::ttype;
+
+/**
+ * TmplT<pos, pos - 1>::value
+ */
+template <VaTmplType TmplT, std::size_t _max_pos,
+    bool _default = false, bool _first = !_default>
+using ct_pos_forward_cmp_tt = typename _tmp_impl::ct_pos_forward_comparator<
+    TmplT, _max_pos, _default, _first>::ttype;
 }
 

@@ -75,14 +75,6 @@ int main()
     using uuu2 = uuu1::sort<>;
     std::cout << getTypeName<uuu2>() << std::endl;
 
-    using _cmp_type = ct_pos_forward_comparator<va_tmpl_t<uuu2::at>, uuu2::size()>;
-    std::cout << (_cmp_type::__cmp_v<1, 0>) << std::endl;
-    std::cout << (_cmp_type::__cmp_v<2, 1>) << std::endl;
-    std::cout << _cmp_type::__forward_cmp<0>::value << std::endl;
-    std::cout << _cmp_type::__forward_cmp<1>::value << std::endl;
-    std::cout << _cmp_type::__forward_cmp<2>::value << std::endl;
-    using _tmpl_type = ct_pos_forward_comparator<va_tmpl_t<uuu2::at>, uuu2::size()>::type;
-    
     using uuu3 = uuu1::unique_sort<>;
     std::cout << getTypeName<uuu3>() << std::endl;
     return 0;

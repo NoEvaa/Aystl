@@ -30,27 +30,27 @@ struct TmplC1 {};
 }
 
 TEST_CASE("template_t wrap") {
-    CHECK(std::is_same_v<ty_wrap_t<ty_list_tmpl_t, int, bool>, type_list<int, bool>>);
-    CHECK(std::is_same_v<ty_wrap_t<va_list_tmpl_t, value_t<1>, value_t<2>>, value_list<1, 2>>);
-    //CHECK(std::is_same_v<ty_wrap_t<co_list_tmpl_t, int, value_t<1>, value_t<2>>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<ty_wrap_t<ty_list_tt, int, bool>, type_list<int, bool>>);
+    CHECK(std::is_same_v<ty_wrap_t<va_list_tt, value_t<1>, value_t<2>>, value_list<1, 2>>);
+    //CHECK(std::is_same_v<ty_wrap_t<co_list_tt, int, value_t<1>, value_t<2>>, constant_list<int, 1, 2>>);
 
-    CHECK(std::is_same_v<va_wrap_t<ty_list_tmpl_t, 1, 2>, type_list<value_t<1>, value_t<2>>>);
-    CHECK(std::is_same_v<va_wrap_t<va_list_tmpl_t, 1, 2>, value_list<1, 2>>);
+    CHECK(std::is_same_v<va_wrap_t<ty_list_tt, 1, 2>, type_list<value_t<1>, value_t<2>>>);
+    CHECK(std::is_same_v<va_wrap_t<va_list_tt, 1, 2>, value_list<1, 2>>);
 
-    CHECK(std::is_same_v<co_wrap_t<ty_list_tmpl_t, int, 1, 2>, type_list<constant_t<int, 1>, constant_t<int, 2>>>);
-    CHECK(std::is_same_v<co_wrap_t<va_list_tmpl_t, int, 1, 2>, value_list<1, 2>>);
-    CHECK(std::is_same_v<co_wrap_t<co_list_tmpl_t, int, 1, 2>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<co_wrap_t<ty_list_tt, int, 1, 2>, type_list<constant_t<int, 1>, constant_t<int, 2>>>);
+    CHECK(std::is_same_v<co_wrap_t<va_list_tt, int, 1, 2>, value_list<1, 2>>);
+    CHECK(std::is_same_v<co_wrap_t<co_list_tt, int, 1, 2>, constant_list<int, 1, 2>>);
 
-    CHECK(std::is_same_v<meta_wrap_t<ty_list_tmpl_t, type_list<int, bool>>, type_list<int, bool>>);
-    CHECK(std::is_same_v<meta_wrap_t<va_list_tmpl_t, value_list<1, 2>>, value_list<1, 2>>);
-    CHECK(std::is_same_v<meta_wrap_t<co_list_tmpl_t, constant_list<int, 1, 2>>, constant_list<int, 1, 2>>);
-    //CHECK(std::is_same_v<meta_wrap_t<co_list_tmpl_t, type_list<int, value_t<1>, value_t<2>>>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<meta_wrap_t<ty_list_tt, type_list<int, bool>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<meta_wrap_t<va_list_tt, value_list<1, 2>>, value_list<1, 2>>);
+    CHECK(std::is_same_v<meta_wrap_t<co_list_tt, constant_list<int, 1, 2>>, constant_list<int, 1, 2>>);
+    //CHECK(std::is_same_v<meta_wrap_t<co_list_tt, type_list<int, value_t<1>, value_t<2>>>, constant_list<int, 1, 2>>);
 }
 
 TEST_CASE("template_t rewrapped") {
-    CHECK(std::is_same_v<meta_rewrapped_t<Tmpl1<int, bool>, ty_list_tmpl_t>, type_list<int, bool>>);
-    CHECK(std::is_same_v<meta_rewrapped_t<TmplV1<1, 2>, va_list_tmpl_t>, value_list<1, 2>>);
-    CHECK(std::is_same_v<meta_rewrapped_t<TmplC1<int, 1, 2>, co_list_tmpl_t>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<Tmpl1<int, bool>, ty_list_tt>, type_list<int, bool>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<TmplV1<1, 2>, va_list_tt>, value_list<1, 2>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<TmplC1<int, 1, 2>, co_list_tt>, constant_list<int, 1, 2>>);
 }
 
 TEST_CASE("template_t rewrap") {

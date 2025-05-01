@@ -58,15 +58,15 @@ struct ct_pos_forward_comparator {
         va_wrap_t<TmplT, lpos>::value, va_wrap_t<TmplT, rpos>::value>;
 
     template <std::size_t pos>
-    struct __forward_cmp : constant_t<bool, _default> {};
+    struct __impl : constant_t<bool, _default> {};
     template <std::size_t pos>
     requires CtCmp<CmpOp::kEQ, pos, 0> && CtCmp<CmpOp::kLT, 0, _max_pos>
-    struct __forward_cmp<pos> : constant_t<bool, _first> {};
+    struct __impl<pos> : constant_t<bool, _first> {};
     template <std::size_t pos>
     requires CtCmp<CmpOp::kLT, 0, pos> && CtCmp<CmpOp::kLT, pos, _max_pos>
-    struct __forward_cmp<pos> : constant_t<bool, __cmp_v<pos, pos - 1>> {};
+    struct __impl<pos> : constant_t<bool, __cmp_v<pos, pos - 1>> {};
 
-    using type = va_tmpl_t<__forward_cmp>;
+    using ttype = va_tmpl_t<__impl>;
 };
 }
 

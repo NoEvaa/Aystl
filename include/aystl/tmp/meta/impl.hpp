@@ -16,7 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/meta_decl.hpp"
+#include "aystl/tmp/meta/utils.hpp"
 #include "aystl/tmp/meta/type_list.hpp"
 #include "aystl/tmp/meta/value_list.hpp"
 #include "aystl/tmp/meta/constant_list.hpp"
@@ -27,12 +27,12 @@ namespace iin {
 namespace _tmp_impl {
 template <TyTmplType T, typename... Ts>
 struct ty_wrap<T, Ts...> {
-    using type = typename T::template wrap<Ts...>;
+    using type = T::template wrap<Ts...>;
 };
 template <VaTmplType T, typename... Ts>
 requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
 struct ty_wrap<T, Ts...> {
-    using type = typename T::template wrap<Ts::value...>;
+    using type = T::template wrap<Ts::value...>;
 };
 /*template <CoTmplType T, typename VT, typename... Ts>
 requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
@@ -43,24 +43,24 @@ struct ty_wrap<T, VT, Ts...> {
 
 template <VaTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = typename T::template wrap<Vs...>;
+    using type = T::template wrap<Vs...>;
 };
 template <TyTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = typename T::template wrap<value_t<Vs>...>;
+    using type = T::template wrap<value_t<Vs>...>;
 };
 
 template <CoTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<VT, Vs...>;
+    using type = T::template wrap<VT, Vs...>;
 };
 template <VaTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<Vs...>;
+    using type = T::template wrap<Vs...>;
 };
 template <TyTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = typename T::template wrap<constant_t<VT, Vs>...>;
+    using type = T::template wrap<constant_t<VT, Vs>...>;
 };
 
 template <TyListType T, typename... NextT>
@@ -175,24 +175,23 @@ struct type_list_get<T, pos, DefaultT> : type_t<typename T::template at<pos>> {}
 
 template <CoListType T, std::size_t pos>
 struct constant_list_at {
-    using _tylist_type = typename T::template wrapped<ty_list_tmpl_t>;
-    using type = typename _tylist_type::template at<pos>;
+    using _tylist_type = T::template wrapped<ty_list_tt>;
+    using type = _tylist_type::template at<pos>;
 };
 template <CoListType T, std::size_t pos, typename DefaultT>
 struct constant_list_get {
-    using _tylist_type = typename T::template wrapped<ty_list_tmpl_t>;
-    using type = typename _tylist_type::template get<pos, DefaultT>;
+    using _tylist_type = T::template wrapped<ty_list_tt>;
+    using type = _tylist_type::template get<pos, DefaultT>;
 };
 
 template <CoListType InT, TyListType MaskT, CoListType OutT, std::size_t pos>
 requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>
 struct constant_list_filter<InT, MaskT, OutT, pos> {
-    using _elem_type  = typename InT::template at<pos>;
-    using _filt_type  = typename MaskT::template at<pos>;
-    using _t_out_type = typename OutT::template push_back<_elem_type::value>;
+    using _elem_type  = InT::template at<pos>;
+    using _filt_type  = MaskT::template at<pos>;
+    using _t_out_type = OutT::template push_back<_elem_type::value>;
     using _f_out_type = OutT;
-    using _out_type   = std::conditional_t<
-        static_cast<bool>(_filt_type::value), _t_out_type, _f_out_type>;
+    using _out_type   = cond_t<_filt_type::value, _t_out_type, _f_out_type>;
 
     using type = typename constant_list_filter<InT, MaskT, _out_type, pos + 1>::type;
 };
@@ -200,22 +199,21 @@ struct constant_list_filter<InT, MaskT, OutT, pos> {
 template <TyListType T, IntSeqType RangeT>
 struct type_list_slice {
     using _tmpl_type = va_tmpl_t<T::template at>;
-    using type = typename RangeT::template ty_map<_tmpl_type>;
+    using type = RangeT::template ty_map<_tmpl_type>;
 };
 
 template <TyListType T, TyListType MaskT>
 struct type_list_filter {
-    using _range_type = typename make_index_seq<T::size()>::template filter<MaskT>;
+    using _range_type = make_index_seq<T::size()>::template filter<MaskT>;
     using type = T::template slice<_range_type>;
 };
 
 template <CoListType T>
 struct constant_list_sorted_unique {
     using _tmpl_type = typename ct_pos_forward_comparator<
-        va_tmpl_t<T::template at>, T::size()>::type;
-    using _filt_type = typename make_index_seq<T::size()>
-        ::template ty_map<_tmpl_type>;
-    using type = typename T::template filter<_filt_type>;
+        va_tmpl_t<T::template at>, T::size()>::ttype;
+    using _filt_type = make_index_seq<T::size()>::template ty_map<_tmpl_type>;
+    using type = T::template filter<_filt_type>;
 };
 }
 }

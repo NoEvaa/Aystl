@@ -117,8 +117,8 @@ using meta_rewrapped_t = typename _tmp_impl::meta_rewrapped<T, TmplT>::type;
 template <typename T, MetaListType ArgsT>
 using meta_rewrap_t = typename _tmp_impl::meta_rewrap<T, ArgsT>::type;
 
-using ty_list_tmpl_t = ty_tmpl_t<type_list>;
-using va_list_tmpl_t = va_tmpl_t<value_list>;
-using co_list_tmpl_t = co_tmpl_t<constant_list>;
+using ty_list_tt = ty_tmpl_t<type_list>;
+using va_list_tt = va_tmpl_t<value_list>;
+using co_list_tt = co_tmpl_t<constant_list>;
 }
 

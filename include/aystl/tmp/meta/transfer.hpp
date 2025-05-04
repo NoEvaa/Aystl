@@ -20,6 +20,8 @@
 namespace iin {
 template <ValueTType T>
 using transfer_value_t = value_t<T::value>;
+template <typename T>
+using transfer_value_type_t = type_t<typename T::value_type>;
 
 namespace detail {
 template <typename T>

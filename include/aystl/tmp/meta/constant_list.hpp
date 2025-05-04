@@ -29,8 +29,6 @@ struct constant_list_cat : type_t<T> {};
 
 template <CoListType T, std::size_t pos>
 struct constant_list_at;
-template <CoListType T, std::size_t pos, typename DefaultT>
-struct constant_list_get;
 
 template <CoListType InT, TyListType MaskT,
     CoListType OutT, std::size_t pos = 0>
@@ -73,8 +71,6 @@ struct constant_list {
     using at = typename _tmp_impl::constant_list_at<type, pos>::type;
     template <std::size_t pos>
     static constexpr auto at_v = at<pos>::value;
-    template <std::size_t pos, typename DefaultT = null_t>
-    using get = typename _tmp_impl::constant_list_get<type, pos, DefaultT>::type;
 
     template <CoListTType<value_type>... _Ts>
     using concat = typename _tmp_impl::constant_list_cat<type, _Ts...>::type;

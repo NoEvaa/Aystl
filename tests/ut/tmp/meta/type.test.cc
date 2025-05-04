@@ -39,20 +39,20 @@ TEST_CASE("value_t") {
 }
 
 TEST_CASE("constant_t") {
-    CHECK(std::is_same_v<constant_t<int, 6>::value_type, int>);
-    CHECK(constant_t<int, 6>::value == 6);
+    using _test_ca1 = constant_t<int, 6>;
+    CHECK(std::is_same_v<_test_ca1::value_type, int>);
+    CHECK(_test_ca1::value == 6);
 
     CHECK(ConstantTType<value_t<int(1)>, int>);
     CHECK(ConstantTType<constant_t<int, 1>, int>);
     CHECK(!ConstantTType<int, int>);
-}
 
-TEST_CASE("template_t") {
-    CHECK(std::is_same_v<template_t<type_t>::wrap<int>, type_t<int>>);
-    CHECK(std::is_same_v<template_t<type_list>::wrap<int, int, double>, type_list<int, int, double>>);
+    CHECK(std::is_same_v<_test_ca1::cast<char>, constant_t<char, 6>>);
 
-    CHECK(TyTmplType<template_t<type_t>>);
-    CHECK(!TyTmplType<int>);
+    constexpr _test_ca1 v;
+    CHECK(v() == 6);
+    CHECK(std::is_same_v<decltype(v()), int>);
+    CHECK(char(v) == 6);
 }
 
 TEST_CASE("take off") {

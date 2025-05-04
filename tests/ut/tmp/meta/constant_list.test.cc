@@ -59,15 +59,10 @@ TEST_CASE("constant list wrapped & map") {
     CHECK(std::is_same_v<test_seq_1::va_map<va_tmpl_t<_test_pow>>, value_list<1, 4, 9>>);
 }
 
-TEST_CASE("constant list at & get") {
+TEST_CASE("constant list at") {
     CHECK(std::is_same_v<test_seq_2::at<0>, constant_t<int, 7>>);
     CHECK(std::is_same_v<test_seq_2::at<1>, constant_t<int, 8>>);
     CHECK(std::is_same_v<test_seq_2::at<2>, constant_t<int, 9>>);
-
-    CHECK(std::is_same_v<test_seq_2::get<0>, constant_t<int, 7>>);
-    CHECK(std::is_same_v<test_seq_2::get<2>, constant_t<int, 9>>);
-    CHECK(std::is_same_v<test_seq_2::get<3>, null_t>);
-    CHECK(std::is_same_v<test_seq_2::get<10>, null_t>);
 }
 
 TEST_CASE("constant list concat") {
@@ -102,8 +97,11 @@ TEST_CASE("constant list filter") {
 
 TEST_CASE("constant list sort") {
     using _test_seq_1 = constant_list<int, 2, 5, 1, -1, 0>;
+    using _test_seq_2 = constant_list<int, 2, 1, 2, 0, 0, 1, -1>;
 
     CHECK(std::is_same_v<_test_seq_1::sort<>, constant_list<int, -1, 0, 1, 2, 5>>);
     CHECK(std::is_same_v<_test_seq_1::sort<std::greater<>>, constant_list<int, 5, 2, 1, 0, -1>>);
+    CHECK(std::is_same_v<_test_seq_2::unique_sort<>, constant_list<int, -1, 0, 1, 2>>);
+    CHECK(std::is_same_v<_test_seq_2::unique_sort<std::greater<>>, constant_list<int, 2, 1, 0, -1>>);
 }
 

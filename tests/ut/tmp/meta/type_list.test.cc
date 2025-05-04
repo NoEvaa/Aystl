@@ -25,6 +25,7 @@ TEST_CASE("type list") {
     CHECK(type_list<>::size() == 0);
     CHECK(_test_list_1::size() == 3);
     CHECK(TyListType<type_list<>>);
+    CHECK(!TyListType<int>);
 }
 
 TEST_CASE("type list concat") {
@@ -43,16 +44,11 @@ TEST_CASE("type list push front & back") {
     CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
 }
 
-TEST_CASE("type list at & get") {
+TEST_CASE("type list at") {
     using _test_list_1 = type_list<int, double, char const &>;
     CHECK(std::is_same_v<_test_list_1::at<0>, int>);
     CHECK(std::is_same_v<_test_list_1::at<1>, double>);
     CHECK(std::is_same_v<_test_list_1::at<2>, char const &>);
-
-    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
-    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
-    CHECK(std::is_same_v<_test_list_1::get<3>, null_t>);
-    CHECK(std::is_same_v<_test_list_1::get<10, void>, void>);
 }
 
 TEST_CASE("type list wrapped & map") {
@@ -74,6 +70,7 @@ TEST_CASE("type list wrapped & map") {
           type_list<constant_t<int, 1>, constant_t<int, 2>, constant_t<int, 3>>>);
 
     CHECK(std::is_same_v<_test_list_2::va_map<ty_tmpl_t<transfer_value_t>>, value_list<1, 2, 3>>);
+    CHECK(std::is_same_v<_test_list_2::co_map<ty_tmpl_t<transfer_value_t>, int>, constant_list<int, 1, 2, 3>>);
 }
 
 TEST_CASE("type list slice") {

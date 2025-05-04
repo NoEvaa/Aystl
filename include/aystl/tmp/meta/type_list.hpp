@@ -27,9 +27,6 @@ namespace _tmp_impl {
 template <TyListType T, TyListType... Ts>
 struct type_list_cat : type_t<T> {};
 
-template <TyListType T, std::size_t pos, typename DefaultT>
-struct type_list_get : type_t<DefaultT> {};
-
 template <TyListType T, IntSeqType RangeT>
 struct type_list_slice;
 
@@ -67,8 +64,6 @@ struct type_list {
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;
-    template <std::size_t pos, typename DefaultT = null_t>
-    using get = typename _tmp_impl::type_list_get<type, pos, DefaultT>::type;
 
     template <TyListType... _Ts>
     using concat = type_list_cat_t<type, _Ts...>;

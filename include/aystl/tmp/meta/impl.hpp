@@ -99,7 +99,7 @@ struct meta_list_iter {
         using type = va_wrap_t<meta_list_get_tt<T>, pos>;
 
         using is_begin = ct_cmp<CmpOp::kEQ, pos, 0>;
-        using is_end   = ct_cmp<CmpOp::kGE, pos, T::size>;
+        using is_end   = ct_cmp<CmpOp::kGE, pos, T::size()>;
 
         template <std::size_t _offset = 1>
         using next = __impl<(pos + _offset)>;
@@ -205,19 +205,10 @@ struct constant_list_cat<T1, T2, Ts...> {
     >::type;
 };
 
-template <TyListType T, std::size_t pos, typename DefaultT>
-requires CtCmp<CmpOp::kLT, pos, T::size()>
-struct type_list_get<T, pos, DefaultT> : type_t<typename T::template at<pos>> {};
-
 template <CoListType T, std::size_t pos>
 struct constant_list_at {
     using _tylist_type = T::template wrapped<ty_list_tt>;
     using type = _tylist_type::template at<pos>;
-};
-template <CoListType T, std::size_t pos, typename DefaultT>
-struct constant_list_get {
-    using _tylist_type = T::template wrapped<ty_list_tt>;
-    using type = _tylist_type::template get<pos, DefaultT>;
 };
 
 template <CoListType InT, TyListType MaskT, CoListType OutT, std::size_t pos>

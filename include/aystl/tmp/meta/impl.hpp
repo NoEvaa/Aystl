@@ -215,10 +215,10 @@ template <CoListType InT, TyListType MaskT, CoListType OutT, std::size_t pos>
 requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>
 struct constant_list_filter<InT, MaskT, OutT, pos> {
     using _elem_type  = InT::template at<pos>;
-    using _filt_type  = MaskT::template at<pos>;
+    using _mask_type  = MaskT::template at<pos>;
     using _t_out_type = OutT::template push_back<_elem_type::value>;
     using _f_out_type = OutT;
-    using _out_type   = cond_t<_filt_type::value, _t_out_type, _f_out_type>;
+    using _out_type   = cond_t<_mask_type::value, _t_out_type, _f_out_type>;
 
     using type = typename constant_list_filter<InT, MaskT, _out_type, pos + 1>::type;
 };

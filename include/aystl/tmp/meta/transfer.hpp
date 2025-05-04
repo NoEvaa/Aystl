@@ -20,8 +20,11 @@
 namespace iin {
 template <ValueTType T>
 using transfer_value_t = value_t<T::value>;
+using transfer_value_tt = ty_tmpl_t<transfer_value_t>;
+
 template <typename T>
 using transfer_value_type_t = type_t<typename T::value_type>;
+using transfer_value_type_tt = ty_tmpl_t<transfer_value_type_t>;
 
 namespace detail {
 template <typename T>
@@ -31,5 +34,6 @@ struct transfer_type<T> : type_t<typename T::type> {};
 }
 template <typename T>
 using transfer_type_t = type_t<typename detail::transfer_type<T>::type>;
+using transfer_type_tt = ty_tmpl_t<transfer_type_t>;
 }
 

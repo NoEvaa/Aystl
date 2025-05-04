@@ -97,6 +97,9 @@ struct type_pair {
     using second_type = T2;
 };
 
+template <typename T>
+concept TypePairType = is_spec_of_v<T, type_pair>;
+
 template <typename... Ts>      struct type_list;
 template <auto... Vs>          struct value_list;
 template <typename T, T... Vs> struct constant_list;

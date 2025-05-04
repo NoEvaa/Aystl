@@ -16,12 +16,11 @@
 #pragma once
 
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/functional.hpp"
 
 namespace iin {
-template <std::size_t _pos, std::size_t _gen = 0>
-struct placeholder_t : value_t<_pos> {
-    static constexpr index_constant<_gen> generation;
-};
+template <std::size_t _pos>
+struct placeholder_t : value_t<_pos> {};
 template <std::size_t pos>
 using plh_t = placeholder_t<pos>;
 template <typename T>
@@ -29,23 +28,36 @@ using is_placeholder = is_value_spec_of<T, placeholder_t>;
 template <typename T>
 concept PlaceholderType = is_placeholder<T>::value;
 
-#if 0
+template <PlaceholderType T>
+struct plh_xx_t : type_t<T> {};
 namespace detail {
-template <TypeListType T>
-struct sorted_placeholders {
-    using _mask_type = typename T::template map<is_placeholder>;
-    using _plhs_type = typename T::template filter<_mask_type>;
-    using _values_type = typename _plhs_type
-        ::template constant_map<std::size_t, transfer_value_t>;
-    using _sorted_values_type = typename _values_type::template sort<>;
-    using _sorted_plhs_type = typename _sorted_values_type
-        ::template type_map<plh_t>;
+template <typename T>
+struct plh_preload : type_t<T>{};
+template <PlaceholderType T>
+struct plh_preload<T> : type_t<plh_xx_t<T>>{};
+template <typename T>
+using plh_preload_t = typename plh_preload<T>::type;
 
-    using type = _sorted_plhs_type;
+template <typename T>
+struct plh_unload : type_t<T> {};
+template <PlaceholderType T>
+struct plh_unload<plh_xx_t<T>> : type_t<T> {};
+template <typename T>
+using plh_unload_t = typename plh_unload<T>::type;
+}
+using plh_preload_tt = ty_tmpl_t<detail::plh_preload_t>;
+using plh_unload_tt = ty_tmpl_t<detail::plh_unload_t>;
+
+namespace detail {
+template <TyListType T>
+struct sorted_placeholders {
+    using _mask_type = T::template map<ty_tmpl_t<is_placeholder>>;
+    using _plhs_type = T::template filter<_mask_type>;
+    using _values_type = _plhs_type::template co_map<transfer_value_tt, std::size_t>;
+    using type = _values_type::template unique_sort<>;
 };
 }
-template <TypeListType T>
+template <TyListType T>
 using sorted_placeholders_t = typename detail::sorted_placeholders<T>::type;
-#endif
 }
 

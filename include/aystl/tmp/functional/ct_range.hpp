@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/tmp/meta.hpp"
+#pragma once
 
-using namespace iin;
+#include <concepts>
 
-TEST_CASE("ct_range") {
-    CHECK(std::is_same_v<ct_range<int, 1, 5, 1>::type, int_seq<int, 1, 2, 3, 4>>);
-    CHECK(std::is_same_v<ct_range<int, 1, -5, -2>::type, int_seq<int, 1, -1, -3>>);
-    CHECK(std::is_same_v<ct_range<int, -1, 1, -1>::type, int_seq<int>>);
-}
-
-TEST_CASE("ct_range_t") {
-    CHECK(std::is_same_v<ct_range_t<1, 5>, int_seq<int, 1, 2, 3, 4>>);
-    CHECK(std::is_same_v<ct_range_t<1, -5, -2>, int_seq<int, 1, -1, -3>>);
+namespace iin {
+template <std::integral T, T _start, T _stop, T _step = 1>
+struct ct_range;
+template <int _start, int _stop, int _step = 1>
+using ct_range_t = typename ct_range<int, _start, _stop, _step>::type;
 }
 

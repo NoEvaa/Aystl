@@ -18,6 +18,7 @@
 #include <array>
 #include <algorithm>
 
+#include "aystl/tmp/functional/ct_range.hpp"
 #include "aystl/tmp/functional/ct_array.hpp"
 #include "aystl/tmp/functional/comparator.hpp"
 
@@ -75,6 +76,22 @@ struct ct_pos_forward_comparator {
 
     using ttype = va_tmpl_t<__impl>;
 };
+
+template <std::integral T, T _start, T _stop, T _step, T... Is>
+struct ct_range_impl : type_t<int_seq<T, Is...>> {};
+
+template <std::integral T, T _start, T _stop, T _step, T... Is>
+requires (
+    (CtCmp<CmpOp::kLT, 0, _step> && CtCmp<CmpOp::kLT, _start, _stop>) ||
+    (CtCmp<CmpOp::kLT, _step, 0> && CtCmp<CmpOp::kLT, _stop, _start>))
+struct ct_range_impl<T, _start, _stop, _step, Is...> {
+    using type = typename ct_range_impl<T,
+        _start + _step, _stop, _step, Is..., _start>::type;
+};
 }
+template <std::integral T, T _start, T _stop, T _step>
+struct ct_range {
+    using type = typename _tmp_impl::ct_range_impl<T, _start, _stop, _step>::type;
+};
 }
 

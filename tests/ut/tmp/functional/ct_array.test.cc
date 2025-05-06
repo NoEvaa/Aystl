@@ -17,11 +17,19 @@
 #include "aystl/tmp/functional.hpp"
 
 using namespace iin;
-#if 0
-TEST_CASE("ct_sorted_array") {
-    CHECK(std::is_same_v<ct_sorted_array<std::less<>, int, 1, 5, 2, 0>::to_constant_list,
+
+TEST_CASE("ct_array sort") {
+    using _lt_sort_tt = ct_array_tt<detail::ct_std_sort_t<std::less<>>>;
+    using _gt_sort_tt = ct_array_tt<detail::ct_std_sort_t<std::greater<>>>;
+    CHECK(std::is_same_v<co_wrap_t<_lt_sort_tt, int, 1, 5, 2, 0>::to_constant_list,
           int_seq<int, 0, 1, 2, 5>>);
-    CHECK(std::is_same_v<ct_sorted_array<std::greater<>, int, 1, 5, 2, 0>::to_constant_list,
+    CHECK(std::is_same_v<co_wrap_t<_gt_sort_tt, int, 1, 5, 2, 0>::to_constant_list,
           int_seq<int, 5, 2, 1, 0>>);
 }
-#endif
+
+TEST_CASE("ct_array reverse") {
+    using _reverse_tt = ct_array_tt<detail::ct_std_reverse_t>;
+    CHECK(std::is_same_v<co_wrap_t<_reverse_tt, int, 1, 5, 2, 0>::to_constant_list,
+          int_seq<int, 0, 2, 5, 1>>);
+}
+

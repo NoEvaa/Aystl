@@ -54,6 +54,7 @@ template <std::size_t _i>
 using index_constant = constant_t<std::size_t, _i>;
 template <bool _b>
 using bool_constant = constant_t<bool, _b>;
+using invalid_index_t = index_constant<static_cast<std::size_t>(-1)>;
 
 template <template <typename...> class Tmpl>      struct template_t;
 template <template <auto...> class Tmpl>          struct value_template_t;
@@ -98,6 +99,8 @@ template <typename T>
 concept VaTmplType = MetaTmplType<T> && detail::is_va_tmpl<T>::value;
 template <typename T>
 concept CoTmplType = MetaTmplType<T> && detail::is_co_tmpl<T>::value;
+template <typename T>
+concept RecTmplType = MetaTmplType<T> && detail::is_rec_tmpl<T>::value;
 
 template <template <typename...> class Tmpl>
 using ty_tmpl_t = template_t<Tmpl>;

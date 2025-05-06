@@ -17,6 +17,7 @@
 
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/type_traits/template.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -68,6 +69,24 @@ struct constant_template_t {
 
     template <typename _Tp>
     using is_wrapped_to = is_constant_spec_of<_Tp, Tmpl>;
+};
+
+namespace _tmp_impl {
+template <typename T, MetaTmplType...>
+struct rec_tmpl_wrap_impl : type_t<T> {};
+
+template <typename T, TyListType TmplsT>
+struct recursive_tmpl_wrap;
+}
+template <MetaTmplType... TmplTs>
+struct recursive_template_t<TmplTs...> {
+    using tmpls_type = type_list<TmplTs...>;
+
+    template <MetaListType _Tp>
+    using wrap = typename _tmp_impl::recursive_tmpl_wrap<_Tp, tmpls_type>::type; 
+
+    template <typename>
+    using is_wrapped_to = bool_constant<false>;
 };
 
 namespace _tmp_impl {

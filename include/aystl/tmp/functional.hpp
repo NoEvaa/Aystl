@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 NoEvaa
+ * Copyright 2025 NoEvaa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "testlib.h"
-#include "aystl/tmp/meta.hpp"
+#pragma once
 
-using namespace iin;
-
-TEST_CASE("ct_range") {
-    CHECK(std::is_same_v<ct_range<int, 1, 5, 1>::type, int_seq<int, 1, 2, 3, 4>>);
-    CHECK(std::is_same_v<ct_range<int, 1, -5, -2>::type, int_seq<int, 1, -1, -3>>);
-    CHECK(std::is_same_v<ct_range<int, -1, 1, -1>::type, int_seq<int>>);
-}
-
-TEST_CASE("ct_range_t") {
-    CHECK(std::is_same_v<ct_range_t<1, 5>, int_seq<int, 1, 2, 3, 4>>);
-    CHECK(std::is_same_v<ct_range_t<1, -5, -2>, int_seq<int, 1, -1, -3>>);
-}
+#include "aystl/tmp/functional/ct_std_algo.hpp"
+#include "aystl/tmp/functional/transfer.hpp"
+#include "aystl/tmp/functional/impl.hpp"
 

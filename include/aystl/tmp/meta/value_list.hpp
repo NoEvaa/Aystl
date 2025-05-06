@@ -16,8 +16,8 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/meta_decl.hpp"
-#include "aystl/tmp/utils/compare.hpp"
+#include "aystl/tmp/meta/utils.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
 
 namespace iin {
 template <auto... Vs>
@@ -29,15 +29,19 @@ struct value_list {
     template <MetaTmplType TmplT>
     using wrapped = meta_wrap_t<TmplT, type>;
 
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform = ty_wrap_t<TmplT, type, _Ts...>;
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform_t = typename transform<TmplT, _Ts...>::type;
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform_tt = typename transform<TmplT, _Ts...>::ttype;
+
     template <MetaTmplType TmplT>
-    using ty_map = typename _tmp_impl::meta_list_map<
-        type, type_list<>, TmplT>::type;
+    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
     template <MetaTmplType TmplT>
-    using va_map = typename _tmp_impl::meta_list_map<
-        type, value_list<>, TmplT>::type;
+    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
     template <MetaTmplType TmplT, typename _VTp>
-    using co_map = typename _tmp_impl::meta_list_map<
-        type, constant_list<_VTp>, TmplT>::type;
+    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
     template <MetaTmplType TmplT>
     using map = va_map<TmplT>;
 

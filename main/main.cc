@@ -9,7 +9,6 @@
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
-#include "aystl/tmp/utils/ct_sorted_array.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
 #include "aystl/tmp.hpp"
 
@@ -56,35 +55,42 @@ void ppp(T && v) {
 void foo(auto &&... args) {
     (ppp(std::forward<decltype(args)>(args)), ...);
 }
-#if 0
-template <template <typename...> typename Tmpl,
-    TypeListType TmplArgs = type_list<>>
-struct currying_template : template_t<Tmpl> {
+
+template <TyTmplType TmplT, TyListType TmplArgs = type_list<>>
+struct currying_template;
+
+template <TyTmplType TmplT, TyListType TmplArgs>
+struct currying_template {
+    using tmpl_type = TmplT;
     using args_type = TmplArgs;
     using plhs_type = sorted_placeholders_t<args_type>;
-    
-    static constexpr std::size_t size() noexcept { return plhs_type::size(); }
+};
+
+template <TyListType OldT, TyListType NewT>
+struct tmpl_args_bind {
+    using a1_type = OldT;
+    using plhs_type = sorted_placeholders_t<a1_type>;
+    //using a2_type = a1_type::
 
 };
-#endif
 
 int main()
 {
-    using ts1 = type_list<int, bool, char>;
-    using r = ct_range_t<0, 1>;
-    using ss = va_tmpl_t<ts1::at>;
-    using dd = r::ty_map<ss>;
-
-
-#if 0
-    using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>>;
-    using xxx2 = xxx1::slice<make_index_seq<xxx1::size()>::template filter<value_t_list<true, false>>>;
-    std::cout << getTypeName<xxx2>() << std::endl;
-
-    using xxx7 = sorted_placeholders_t<xxx1>;
-    std::cout << getTypeName<xxx7::type>() << std::endl;
+    using fff1 = constant_list<int, 1,2,0,3>::apply_algo<detail::ct_std_reverse_t>;
+    std::cout << getTypeName<fff1>() << std::endl;
+    #if 0
+    std::array<int, 10> aw;
+    using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>, plh_t<1>>;
+    using b1_type = type_list<bool, double, plh_t<10>>;
+    using a1_type = xxx1;
+    using plhs_type = sorted_placeholders_t<a1_type>;
+    std::cout << getTypeName<plhs_type>() << std::endl;
+    using a2_type = a1_type::template ty_map<plh_preload_tt>;
+    std::cout << getTypeName<a2_type>() << std::endl;
+    using a3_type = a2_type::template ty_map<plh_unload_tt>;
+    std::cout << getTypeName<a3_type>() << std::endl;
+    #endif
     return 0;
-#endif
 
     int i = 3;
     foo(1, i, std::move(i));

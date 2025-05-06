@@ -19,16 +19,14 @@
 
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/meta/template.hpp"
-#include "aystl/tmp/meta/meta_decl.hpp"
-#include "aystl/tmp/utils/compare.hpp"
+#include "aystl/tmp/meta/utils.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
+#include "aystl/tmp/functional/ct_range.hpp"
 
 namespace iin {
 namespace _tmp_impl {
 template <TyListType T, TyListType... Ts>
 struct type_list_cat : type_t<T> {};
-
-template <TyListType T, std::size_t pos, typename DefaultT>
-struct type_list_get : type_t<DefaultT> {};
 
 template <TyListType T, IntSeqType RangeT>
 struct type_list_slice;
@@ -49,23 +47,24 @@ struct type_list {
     template <MetaTmplType TmplT>
     using wrapped = meta_wrap_t<TmplT, type>;
 
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform = ty_wrap_t<TmplT, type, _Ts...>;
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform_t = typename transform<TmplT, _Ts...>::type;
+    template <TyTmplType TmplT, typename... _Ts>
+    using transform_tt = typename transform<TmplT, _Ts...>::ttype;
+
     template <TyTmplType TmplT, typename... TmplArgs>
-    using map = typename _tmp_impl::meta_list_map<
-        type, type_list<>, TmplT, TmplArgs...>::type;
+    using map = meta_list_map_t<type, type_list<>, TmplT, TmplArgs...>;
     template <MetaTmplType TmplT>
-    using ty_map = typename _tmp_impl::meta_list_map<
-        type, type_list<>, TmplT>::type;
+    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
     template <MetaTmplType TmplT>
-    using va_map = typename _tmp_impl::meta_list_map<
-        type, value_list<>, TmplT>::type;
+    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
     template <MetaTmplType TmplT, typename _VTp>
-    using co_map = typename _tmp_impl::meta_list_map<
-        type, constant_list<_VTp>, TmplT>::type;
+    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
 
     template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
     using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;
-    template <std::size_t pos, typename DefaultT = null_t>
-    using get = typename _tmp_impl::type_list_get<type, pos, DefaultT>::type;
 
     template <TyListType... _Ts>
     using concat = type_list_cat_t<type, _Ts...>;

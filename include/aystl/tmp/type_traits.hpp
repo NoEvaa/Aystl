@@ -16,6 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/type_traits/common.hpp"
+#include "aystl/tmp/type_traits/compare.hpp"
 #include "aystl/tmp/type_traits/enum.hpp"
 #include "aystl/tmp/type_traits/template.hpp"
 

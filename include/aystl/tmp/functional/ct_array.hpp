@@ -15,19 +15,11 @@
  */
 #pragma once
 
-#include "aystl/tmp/meta/type.hpp"
-
 namespace iin {
-template <ValueTType T>
-using transfer_value_t = value_t<T::value>;
+template <typename FnT>
+struct ct_array;
 
-namespace detail {
-template <typename T>
-struct transfer_type : type_t<T> {};
-template <TypeTType T>
-struct transfer_type<T> : type_t<typename T::type> {};
-}
-template <typename T>
-using transfer_type_t = type_t<typename detail::transfer_type<T>::type>;
+template <typename FnT>
+using ct_array_tt = typename ct_array<FnT>::ttype;
 }
 

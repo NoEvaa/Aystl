@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-/**
- * Template Metaprogramming
- */
-
-#include "aystl/tmp/type_traits.hpp"
-#include "aystl/tmp/meta.hpp"
+#include "testlib.h"
 #include "aystl/tmp/functional.hpp"
-#include "aystl/tmp/utility.hpp"
+
+using namespace iin;
+
+TEST_CASE("ct_range") {
+    CHECK(std::is_same_v<ct_range<int, 1, 5, 1>::type, int_seq<int, 1, 2, 3, 4>>);
+    CHECK(std::is_same_v<ct_range<int, 1, -5, -2>::type, int_seq<int, 1, -1, -3>>);
+    CHECK(std::is_same_v<ct_range<int, -1, 1, -1>::type, int_seq<int>>);
+}
+
+TEST_CASE("ct_range_t") {
+    CHECK(std::is_same_v<ct_range_t<1, 5>, int_seq<int, 1, 2, 3, 4>>);
+    CHECK(std::is_same_v<ct_range_t<1, -5, -2>, int_seq<int, 1, -1, -3>>);
+}
 

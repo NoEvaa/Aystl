@@ -19,38 +19,64 @@
 using namespace iin;
 
 namespace{
-template <typename... Ts>
+template <typename...>
 struct Tmpl1 {};
+template <typename... Ts>
+using Tmpl2 = Tmpl1<Ts...>;
 
 template <auto...>
 struct TmplV1 {};
+template <auto... Vs>
+using TmplV2 = TmplV1<Vs...>;
 
 template <typename T, T...>
 struct TmplC1 {};
+template <typename T, T... Vs>
+using TmplC2 = TmplC1<T, Vs...>;
+}
+
+TEST_CASE("template_t") {
+    CHECK(std::is_same_v<ty_tmpl_t<type_t>::wrap<int>, type_t<int>>);
+    CHECK(std::is_same_v<ty_tmpl_t<type_list>::wrap<int, int, double>, type_list<int, int, double>>);
+    CHECK(std::is_same_v<va_tmpl_t<value_list>::wrap<1, 3, 5>, value_list<1, 3, 5>>);
+    CHECK(std::is_same_v<co_tmpl_t<constant_list>::wrap<int, 1, 3, 5>, constant_list<int, 1, 3, 5>>);
+
+    CHECK(!TyTmplType<int>);
+    CHECK(TyTmplType<ty_tmpl_t<type_t>>);
+    CHECK(!TyTmplType<va_tmpl_t<value_t>>);
+    CHECK(!TyTmplType<co_tmpl_t<constant_t>>);
+
+    CHECK(!CoTmplType<int>);
+    CHECK(CoTmplType<co_tmpl_t<constant_t>>);
+    CHECK(!CoTmplType<va_tmpl_t<value_t>>);
+    CHECK(!CoTmplType<ty_tmpl_t<type_t>>);
+
+    CHECK(!VaTmplType<int>);
+    CHECK(VaTmplType<va_tmpl_t<value_t>>);
+    CHECK(!VaTmplType<co_tmpl_t<constant_t>>);
+    CHECK(!VaTmplType<ty_tmpl_t<type_t>>);
 }
 
 TEST_CASE("template_t wrap") {
-    CHECK(std::is_same_v<ty_wrap_t<ty_list_tmpl_t, int, bool>, type_list<int, bool>>);
-    CHECK(std::is_same_v<ty_wrap_t<va_list_tmpl_t, value_t<1>, value_t<2>>, value_list<1, 2>>);
-    //CHECK(std::is_same_v<ty_wrap_t<co_list_tmpl_t, int, value_t<1>, value_t<2>>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<ty_wrap_t<ty_list_tt, int, bool>, type_list<int, bool>>);
+    CHECK(std::is_same_v<ty_wrap_t<va_list_tt, value_t<1>, value_t<2>>, value_list<1, 2>>);
 
-    CHECK(std::is_same_v<va_wrap_t<ty_list_tmpl_t, 1, 2>, type_list<value_t<1>, value_t<2>>>);
-    CHECK(std::is_same_v<va_wrap_t<va_list_tmpl_t, 1, 2>, value_list<1, 2>>);
+    CHECK(std::is_same_v<va_wrap_t<ty_list_tt, 1, 2>, type_list<value_t<1>, value_t<2>>>);
+    CHECK(std::is_same_v<va_wrap_t<va_list_tt, 1, 2>, value_list<1, 2>>);
 
-    CHECK(std::is_same_v<co_wrap_t<ty_list_tmpl_t, int, 1, 2>, type_list<constant_t<int, 1>, constant_t<int, 2>>>);
-    CHECK(std::is_same_v<co_wrap_t<va_list_tmpl_t, int, 1, 2>, value_list<1, 2>>);
-    CHECK(std::is_same_v<co_wrap_t<co_list_tmpl_t, int, 1, 2>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<co_wrap_t<ty_list_tt, int, 1, 2>, type_list<constant_t<int, 1>, constant_t<int, 2>>>);
+    CHECK(std::is_same_v<co_wrap_t<va_list_tt, int, 1, 2>, value_list<1, 2>>);
+    CHECK(std::is_same_v<co_wrap_t<co_list_tt, int, 1, 2>, constant_list<int, 1, 2>>);
 
-    CHECK(std::is_same_v<meta_wrap_t<ty_list_tmpl_t, type_list<int, bool>>, type_list<int, bool>>);
-    CHECK(std::is_same_v<meta_wrap_t<va_list_tmpl_t, value_list<1, 2>>, value_list<1, 2>>);
-    CHECK(std::is_same_v<meta_wrap_t<co_list_tmpl_t, constant_list<int, 1, 2>>, constant_list<int, 1, 2>>);
-    //CHECK(std::is_same_v<meta_wrap_t<co_list_tmpl_t, type_list<int, value_t<1>, value_t<2>>>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<meta_wrap_t<ty_list_tt, type_list<int, bool>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<meta_wrap_t<va_list_tt, value_list<1, 2>>, value_list<1, 2>>);
+    CHECK(std::is_same_v<meta_wrap_t<co_list_tt, constant_list<int, 1, 2>>, constant_list<int, 1, 2>>);
 }
 
 TEST_CASE("template_t rewrapped") {
-    CHECK(std::is_same_v<meta_rewrapped_t<Tmpl1<int, bool>, ty_list_tmpl_t>, type_list<int, bool>>);
-    CHECK(std::is_same_v<meta_rewrapped_t<TmplV1<1, 2>, va_list_tmpl_t>, value_list<1, 2>>);
-    CHECK(std::is_same_v<meta_rewrapped_t<TmplC1<int, 1, 2>, co_list_tmpl_t>, constant_list<int, 1, 2>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<Tmpl1<int, bool>, ty_list_tt>, type_list<int, bool>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<TmplV1<1, 2>, va_list_tt>, value_list<1, 2>>);
+    CHECK(std::is_same_v<meta_rewrapped_t<TmplC1<int, 1, 2>, co_list_tt>, constant_list<int, 1, 2>>);
 }
 
 TEST_CASE("template_t rewrap") {

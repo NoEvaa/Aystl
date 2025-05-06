@@ -18,33 +18,38 @@
 #include <array>
 #include <algorithm>
 
-#include "aystl/tmp/functional/ct_sorted_array.hpp"
+#include "aystl/tmp/functional/ct_array.hpp"
 #include "aystl/tmp/functional/comparator.hpp"
 
 #include "aystl/tmp/type_traits.hpp"
 #include "aystl/tmp/meta.hpp"
 
 namespace iin {
-template <typename _Cmp, typename T, T... Vs>
-struct ct_sorted_array {
-    using element_type = T;
-    using value_type   = std::array<element_type, sizeof...(Vs)>;
+template <typename FnT>
+struct ct_array {
+    template <typename T, T... Vs>
+    struct __impl {
+        using element_type = T;
+        using value_type   = std::array<element_type, sizeof...(Vs)>;
 
-    static constexpr value_type value = [] {
-        value_type temp = { Vs... };
-        std::sort(temp.begin(), temp.end(), _Cmp{});
-        return temp;
-    }();
+        static constexpr value_type value = [] {
+            value_type temp = { Vs... };
+            FnT{}(temp.begin(), temp.end());
+            return temp;
+        }();
 
-    static constexpr index_constant<sizeof...(Vs)> size;
+        static constexpr index_constant<sizeof...(Vs)> size;
 
-    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    static constexpr element_type at_v = std::get<pos>(value);
-    template <std::size_t pos>
-    using at = constant_t<element_type, at_v<pos>>;
+        template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
+        static constexpr element_type at_v = std::get<pos>(value);
+        template <std::size_t pos>
+        using at = constant_t<element_type, at_v<pos>>;
 
-    using to_constant_list = typename make_index_seq<size()>
-        ::template co_map<va_tmpl_t<at>, element_type>;
+        using to_constant_list = typename make_index_seq<size()>
+            ::template co_map<va_tmpl_t<at>, element_type>;
+    };
+
+    using ttype = co_tmpl_t<__impl>;
 };
 
 namespace _tmp_impl {

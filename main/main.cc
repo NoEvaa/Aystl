@@ -13,6 +13,7 @@
 #include "aystl/tmp/functional.hpp"
 #include "aystl/tmp/utils/placeholder.hpp"
 #include "aystl/tmp.hpp"
+#include "aystl/tmp/functional/ct_std_algo.hpp"
 
 
 using namespace iin;
@@ -78,6 +79,10 @@ struct tmpl_args_bind {
 
 int main()
 {
+    using fff1 = constant_list<int, 1,2,0,3>::apply_algo<detail::ct_std_reverse_t>;
+    std::cout << getTypeName<fff1>() << std::endl;
+    #if 0
+    std::array<int, 10> aw;
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>, plh_t<1>>;
     using b1_type = type_list<bool, double, plh_t<10>>;
     using a1_type = xxx1;
@@ -87,6 +92,7 @@ int main()
     std::cout << getTypeName<a2_type>() << std::endl;
     using a3_type = a2_type::template ty_map<plh_unload_tt>;
     std::cout << getTypeName<a3_type>() << std::endl;
+    #endif
     return 0;
 
     int i = 3;

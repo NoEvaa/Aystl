@@ -19,6 +19,21 @@
 #include "aystl/tmp/type_traits/template.hpp"
 
 namespace iin {
+namespace _tmp_impl {
+template <MetaTmplType T, typename... Ts>        struct ty_wrap;
+template <MetaTmplType T, auto... Vs>            struct va_wrap;
+template <MetaTmplType T, typename VT, VT... Vs> struct co_wrap;
+template <MetaTmplType TmplT, MetaListType T>    struct meta_wrap;
+}
+template <MetaTmplType T, typename... Ts>
+using ty_wrap_t = typename _tmp_impl::ty_wrap<T, Ts...>::type;
+template <MetaTmplType T, auto... Vs>
+using va_wrap_t = typename _tmp_impl::va_wrap<T, Vs...>::type;
+template <MetaTmplType T, typename VT, VT... Vs>
+using co_wrap_t = typename _tmp_impl::co_wrap<T, VT, Vs...>::type;
+template <MetaTmplType TmplT, MetaListType T>
+using meta_wrap_t = typename _tmp_impl::meta_wrap<TmplT, T>::type;
+
 template <template <typename...> class Tmpl>
 struct template_t {
     template <typename... _Ts>
@@ -56,11 +71,6 @@ struct constant_template_t {
 };
 
 namespace _tmp_impl {
-template <MetaTmplType T, typename... Ts>        struct ty_wrap;
-template <MetaTmplType T, auto... Vs>            struct va_wrap;
-template <MetaTmplType T, typename VT, VT... Vs> struct co_wrap;
-template <MetaTmplType TmplT, MetaListType T>    struct meta_wrap;
-
 template <MetaTmplType TmplT, typename... Ts>
 struct meta_wrap<TmplT, type_list<Ts...>> {
     using type = typename ty_wrap<TmplT, Ts...>::type;
@@ -102,15 +112,6 @@ struct meta_rewrap<T, constant_list<VT, Vs...>> {
     using type = replace_co_tmpl_args_t<T, VT, Vs...>;
 };
 }
-
-template <MetaTmplType T, typename... Ts>
-using ty_wrap_t = typename _tmp_impl::ty_wrap<T, Ts...>::type;
-template <MetaTmplType T, auto... Vs>
-using va_wrap_t = typename _tmp_impl::va_wrap<T, Vs...>::type;
-template <MetaTmplType T, typename VT, VT... Vs>
-using co_wrap_t = typename _tmp_impl::co_wrap<T, VT, Vs...>::type;
-template <MetaTmplType TmplT, MetaListType T>
-using meta_wrap_t = typename _tmp_impl::meta_wrap<TmplT, T>::type;
 
 template <typename T, MetaTmplType TmplT>
 using meta_rewrapped_t = typename _tmp_impl::meta_rewrapped<T, TmplT>::type;

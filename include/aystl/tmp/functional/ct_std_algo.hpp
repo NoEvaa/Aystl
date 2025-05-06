@@ -15,8 +15,16 @@
  */
 #pragma once
 
+#include <algorithm>
+
 namespace iin {
-template <typename _Cmp, typename T, T... Vs>
-struct ct_sorted_array;
+namespace detail {
+using ct_std_pass_t = decltype([](...){});
+
+template <typename _CmpT>
+using ct_std_sort_t = decltype([](auto itl, auto itr){ std::sort(itl, itr, _CmpT{}); });
+
+using ct_std_reverse_t = decltype([](auto itl, auto itr){ std::reverse(itl, itr); });
+}
 }
 

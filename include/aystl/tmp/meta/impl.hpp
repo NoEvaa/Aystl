@@ -22,6 +22,8 @@
 #include "aystl/tmp/meta/constant_list.hpp"
 #include "aystl/tmp/meta/int_seq.hpp"
 #include "aystl/tmp/functional/comparator.hpp"
+#include "aystl/tmp/functional/ct_array.hpp"
+#include "aystl/tmp/functional/ct_std_algo.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -233,6 +235,16 @@ template <TyListType T, TyListType MaskT>
 struct type_list_filter {
     using _range_type = make_index_seq<T::size()>::template filter<MaskT>;
     using type = T::template slice<_range_type>;
+};
+
+template <CoListType T, typename AlgoT>
+struct constant_list_apply_algo {
+    using type = typename T::template wrapped<ct_array_tt<AlgoT>>::to_constant_list;
+};
+
+template <CoListType T, typename CmpT>
+struct constant_list_sort {
+    using type = T::template apply_algo<detail::ct_std_sort_t<CmpT>>;
 };
 
 template <CoListType T>

@@ -15,5 +15,6 @@
  */
 #pragma once
 
+#include "aystl/tmp/functional/ct_std_algo.hpp"
 #include "aystl/tmp/functional/impl.hpp"
 

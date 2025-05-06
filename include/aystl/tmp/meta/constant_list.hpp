@@ -20,7 +20,6 @@
 #include "aystl/tmp/meta/type.hpp"
 #include "aystl/tmp/meta/utils.hpp"
 #include "aystl/tmp/type_traits/compare.hpp"
-#include "aystl/tmp/functional/ct_sorted_array.hpp"
 
 namespace iin {
 namespace _tmp_impl {
@@ -34,8 +33,9 @@ template <CoListType InT, TyListType MaskT,
     CoListType OutT, std::size_t pos = 0>
 struct constant_list_filter : type_t<OutT> {};
 
-template <CoListType T>
-struct constant_list_sorted_unique;
+template <CoListType, typename AlgoT> struct constant_list_apply_algo;
+template <CoListType, typename CmpT> struct constant_list_sort;
+template <CoListType> struct constant_list_sorted_unique;
 }
 
 template<typename T, T... Vs>
@@ -84,8 +84,11 @@ struct constant_list {
     using filter = typename _tmp_impl::constant_list_filter<
         type, MaskT, constant_list<value_type>>::type;
 
-    template <typename _Cmp = std::less<>>
-    using sort = typename ct_sorted_array<_Cmp, value_type, Vs...>::to_constant_list;
+    template <typename _AlgoT>
+    using apply_algo = typename _tmp_impl::constant_list_apply_algo<type, _AlgoT>::type;
+
+    template <typename _CmpT = std::less<>>
+    using sort = typename _tmp_impl::constant_list_sort<type, _CmpT>::type;
 
     template <typename _Cmp = std::less<>>
     using unique_sort = typename _tmp_impl::constant_list_sorted_unique<sort<_Cmp>>::type;

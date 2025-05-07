@@ -20,16 +20,16 @@
 
 namespace iin {
 namespace _tmp_impl {
-template <MetaTmplType T, typename... Ts>        struct ty_wrap;
-template <MetaTmplType T, auto... Vs>            struct va_wrap;
-template <MetaTmplType T, typename VT, VT... Vs> struct co_wrap;
-template <MetaTmplType TmplT, MetaListType T>    struct meta_wrap;
+template <MetaPrimTmplType T, typename... Ts>        struct ty_wrap;
+template <MetaPrimTmplType T, auto... Vs>            struct va_wrap;
+template <MetaPrimTmplType T, typename VT, VT... Vs> struct co_wrap;
+template <MetaTmplType TmplT, MetaListType T>        struct meta_wrap;
 }
-template <MetaTmplType T, typename... Ts>
+template <MetaPrimTmplType T, typename... Ts>
 using ty_wrap_t = typename _tmp_impl::ty_wrap<T, Ts...>::type;
-template <MetaTmplType T, auto... Vs>
+template <MetaPrimTmplType T, auto... Vs>
 using va_wrap_t = typename _tmp_impl::va_wrap<T, Vs...>::type;
-template <MetaTmplType T, typename VT, VT... Vs>
+template <MetaPrimTmplType T, typename VT, VT... Vs>
 using co_wrap_t = typename _tmp_impl::co_wrap<T, VT, Vs...>::type;
 template <MetaTmplType TmplT, MetaListType T>
 using meta_wrap_t = typename _tmp_impl::meta_wrap<TmplT, T>::type;
@@ -71,49 +71,11 @@ struct constant_template_t {
 };
 
 namespace _tmp_impl {
-template <MetaTmplType TmplT, typename... Ts>
-struct meta_wrap<TmplT, type_list<Ts...>> {
-    using type = typename ty_wrap<TmplT, Ts...>::type;
-};
-template <MetaTmplType TmplT, auto... Vs>
-struct meta_wrap<TmplT, value_list<Vs...>> {
-    using type = typename va_wrap<TmplT, Vs...>::type;
-};
-template <MetaTmplType TmplT, typename VT, VT... Vs>
-struct meta_wrap<TmplT, constant_list<VT, Vs...>> {
-    using type = typename co_wrap<TmplT, VT, Vs...>::type;
-};
-
-template <typename T, MetaTmplType TmplT> struct meta_rewrapped;
-template <typename T, TyTmplType TmplT>
-struct meta_rewrapped<T, TmplT> {
-    using type = replace_tmpl_wrapper_t<T, TmplT::template wrap>;
-};
-template <typename T, VaTmplType TmplT>
-struct meta_rewrapped<T, TmplT> {
-    using type = replace_va_tmpl_wrapper_t<T, TmplT::template wrap>;
-};
-template <typename T, CoTmplType TmplT>
-struct meta_rewrapped<T, TmplT> {
-    using type = replace_co_tmpl_wrapper_t<T, TmplT::template wrap>;
-};
-
+template <typename T, MetaPrimTmplType TmplT> struct meta_rewrapped;
 template <typename T, MetaListType ArgsT> struct meta_rewrap;
-template <typename T, typename... Ts>
-struct meta_rewrap<T, type_list<Ts...>> {
-    using type = replace_tmpl_args_t<T, Ts...>;
-};
-template <typename T, auto... Vs>
-struct meta_rewrap<T, value_list<Vs...>> {
-    using type = replace_va_tmpl_args_t<T, Vs...>;
-};
-template <typename T, typename VT, VT... Vs>
-struct meta_rewrap<T, constant_list<VT, Vs...>> {
-    using type = replace_co_tmpl_args_t<T, VT, Vs...>;
-};
 }
 
-template <typename T, MetaTmplType TmplT>
+template <typename T, MetaPrimTmplType TmplT>
 using meta_rewrapped_t = typename _tmp_impl::meta_rewrapped<T, TmplT>::type;
 template <typename T, MetaListType ArgsT>
 using meta_rewrap_t = typename _tmp_impl::meta_rewrap<T, ArgsT>::type;

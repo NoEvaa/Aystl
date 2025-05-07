@@ -51,11 +51,11 @@ struct constant_list {
     template <MetaTmplType TmplT>
     using wrapped = meta_wrap_t<TmplT, type>;
 
-    template <TyTmplType TmplT, typename... _Ts>
-    using transform = ty_wrap_t<TmplT, type, _Ts...>;
-    template <TyTmplType TmplT, typename... _Ts>
+    template <MetaTmplType TmplT, typename... _Ts>
+    using transform = meta_wrap_t<TmplT, type_list<type, _Ts...>>;
+    template <MetaTmplType TmplT, typename... _Ts>
     using transform_t = typename transform<TmplT, _Ts...>::type;
-    template <TyTmplType TmplT, typename... _Ts>
+    template <MetaTmplType TmplT, typename... _Ts>
     using transform_tt = typename transform<TmplT, _Ts...>::ttype;
 
     template <MetaTmplType TmplT>

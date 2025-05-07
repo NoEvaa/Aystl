@@ -65,6 +65,49 @@ struct co_wrap<T, VT, Vs...> {
     using type = T::template wrap<constant_t<VT, Vs>...>;
 };
 
+template <MetaTmplType TmplT, MetaListType T>
+struct meta_wrap {
+    using type = TmplT::template wrap<T>;
+};
+template <MetaPrimTmplType TmplT, typename... Ts>
+struct meta_wrap<TmplT, type_list<Ts...>> {
+    using type = typename ty_wrap<TmplT, Ts...>::type;
+};
+template <MetaPrimTmplType TmplT, auto... Vs>
+struct meta_wrap<TmplT, value_list<Vs...>> {
+    using type = typename va_wrap<TmplT, Vs...>::type;
+};
+template <MetaPrimTmplType TmplT, typename VT, VT... Vs>
+struct meta_wrap<TmplT, constant_list<VT, Vs...>> {
+    using type = typename co_wrap<TmplT, VT, Vs...>::type;
+};
+
+template <typename T, TyTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+template <typename T, VaTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_va_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+template <typename T, CoTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_co_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+
+template <typename T, typename... Ts>
+struct meta_rewrap<T, type_list<Ts...>> {
+    using type = replace_tmpl_args_t<T, Ts...>;
+};
+template <typename T, auto... Vs>
+struct meta_rewrap<T, value_list<Vs...>> {
+    using type = replace_va_tmpl_args_t<T, Vs...>;
+};
+template <typename T, typename VT, VT... Vs>
+struct meta_rewrap<T, constant_list<VT, Vs...>> {
+    using type = replace_co_tmpl_args_t<T, VT, Vs...>;
+};
+
 template <TyListType T, typename... NextT>
 struct meta_list_push_back<T, NextT...> {
     using type = T::template push_back<NextT...>;
@@ -92,27 +135,21 @@ struct meta_list_get {
     using ttype = va_tmpl_t<__impl_t>;
 };
 
-template <MetaListType T>
-struct meta_list_iter {
-    template <std::size_t pos>
-    struct __impl {
-        static constexpr index_constant<pos> current_pos;
+template <CoListType T>
+struct meta_list_reverse<T> {
+    using type = T::template apply_algo<detail::ct_std_reverse_t>;
+};
 
-        using type = va_wrap_t<meta_list_get_tt<T>, pos>;
+template <TyListType T>
+struct meta_list_reverse<T> {
+    using idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using type = idxes_type::template ty_map<va_tmpl_t<T::template at>>;
+};
 
-        using is_begin = ct_cmp<CmpOp::kEQ, pos, 0>;
-        using is_end   = ct_cmp<CmpOp::kGE, pos, T::size()>;
-
-        template <std::size_t _offset = 1>
-        using next = __impl<(pos + _offset)>;
-        template <std::size_t _offset>
-        using prev = __impl<(pos < _offset ? 0 : pos - _offset)>;
-        template <int _offset = 1>
-        using advance = cond_t<ct_cmp_v<CmpOp::kLT, _offset, 0>,
-            prev<static_cast<std::size_t>(-_offset)>,
-            next<static_cast<std::size_t>(_offset)>>;
-    };
-    using ttype = va_tmpl_t<__impl>;
+template <VaListType T>
+struct meta_list_reverse<T> {
+    using idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using type = idxes_type::template va_map<va_tmpl_t<T::template at>>;
 };
 
 template <MetaListType InT, MetaListType OutT, MetaTmplType TmplT, typename... TmplArgs>

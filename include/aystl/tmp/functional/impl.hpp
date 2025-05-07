@@ -46,6 +46,16 @@ struct ct_array {
         template <std::size_t pos>
         using at = constant_t<element_type, at_v<pos>>;
 
+        template <element_type _target>
+        static constexpr std::size_t findFirst() noexcept {
+            auto it = std::find(value.begin(), value.end(), _target);
+            if (it != value.end()) {
+                return static_cast<std::size_t>(std::distance(value.begin(), it));
+            } else {
+                return invalid_index_t::value;
+            }
+        }
+
         using to_constant_list = typename make_index_seq<size()>
             ::template co_map<va_tmpl_t<at>, element_type>;
     };
@@ -76,7 +86,9 @@ struct ct_pos_forward_comparator {
 
     using ttype = va_tmpl_t<__impl>;
 };
+}
 
+namespace _tmp_impl {
 template <std::integral T, T _start, T _stop, T _step, T... Is>
 struct ct_range_impl : type_t<int_seq<T, Is...>> {};
 

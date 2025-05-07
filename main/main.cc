@@ -4,12 +4,12 @@
 #include <iostream>
 #include <string_view>
 #include <utility>
+#include <any>
 #include "aystl/aystl.hpp"
 #include "aystl/utility.hpp"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
-#include "aystl/tmp/utils/placeholder.hpp"
 #include "aystl/tmp.hpp"
 
 
@@ -21,12 +21,6 @@ using namespace iin::detail;
 template <typename T, std::size_t N>
 std::ostream & operator<<(std::ostream & ost, ct_str<T, N> const & s) {
     return (ost << std::string_view(s));
-}
-
-template <typename T, T... Is>
-void abcc(std::integer_sequence<T, Is...>)
-{
-    (..., (std::cout << Is << std::endl));
 }
 
 template <auto _func>
@@ -45,8 +39,6 @@ enum class ABC {
     k1 = 1,
 };
 
-#include <any>
-
 template <typename T>
 void ppp(T && v) {
     std::cout << getTypeName<decltype(v)>() << std::endl;
@@ -56,52 +48,34 @@ void foo(auto &&... args) {
     (ppp(std::forward<decltype(args)>(args)), ...);
 }
 
-template <TyTmplType TmplT, TyListType TmplArgs = type_list<>>
-struct currying_template;
-
-template <TyTmplType TmplT, TyListType TmplArgs>
-struct currying_template {
-    using tmpl_type = TmplT;
-    using args_type = TmplArgs;
-    using plhs_type = sorted_placeholders_t<args_type>;
-};
-
-template <TyListType OldT, TyListType NewT>
-struct tmpl_args_bind {
-    using a1_type = OldT;
-    using plhs_type = sorted_placeholders_t<a1_type>;
-    //using a2_type = a1_type::
-
-};
+template <typename...>
+struct abc_de;
+template <typename...>
+struct abc_fg;
 
 int main()
 {
+    #if 0
     using fff1 = constant_list<int, 1,2,0,3>::apply_algo<detail::ct_std_reverse_t>;
     std::cout << getTypeName<fff1>() << std::endl;
-    #if 0
-    std::array<int, 10> aw;
+    using ttt1 = rec_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, ty_tmpl_t<abc_de>, ty_list_tt>;
+    using ttt2 = rec_tmpl_t<ty_list_tt, ttt1>;
+    using fff2 = meta_wrap_t<ttt2, type_list<int, int>>;
+    std::cout << getTypeName<fff2>() << std::endl;
+    #endif
+
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>, plh_t<1>>;
     using b1_type = type_list<bool, double, plh_t<10>>;
     using a1_type = xxx1;
-    using plhs_type = sorted_placeholders_t<a1_type>;
-    std::cout << getTypeName<plhs_type>() << std::endl;
-    using a2_type = a1_type::template ty_map<plh_preload_tt>;
-    std::cout << getTypeName<a2_type>() << std::endl;
-    using a3_type = a2_type::template ty_map<plh_unload_tt>;
-    std::cout << getTypeName<a3_type>() << std::endl;
-    #endif
+    std::cout << getTypeName<a1_type>() << std::endl;
+    std::cout << getTypeName<b1_type>() << std::endl;
+    using ooo1 = _tmp_impl::tmpl_args_bind<a1_type, b1_type>::type;
+    std::cout << getTypeName<ooo1>() << std::endl;
+    using ooo2 = _tmp_impl::tmpl_args_bind<ooo1, type_list<value_t<1>, value_t<2>, value_t<3>>>::type;
+    std::cout << getTypeName<ooo2>() << std::endl;
+
     return 0;
 
-    int i = 3;
-    foo(1, i, std::move(i));
-
-    std::cout << sizeof(std::any) << std::endl;
-    std::cout << sizeof(iin::AyAny) << std::endl;
-    std::cout << sizeof(void*) << std::endl;
-    std::cout << sizeof(std::shared_ptr<int>) << std::endl;
-    std::cout << sizeof(std::weak_ptr<int>) << std::endl;
-    std::cout << sizeof(std::unique_ptr<int>) << std::endl;
-    std::cout << alignof(std::max_align_t) << std::endl;
     #if 0
     std::cout << getTypeName<std::shared_ptr<std::string const &>>() << std::endl;
 

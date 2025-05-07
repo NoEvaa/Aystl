@@ -152,29 +152,6 @@ struct meta_list_reverse<T> {
     using type = idxes_type::template va_map<va_tmpl_t<T::template at>>;
 };
 
-template <MetaListType T>
-struct meta_list_iter {
-    template <std::size_t pos>
-    struct __impl {
-        static constexpr index_constant<pos> current_pos;
-
-        using type = va_wrap_t<meta_list_get_tt<T>, pos>;
-
-        using is_begin = ct_cmp<CmpOp::kEQ, pos, 0>;
-        using is_end   = ct_cmp<CmpOp::kGE, pos, T::size()>;
-
-        template <std::size_t _offset = 1>
-        using next = __impl<(pos + _offset)>;
-        template <std::size_t _offset>
-        using prev = __impl<(pos < _offset ? 0 : pos - _offset)>;
-        template <int _offset = 1>
-        using advance = cond_t<ct_cmp_v<CmpOp::kLT, _offset, 0>,
-            prev<static_cast<std::size_t>(-_offset)>,
-            next<static_cast<std::size_t>(_offset)>>;
-    };
-    using ttype = va_tmpl_t<__impl>;
-};
-
 template <MetaListType InT, MetaListType OutT, MetaTmplType TmplT, typename... TmplArgs>
 requires CtCmp<CmpOp::kEQ, InT::size(), 0>
 struct meta_list_map<InT, OutT, TmplT, TmplArgs...> : type_t<OutT> {};

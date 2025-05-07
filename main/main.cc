@@ -4,12 +4,12 @@
 #include <iostream>
 #include <string_view>
 #include <utility>
+#include <any>
 #include "aystl/aystl.hpp"
 #include "aystl/utility.hpp"
 #include "aystl/reflect/type_name.hpp"
 #include "aystl/reflect/enum_name.hpp"
 #include "aystl/utility/hash.hpp"
-#include "aystl/tmp/utils/placeholder.hpp"
 #include "aystl/tmp.hpp"
 
 
@@ -39,8 +39,6 @@ enum class ABC {
     k1 = 1,
 };
 
-#include <any>
-
 template <typename T>
 void ppp(T && v) {
     std::cout << getTypeName<decltype(v)>() << std::endl;
@@ -49,16 +47,6 @@ void ppp(T && v) {
 void foo(auto &&... args) {
     (ppp(std::forward<decltype(args)>(args)), ...);
 }
-
-template <TyTmplType TmplT, TyListType TmplArgs = type_list<>>
-struct currying_template;
-
-template <TyTmplType TmplT, TyListType TmplArgs>
-struct currying_template {
-    using tmpl_type = TmplT;
-    using args_type = TmplArgs;
-    using plhs_type = sorted_placeholders_t<args_type>;
-};
 
 template <typename...>
 struct abc_de;

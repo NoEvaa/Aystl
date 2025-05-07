@@ -20,6 +20,20 @@
 #include "aystl/tmp/utils/placeholder.hpp"
 
 namespace iin {
+template <MetaTmplType, TyListType> struct currying_template_t;
+
+template <MetaTmplType TmplT, TyListType TmplArgs>
+using currying_tmpl_t = currying_template_t<TmplT, TmplArgs>;
+
+namespace detail {
+template <typename T>
+using is_currying_tmpl = is_spec_of<T, currying_template_t>;
+template <typename T> requires is_currying_tmpl<T>::value
+struct is_meta_tmpl<T> : bool_constant<true> {};
+}
+template <typename T>
+concept CurryingTmplType = MetaTmplType<T> && detail::is_currying_tmpl<T>::value;
+
 namespace _tmp_impl {
 template <TyListType OldT, TyListType NewT>
 struct tmpl_args_bind {
@@ -41,6 +55,28 @@ struct tmpl_args_bind {
 
     using type = OldT::template map<ty_tmpl_t<__impl_t>>;
 };
+template <TyListType OldT, TyListType NewT>
+using tmpl_args_bind_t = typename tmpl_args_bind<OldT, NewT>::type;
 }
+
+template <MetaTmplType TmplT, TyListType TmplArgs>
+struct currying_template_t {
+    using tmpl_type = TmplT;
+    using args_type = TmplArgs;
+
+    template <TyListType _Tp>
+    using wrap = meta_wrap_t<tmpl_type, _tmp_impl::tmpl_args_bind_t<args_type, _Tp>>; 
+
+    template <typename>
+    using is_wrapped_to = bool_constant<false>;
+
+    template <MetaTmplType _TmplT>
+    using change_args = currying_tmpl_t<_TmplT, args_type>;
+    template <TyListType _TmplArgs>
+    using change_tmpl = currying_tmpl_t<tmpl_type, _TmplArgs>;
+
+    template <TyListType _TmplArgs>
+    using bind = change_args<_tmp_impl::tmpl_args_bind_t<args_type, _TmplArgs>>;
+};
 }
 

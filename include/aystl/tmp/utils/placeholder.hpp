@@ -28,26 +28,6 @@ using is_placeholder = is_value_spec_of<T, placeholder_t>;
 template <typename T>
 concept PlaceholderType = is_placeholder<T>::value;
 
-template <PlaceholderType T>
-struct plh_xx_t : type_t<T> {};
-namespace detail {
-template <typename T>
-struct plh_preload : type_t<T>{};
-template <PlaceholderType T>
-struct plh_preload<T> : type_t<plh_xx_t<T>>{};
-template <typename T>
-using plh_preload_t = typename plh_preload<T>::type;
-
-template <typename T>
-struct plh_unload : type_t<T> {};
-template <PlaceholderType T>
-struct plh_unload<plh_xx_t<T>> : type_t<T> {};
-template <typename T>
-using plh_unload_t = typename plh_unload<T>::type;
-}
-using plh_preload_tt = ty_tmpl_t<detail::plh_preload_t>;
-using plh_unload_tt = ty_tmpl_t<detail::plh_unload_t>;
-
 namespace detail {
 template <TyListType T>
 struct sorted_placeholders {

@@ -16,6 +16,7 @@
 #pragma once
 
 #include "aystl/tmp/meta.hpp"
+#include "aystl/tmp/functional.hpp"
 
 namespace iin {
 template <typename... TmplTs> struct recursive_template_t;

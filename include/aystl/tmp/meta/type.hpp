@@ -54,53 +54,52 @@ template <std::size_t _i>
 using index_constant = constant_t<std::size_t, _i>;
 template <bool _b>
 using bool_constant = constant_t<bool, _b>;
+
 using invalid_index_t = index_constant<static_cast<std::size_t>(-1)>;
 
 template <template <typename...> class Tmpl>      struct template_t;
 template <template <auto...> class Tmpl>          struct value_template_t;
 template <template <typename T, T...> class Tmpl> struct constant_template_t;
-template <typename... TmplTs>                     struct recursive_template_t;
 
 namespace detail {
 template <typename>
 struct is_meta_tmpl : bool_constant<false> {};
+template <typename>
+struct is_meta_primitive_tmpl : bool_constant<false> {};
+template <typename T> requires is_meta_primitive_tmpl<T>::value
+struct is_meta_tmpl<T> : bool_constant<true> {};
 
 template <typename T>
 struct is_ty_tmpl : std::false_type {};
 template <template <typename...> class Tmpl>
 struct is_ty_tmpl<template_t<Tmpl>> : std::true_type {};
 template <typename T> requires is_ty_tmpl<T>::value
-struct is_meta_tmpl<T> : bool_constant<true> {};
+struct is_meta_primitive_tmpl<T> : bool_constant<true> {};
 
 template <typename T>
 struct is_va_tmpl : std::false_type {};
 template <template <auto...> class Tmpl>
 struct is_va_tmpl<value_template_t<Tmpl>> : std::true_type {};
 template <typename T> requires is_va_tmpl<T>::value
-struct is_meta_tmpl<T> : bool_constant<true> {};
+struct is_meta_primitive_tmpl<T> : bool_constant<true> {};
 
 template <typename T>
 struct is_co_tmpl : std::false_type {};
 template <template <typename T, T...> class Tmpl>
 struct is_co_tmpl<constant_template_t<Tmpl>> : std::true_type {};
 template <typename T> requires is_co_tmpl<T>::value
-struct is_meta_tmpl<T> : bool_constant<true> {};
-
-template <typename T>
-using is_rec_tmpl = is_spec_of<T, recursive_template_t>;
-template <typename T> requires is_rec_tmpl<T>::value
-struct is_meta_tmpl<T> : bool_constant<true> {};
+struct is_meta_primitive_tmpl<T> : bool_constant<true> {};
 }
 template <typename T>
 concept MetaTmplType = detail::is_meta_tmpl<T>::value;
 template <typename T>
-concept TyTmplType = MetaTmplType<T> && detail::is_ty_tmpl<T>::value;
+concept MetaPrimTmplType = MetaTmplType<T> && detail::is_meta_primitive_tmpl<T>::value;
 template <typename T>
-concept VaTmplType = MetaTmplType<T> && detail::is_va_tmpl<T>::value;
+concept TyTmplType = MetaPrimTmplType<T> && detail::is_ty_tmpl<T>::value;
 template <typename T>
-concept CoTmplType = MetaTmplType<T> && detail::is_co_tmpl<T>::value;
+concept VaTmplType = MetaPrimTmplType<T> && detail::is_va_tmpl<T>::value;
 template <typename T>
-concept RecTmplType = MetaTmplType<T> && detail::is_rec_tmpl<T>::value;
+concept CoTmplType = MetaPrimTmplType<T> && detail::is_co_tmpl<T>::value;
 
 template <template <typename...> class Tmpl>
 using ty_tmpl_t = template_t<Tmpl>;
@@ -108,8 +107,6 @@ template <template <auto...> class Tmpl>
 using va_tmpl_t = value_template_t<Tmpl>;
 template <template <typename T, T...> class Tmpl>
 using co_tmpl_t = constant_template_t<Tmpl>;
-template <MetaTmplType... TmplTs>
-using rec_tmpl_t = recursive_template_t<TmplTs...>;
 
 template <typename T1, typename T2>
 struct type_pair {
@@ -126,25 +123,31 @@ template <typename T, T... Vs> struct constant_list;
 
 namespace detail {
 template <typename>
-struct is_meta_list : bool_constant<false> {};
+struct is_meta_primitive_list : bool_constant<false> {};
 template <typename T> requires is_spec_of_v<T, type_list>
-struct is_meta_list<T> : bool_constant<true> {};
+struct is_meta_primitive_list<T> : bool_constant<true> {};
 template <typename T> requires is_value_spec_of_v<T, value_list>
-struct is_meta_list<T> : bool_constant<true> {};
+struct is_meta_primitive_list<T> : bool_constant<true> {};
 template <typename T> requires is_constant_spec_of_v<T, constant_list>
+struct is_meta_primitive_list<T> : bool_constant<true> {};
+
+template <typename>
+struct is_meta_list : bool_constant<false> {};
+template <typename T> requires is_meta_primitive_list<T>::value
 struct is_meta_list<T> : bool_constant<true> {};
 }
 template <typename T>
 concept MetaListType = detail::is_meta_list<T>::value;
 template <typename T>
-concept TyListType = MetaListType<T> && is_spec_of_v<T, type_list>;
+concept MetaPrimListType = MetaListType<T> && detail::is_meta_primitive_list<T>::value;
 template <typename T>
-concept VaListType = MetaListType<T> && is_value_spec_of_v<T, value_list>;
+concept TyListType = MetaPrimListType<T> && is_spec_of_v<T, type_list>;
 template <typename T>
-concept CoListType = MetaListType<T> && is_constant_spec_of_v<T, constant_list>;
+concept VaListType = MetaPrimListType<T> && is_value_spec_of_v<T, value_list>;
+template <typename T>
+concept CoListType = MetaPrimListType<T> && is_constant_spec_of_v<T, constant_list>;
 template <typename T, typename VT>
-concept CoListTType = CoListType<T>
-    && std::is_same_v<typename T::value_type, VT>;
+concept CoListTType = CoListType<T> && std::is_same_v<typename T::value_type, VT>;
 
 template <auto... Vs>
 using value_t_list = type_list<value_t<Vs>...>;

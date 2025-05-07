@@ -76,12 +76,16 @@ struct tmpl_args_bind {
 
 template <typename...>
 struct abc_de;
+template <typename...>
+struct abc_fg;
 
 int main()
 {
     using fff1 = constant_list<int, 1,2,0,3>::apply_algo<detail::ct_std_reverse_t>;
     std::cout << getTypeName<fff1>() << std::endl;
-    using fff2 = rec_tmpl_t<ty_list_tt, ty_list_tt, ty_tmpl_t<abc_de>, ty_list_tt>::wrap<type_list<int, int>>;
+    using ttt1 = rec_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, ty_tmpl_t<abc_de>, ty_list_tt>;
+    using ttt2 = rec_tmpl_t<ty_list_tt, ttt1>;
+    using fff2 = meta_wrap_t<ttt2, type_list<int, int>>;
     std::cout << getTypeName<fff2>() << std::endl;
 
     #if 0

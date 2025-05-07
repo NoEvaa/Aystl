@@ -65,20 +65,47 @@ struct co_wrap<T, VT, Vs...> {
     using type = T::template wrap<constant_t<VT, Vs>...>;
 };
 
-template <MetaListType T, MetaTmplType TmplT, MetaTmplType... TmplTs>
-struct rec_tmpl_wrap_impl<T, TmplT, TmplTs...> {
-    using _a1_type = meta_wrap_t<TmplT, T>;
-    using _a2_type = cond_t<MetaListType<_a1_type>, _a1_type, type_list<_a1_type>>;
-    using _a3_type = cond_t<ct_cmp_v<CmpOp::kEQ, sizeof...(TmplTs), 0>, _a1_type, _a2_type>;
-    using type = typename rec_tmpl_wrap_impl<_a3_type, TmplTs...>::type;
+template <MetaTmplType TmplT, MetaListType T>
+struct meta_wrap {
+    using type = TmplT::template wrap<T>;
+};
+template <MetaPrimTmplType TmplT, typename... Ts>
+struct meta_wrap<TmplT, type_list<Ts...>> {
+    using type = typename ty_wrap<TmplT, Ts...>::type;
+};
+template <MetaPrimTmplType TmplT, auto... Vs>
+struct meta_wrap<TmplT, value_list<Vs...>> {
+    using type = typename va_wrap<TmplT, Vs...>::type;
+};
+template <MetaPrimTmplType TmplT, typename VT, VT... Vs>
+struct meta_wrap<TmplT, constant_list<VT, Vs...>> {
+    using type = typename co_wrap<TmplT, VT, Vs...>::type;
 };
 
-template <typename T, TyListType TmplsT>
-struct recursive_tmpl_wrap {
-    template <MetaTmplType... _TmplTs>
-    using __impl_t = typename rec_tmpl_wrap_impl<T, _TmplTs...>::type;
-    using tmpls_type = meta_list_reverse_t<TmplsT>;
-    using type = tmpls_type::template wrapped<ty_tmpl_t<__impl_t>>;
+template <typename T, TyTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+template <typename T, VaTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_va_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+template <typename T, CoTmplType TmplT>
+struct meta_rewrapped<T, TmplT> {
+    using type = replace_co_tmpl_wrapper_t<T, TmplT::template wrap>;
+};
+
+template <typename T, typename... Ts>
+struct meta_rewrap<T, type_list<Ts...>> {
+    using type = replace_tmpl_args_t<T, Ts...>;
+};
+template <typename T, auto... Vs>
+struct meta_rewrap<T, value_list<Vs...>> {
+    using type = replace_va_tmpl_args_t<T, Vs...>;
+};
+template <typename T, typename VT, VT... Vs>
+struct meta_rewrap<T, constant_list<VT, Vs...>> {
+    using type = replace_co_tmpl_args_t<T, VT, Vs...>;
 };
 
 template <TyListType T, typename... NextT>

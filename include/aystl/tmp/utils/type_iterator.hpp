@@ -24,10 +24,17 @@ struct type_iterator {
     struct __impl {
         static constexpr index_constant<pos> current_pos;
 
-        using type = va_wrap_t<meta_list_get_tt<T>, pos>;
+        using list_type = T;
+        using iter_type = __impl;
+        using type      = va_wrap_t<meta_list_get_tt<T>, pos>;
 
         using is_begin = ct_cmp<CmpOp::kEQ, pos, 0>;
         using is_end   = ct_cmp<CmpOp::kGE, pos, T::size()>;
+
+        template <MetaListType _TmplT>
+        using wrapped = meta_wrap_t<_TmplT, type_list<type>>;
+        template <MetaTmplType TmplT, typename... _Ts>
+        using transform = meta_wrap_t<TmplT, type_list<iter_type, _Ts...>>;
 
         template <std::size_t _offset = 1>
         using next = __impl<(pos + _offset)>;

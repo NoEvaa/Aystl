@@ -123,29 +123,22 @@ template <typename T, T... Vs> struct constant_list;
 
 namespace detail {
 template <typename>
-struct is_meta_primitive_list : bool_constant<false> {};
-template <typename T> requires is_spec_of_v<T, type_list>
-struct is_meta_primitive_list<T> : bool_constant<true> {};
-template <typename T> requires is_value_spec_of_v<T, value_list>
-struct is_meta_primitive_list<T> : bool_constant<true> {};
-template <typename T> requires is_constant_spec_of_v<T, constant_list>
-struct is_meta_primitive_list<T> : bool_constant<true> {};
-
-template <typename>
 struct is_meta_list : bool_constant<false> {};
-template <typename T> requires is_meta_primitive_list<T>::value
+template <typename T> requires is_spec_of_v<T, type_list>
+struct is_meta_list<T> : bool_constant<true> {};
+template <typename T> requires is_value_spec_of_v<T, value_list>
+struct is_meta_list<T> : bool_constant<true> {};
+template <typename T> requires is_constant_spec_of_v<T, constant_list>
 struct is_meta_list<T> : bool_constant<true> {};
 }
 template <typename T>
 concept MetaListType = detail::is_meta_list<T>::value;
 template <typename T>
-concept MetaPrimListType = MetaListType<T> && detail::is_meta_primitive_list<T>::value;
+concept TyListType = MetaListType<T> && is_spec_of_v<T, type_list>;
 template <typename T>
-concept TyListType = MetaPrimListType<T> && is_spec_of_v<T, type_list>;
+concept VaListType = MetaListType<T> && is_value_spec_of_v<T, value_list>;
 template <typename T>
-concept VaListType = MetaPrimListType<T> && is_value_spec_of_v<T, value_list>;
-template <typename T>
-concept CoListType = MetaPrimListType<T> && is_constant_spec_of_v<T, constant_list>;
+concept CoListType = MetaListType<T> && is_constant_spec_of_v<T, constant_list>;
 template <typename T, typename VT>
 concept CoListTType = CoListType<T> && std::is_same_v<typename T::value_type, VT>;
 

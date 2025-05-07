@@ -72,12 +72,12 @@ struct constant_template_t {
 
 namespace _tmp_impl {
 template <typename T, MetaPrimTmplType TmplT> struct meta_rewrapped;
-template <typename T, MetaPrimListType ArgsT> struct meta_rewrap;
+template <typename T, MetaListType ArgsT> struct meta_rewrap;
 }
 
 template <typename T, MetaPrimTmplType TmplT>
 using meta_rewrapped_t = typename _tmp_impl::meta_rewrapped<T, TmplT>::type;
-template <typename T, MetaPrimListType ArgsT>
+template <typename T, MetaListType ArgsT>
 using meta_rewrap_t = typename _tmp_impl::meta_rewrap<T, ArgsT>::type;
 
 using ty_list_tt = ty_tmpl_t<type_list>;

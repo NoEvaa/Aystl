@@ -17,10 +17,7 @@
 
 #include <tuple>
 
-#include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/template.hpp"
-#include "aystl/tmp/meta/utils.hpp"
-#include "aystl/tmp/type_traits/compare.hpp"
+#include "aystl/tmp/meta/base.hpp"
 #include "aystl/tmp/functional/ct_range.hpp"
 
 namespace iin {

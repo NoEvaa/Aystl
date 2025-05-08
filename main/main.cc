@@ -55,24 +55,21 @@ struct abc_fg;
 
 int main()
 {
-    #if 0
-    using fff1 = constant_list<int, 1,2,0,3>::apply_algo<detail::ct_std_reverse_t>;
-    std::cout << getTypeName<fff1>() << std::endl;
-    using ttt1 = rec_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, ty_tmpl_t<abc_de>, ty_list_tt>;
-    using ttt2 = rec_tmpl_t<ty_list_tt, ttt1>;
-    using fff2 = meta_wrap_t<ttt2, type_list<int, int>>;
-    std::cout << getTypeName<fff2>() << std::endl;
-    #endif
-
     using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>, plh_t<1>>;
-    using b1_type = type_list<bool, double, plh_t<10>>;
-    using a1_type = xxx1;
-    std::cout << getTypeName<a1_type>() << std::endl;
-    std::cout << getTypeName<b1_type>() << std::endl;
-    using ooo1 = _tmp_impl::tmpl_args_bind<a1_type, b1_type>::type;
-    std::cout << getTypeName<ooo1>() << std::endl;
-    using ooo2 = _tmp_impl::tmpl_args_bind<ooo1, type_list<value_t<1>, value_t<2>, value_t<3>>>::type;
-    std::cout << getTypeName<ooo2>() << std::endl;
+    using xxx2 = type_list<bool, double, plh_t<10>>;
+
+    using uuu1 = currying_tmpl_t<ty_tmpl_t<abc_de>, xxx1>;
+    using uuu2 = meta_wrap_t<uuu1, xxx2>;
+    std::cout << getTypeName<uuu2>() << std::endl;
+
+    using uuu3 = uuu1::bind<xxx2>;
+    using uuu4 = meta_wrap_t<uuu3, type_list<value_t<1>, value_t<2>, value_t<3>>>;
+    std::cout << getTypeName<uuu4>() << std::endl;
+
+    using ttt1 = rec_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, uuu1, ty_list_tt>;
+    using ttt2 = rec_tmpl_t<ty_list_tt, ttt1>;
+    using ttt3 = meta_wrap_t<ttt2, type_list<value_t<1>, value_t<2>, value_t<3>>>;
+    std::cout << getTypeName<ttt3>() << std::endl;
 
     return 0;
 

@@ -76,13 +76,13 @@ template <VaTmplType TmplT, std::size_t _max_pos,
     bool _default, bool _first>
 struct ct_pos_forward_comparator {
     template <std::size_t pos>
-    struct __impl : constant_t<bool, _default> {};
+    struct __impl : bool_constant<_default> {};
     template <std::size_t pos>
     requires CtCmp<CmpOp::kEQ, pos, 0> && CtCmp<CmpOp::kLT, 0, _max_pos>
-    struct __impl<pos> : constant_t<bool, _first> {};
+    struct __impl<pos> : bool_constant<_first> {};
     template <std::size_t pos>
     requires CtCmp<CmpOp::kLT, 0, pos> && CtCmp<CmpOp::kLT, pos, _max_pos>
-    struct __impl<pos> : constant_t<bool, va_wrap_t<TmplT, pos, pos - 1>::value> {};
+    struct __impl<pos> : bool_constant<va_wrap_t<TmplT, pos, pos - 1>::value> {};
 
     using ttype = va_tmpl_t<__impl>;
 };

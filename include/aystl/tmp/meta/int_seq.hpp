@@ -16,14 +16,11 @@
 #pragma once
 
 #include "aystl/tmp/meta/type.hpp"
+#include "aystl/tmp/type_traits/template.hpp"
 
 namespace iin {
-namespace detail {
-template <typename T, T... Is>
-auto _toIntSeq(std::integer_sequence<T, Is...>) -> int_seq<T, Is...>;
-}
 template<size_t N>
-using make_index_seq = decltype(detail::_toIntSeq(
-    std::declval<std::make_index_sequence<N>>()));
+using make_index_seq = replace_co_tmpl_wrapper_t<
+    std::make_index_sequence<N>, int_seq>;
 }
 

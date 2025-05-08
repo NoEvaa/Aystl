@@ -17,21 +17,12 @@
 
 #include <functional>
 
-#include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/utils.hpp"
-#include "aystl/tmp/type_traits/compare.hpp"
+#include "aystl/tmp/meta/base.hpp"
 
 namespace iin {
 namespace _tmp_impl {
 template <CoListType T, CoListType... Ts>
 struct constant_list_cat : type_t<T> {};
-
-template <CoListType T, std::size_t pos>
-struct constant_list_at;
-
-template <CoListType InT, TyListType MaskT,
-    CoListType OutT, std::size_t pos = 0>
-struct constant_list_filter : type_t<OutT> {};
 
 template <CoListType, typename AlgoT> struct constant_list_apply_algo;
 template <CoListType, typename CmpT> struct constant_list_sort;
@@ -39,7 +30,7 @@ template <CoListType> struct constant_list_sorted_unique;
 }
 
 template<typename T, T... Vs>
-struct constant_list {
+struct constant_list : detail::basic_meta_list<constant_list<T, Vs...>> {
     using type       = constant_list;
     using value_type = T;
 
@@ -49,28 +40,7 @@ struct constant_list {
     using cast = constant_list<_Tp, static_cast<_Tp>(Vs)...>;
 
     template <MetaTmplType TmplT>
-    using wrapped = meta_wrap_t<TmplT, type>;
-
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform = meta_wrap_t<TmplT, type_list<type, _Ts...>>;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_t = typename transform<TmplT, _Ts...>::type;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_tt = typename transform<TmplT, _Ts...>::ttype;
-
-    template <MetaTmplType TmplT>
     using map = meta_list_map_t<type, constant_list<value_type>, TmplT>;
-    template <MetaTmplType TmplT>
-    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
-    template <MetaTmplType TmplT>
-    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
-    template <MetaTmplType TmplT, typename _VTp>
-    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
-
-    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using at = typename _tmp_impl::constant_list_at<type, pos>::type;
-    template <std::size_t pos>
-    static constexpr auto at_v = at<pos>::value;
 
     template <CoListTType<value_type>... _Ts>
     using concat = typename _tmp_impl::constant_list_cat<type, _Ts...>::type;
@@ -79,10 +49,6 @@ struct constant_list {
     using push_back  = constant_list<value_type, Vs..., _Vs...>;
     template <value_type... _Vs>
     using push_front = constant_list<value_type, _Vs..., Vs...>;
-
-    template <TyListType MaskT>
-    using filter = typename _tmp_impl::constant_list_filter<
-        type, MaskT, constant_list<value_type>>::type;
 
     template <typename _AlgoT>
     using apply_algo = typename _tmp_impl::constant_list_apply_algo<type, _AlgoT>::type;

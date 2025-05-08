@@ -15,12 +15,7 @@
  */
 #pragma once
 
-#include <tuple>
-
-#include "aystl/tmp/meta/type.hpp"
-#include "aystl/tmp/meta/template.hpp"
-#include "aystl/tmp/meta/utils.hpp"
-#include "aystl/tmp/type_traits/compare.hpp"
+#include "aystl/tmp/meta/base.hpp"
 #include "aystl/tmp/functional/ct_range.hpp"
 
 namespace iin {
@@ -30,41 +25,18 @@ struct type_list_cat : type_t<T> {};
 
 template <TyListType T, IntSeqType RangeT>
 struct type_list_slice;
-
-template <TyListType T, TyListType MaskT>
-struct type_list_filter;
 }
-
 template <TyListType... Ts>
 using type_list_cat_t = typename _tmp_impl::type_list_cat<Ts...>::type;
 
 template <typename... Ts>
-struct type_list {
+struct type_list : detail::basic_meta_list<type_list<Ts...>> {
     using type = type_list;
 
     static constexpr index_constant<sizeof...(Ts)> size;
 
-    template <MetaTmplType TmplT>
-    using wrapped = meta_wrap_t<TmplT, type>;
-
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform = meta_wrap_t<TmplT, type_list<type, _Ts...>>;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_t = typename transform<TmplT, _Ts...>::type;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_tt = typename transform<TmplT, _Ts...>::ttype;
-
     template <TyTmplType TmplT, typename... TmplArgs>
     using map = meta_list_map_t<type, type_list<>, TmplT, TmplArgs...>;
-    template <MetaTmplType TmplT>
-    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
-    template <MetaTmplType TmplT>
-    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
-    template <MetaTmplType TmplT, typename _VTp>
-    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
-
-    template <std::size_t pos> requires CtCmp<CmpOp::kLT, pos, size()>
-    using at = std::tuple_element_t<pos, wrapped<ty_tmpl_t<std::tuple>>>;
 
     template <TyListType... _Ts>
     using concat = type_list_cat_t<type, _Ts...>;
@@ -88,9 +60,6 @@ struct type_list {
 
     template <typename OldT, typename NewT>
     using replace = map<ty_tmpl_t<replace_if_same_as_t>, OldT, NewT>;
-
-    template <TyListType MaskT>
-    using filter = typename _tmp_impl::type_list_filter<type, MaskT>::type;
 };
 }
 

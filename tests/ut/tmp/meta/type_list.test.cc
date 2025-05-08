@@ -83,6 +83,7 @@ TEST_CASE("type list slice") {
     CHECK(std::is_same_v<_test_list_1::slice<ct_range_t<1, 4>>, type_list<double, char, float>>);
     CHECK(std::is_same_v<_test_list_1::slice<ct_range_t<3, 4>>, type_list<float>>);
     CHECK(std::is_same_v<_test_list_1::slice<ct_range_t<3, 3>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::slice<ct_range_t<5, 9>>, type_list<>>);
 
     CHECK(std::is_same_v<_test_list_1::slice_range<1, 1>, type_list<>>);
     CHECK(std::is_same_v<_test_list_1::slice_range<0, 1>, type_list<int>>);
@@ -125,25 +126,25 @@ TEST_CASE("type list replace") {
 TEST_CASE("type list filter") {
     using _test_list_1 = type_list<int, bool, char>;
 
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<>>, type_list<>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false>>, type_list<>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true>>, type_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true>>, type_list<int>>);
 
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false>>, type_list<>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false>>, type_list<int>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true>>, type_list<int, bool>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true>>, type_list<bool>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, false>>, type_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, true>>, type_list<bool>>);
 
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, false>>, type_list<>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, false>>, type_list<int>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, false>>, type_list<bool>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, false, true>>, type_list<char>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false>>, type_list<int, bool>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, false, true>>, type_list<int, char>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<false, true, true>>, type_list<bool, char>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true>>, type_list<int, bool, char>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, false, false>>, type_list<>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, false, false>>, type_list<int>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, true, false>>, type_list<bool>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, false, true>>, type_list<char>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, false>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, false, true>>, type_list<int, char>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<false, true, true>>, type_list<bool, char>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, true>>, type_list<int, bool, char>>);
 
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, true, true>>, type_list<int, bool, char>>);
-    CHECK(std::is_same_v<_test_list_1::filter<value_t_list<true, true, false, true>>, type_list<int, bool>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, true, true>>, type_list<int, bool, char>>);
+    CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, false, true>>, type_list<int, bool>>);
 }
 

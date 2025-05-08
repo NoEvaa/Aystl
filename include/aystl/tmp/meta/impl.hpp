@@ -32,12 +32,12 @@ struct ty_wrap<T, Ts...> {
     using type = T::template wrap<Ts...>;
 };
 template <VaTmplType T, typename... Ts>
-requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
+requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, Ts...> {
     using type = T::template wrap<Ts::value...>;
 };
 /*template <CoTmplType T, typename VT, typename... Ts>
-requires is_all_of_v<constant_t<bool, ValueTType<Ts>>...>
+requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, VT, Ts...> {
     using type = typename T::template wrap<
         VT, static_cast<VT>(Ts::value)...>;
@@ -107,7 +107,9 @@ template <typename T, typename VT, VT... Vs>
 struct meta_rewrap<T, constant_list<VT, Vs...>> {
     using type = replace_co_tmpl_args_t<T, VT, Vs...>;
 };
+}
 
+namespace _tmp_impl {
 template <TyListType T, typename... NextT>
 struct meta_list_push_back<T, NextT...> {
     using type = T::template push_back<NextT...>;
@@ -142,14 +144,14 @@ struct meta_list_reverse<T> {
 
 template <TyListType T>
 struct meta_list_reverse<T> {
-    using idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
-    using type = idxes_type::template ty_map<va_tmpl_t<T::template at>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using type = _idxes_type::template ty_map<va_tmpl_t<T::template at>>;
 };
 
 template <VaListType T>
 struct meta_list_reverse<T> {
-    using idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
-    using type = idxes_type::template va_map<va_tmpl_t<T::template at>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using type = _idxes_type::template va_map<va_tmpl_t<T::template at>>;
 };
 
 template <MetaListType InT, MetaListType OutT, MetaTmplType TmplT, typename... TmplArgs>
@@ -220,28 +222,16 @@ struct meta_list_map<constant_list<VT, Vs...>, OutT, TmplT> {
         OutT, ty_wrap_t<TmplT, constant_t<VT, Vs>>...>::type;
 };
 
-template <typename... Ts, typename... Ts2>
-auto _concat_two_type_list(type_list<Ts...>, type_list<Ts2...>)
-    -> type_list<Ts..., Ts2...>;
-
 template <TyListType T1, TyListType T2, TyListType... Ts>
 struct type_list_cat<T1, T2, Ts...> {
-    using type = typename type_list_cat<
-        decltype(_concat_two_type_list(std::declval<T1>(), std::declval<T2>())),
-        Ts...
-    >::type;
+    using _first_type = T2::template wrapped<ty_tmpl_t<T1::template push_back>>;
+    using type = typename type_list_cat<_first_type, Ts...>::type;
 };
-
-template <typename T, T... Vs1, T... Vs2>
-auto _concat_two_constant_list(constant_list<T, Vs1...>, constant_list<T, Vs2...>)
-    -> constant_list<T, Vs1..., Vs2...>;
 
 template <CoListType T1, CoListType T2, CoListType... Ts>
 struct constant_list_cat<T1, T2, Ts...> {
-    using type = typename constant_list_cat<
-        decltype(_concat_two_constant_list(std::declval<T1>(), std::declval<T2>())),
-        Ts...
-    >::type;
+    using _first_type = T2::template wrapped<va_tmpl_t<T1::template push_back>>;
+    using type = typename constant_list_cat<_first_type, Ts...>::type;
 };
 
 template <CoListType T, std::size_t pos>
@@ -252,25 +242,29 @@ struct constant_list_at {
 
 template <CoListType InT, TyListType MaskT, CoListType OutT, std::size_t pos>
 requires CtCmp<CmpOp::kLT, pos, InT::size()> && CtCmp<CmpOp::kLT, pos, MaskT::size()>
-struct constant_list_filter<InT, MaskT, OutT, pos> {
+struct constant_list_mask_filter<InT, MaskT, OutT, pos> {
     using _elem_type  = InT::template at<pos>;
     using _mask_type  = MaskT::template at<pos>;
     using _t_out_type = OutT::template push_back<_elem_type::value>;
     using _f_out_type = OutT;
     using _out_type   = cond_t<_mask_type::value, _t_out_type, _f_out_type>;
 
-    using type = typename constant_list_filter<InT, MaskT, _out_type, pos + 1>::type;
+    using type = typename constant_list_mask_filter<
+        InT, MaskT, _out_type, pos + 1>::type;
 };
 
 template <TyListType T, IntSeqType RangeT>
 struct type_list_slice {
-    using _tmpl_type = va_tmpl_t<T::template at>;
-    using type = RangeT::template ty_map<_tmpl_type>;
+    template <std::size_t pos>
+    using _check_pos = ct_cmp<CmpOp::kLT, pos, T::size()>;
+
+    using type = RangeT::template filter<va_tmpl_t<_check_pos>>
+        ::template ty_map<va_tmpl_t<T::template at>>;
 };
 
 template <TyListType T, TyListType MaskT>
-struct type_list_filter {
-    using _range_type = make_index_seq<T::size()>::template filter<MaskT>;
+struct type_list_mask_filter {
+    using _range_type = make_index_seq<T::size()>::template mask_filter<MaskT>;
     using type = T::template slice<_range_type>;
 };
 
@@ -288,8 +282,8 @@ template <CoListType T>
 struct constant_list_sorted_unique {
     using _cmp_2v_ttype = ct_pos_value_cmp_tt<va_tmpl_t<T::template at>, CmpOp::kNE>;
     using _cmp_1f_ttype = ct_pos_forward_cmp_tt<_cmp_2v_ttype, T::size()>;
-    using _filt_type = make_index_seq<T::size()>::template ty_map<_cmp_1f_ttype>;
-    using type = T::template filter<_filt_type>;
+    using _mask_type    = make_index_seq<T::size()>::template ty_map<_cmp_1f_ttype>;
+    using type = T::template mask_filter<_mask_type>;
 };
 }
 }

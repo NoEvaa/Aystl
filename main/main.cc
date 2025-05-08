@@ -69,10 +69,13 @@ int main()
     using a1_type = xxx1;
     std::cout << getTypeName<a1_type>() << std::endl;
     std::cout << getTypeName<b1_type>() << std::endl;
-    using ooo1 = _tmp_impl::tmpl_args_bind<a1_type, b1_type>::type;
-    std::cout << getTypeName<ooo1>() << std::endl;
-    using ooo2 = _tmp_impl::tmpl_args_bind<ooo1, type_list<value_t<1>, value_t<2>, value_t<3>>>::type;
-    std::cout << getTypeName<ooo2>() << std::endl;
+
+    using uuu1 = currying_tmpl_t<ty_tmpl_t<abc_de>, a1_type>;
+    using uuu2 = meta_wrap_t<uuu1, b1_type>;
+    std::cout << getTypeName<uuu2>() << std::endl;
+    using uuu3 = uuu1::bind<b1_type>;
+    using uuu4 = meta_wrap_t<uuu3, type_list<value_t<1>, value_t<2>, value_t<3>>>;
+    std::cout << getTypeName<uuu4>() << std::endl;
 
     return 0;
 

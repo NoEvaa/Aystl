@@ -32,7 +32,7 @@ template <TyListType T, IntSeqType RangeT>
 struct type_list_slice;
 
 template <TyListType T, TyListType MaskT>
-struct type_list_filter;
+struct type_list_mask_filter;
 }
 
 template <TyListType... Ts>
@@ -90,7 +90,9 @@ struct type_list {
     using replace = map<ty_tmpl_t<replace_if_same_as_t>, OldT, NewT>;
 
     template <TyListType MaskT>
-    using filter = typename _tmp_impl::type_list_filter<type, MaskT>::type;
+    using mask_filter = typename _tmp_impl::type_list_mask_filter<type, MaskT>::type;
+    template <MetaTmplType TmplT>
+    using filter = mask_filter<ty_map<TmplT>>;
 };
 }
 

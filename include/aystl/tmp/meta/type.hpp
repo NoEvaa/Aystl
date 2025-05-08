@@ -50,12 +50,12 @@ template <typename T, typename VT>
 concept ConstantTType = ValueTType<T>
     && std::is_same_v<typename T::value_type, VT>;
 
-template <std::size_t _i>
-using index_constant = constant_t<std::size_t, _i>;
-template <bool _b>
-using bool_constant = constant_t<bool, _b>;
+template <auto _i>
+using index_constant = constant_t<std::size_t, static_cast<std::size_t>(_i)>;
+template <auto _b>
+using bool_constant = constant_t<bool, static_cast<bool>(_b)>;
 
-using invalid_index_t = index_constant<static_cast<std::size_t>(-1)>;
+using invalid_index_t = index_constant<-1>;
 
 template <template <typename...> class Tmpl>      struct template_t;
 template <template <auto...> class Tmpl>          struct value_template_t;

@@ -23,6 +23,7 @@ template <typename...> struct recursive_template_t;
 
 template <MetaTmplType... TmplTs>
 using rec_tmpl_t = recursive_template_t<TmplTs...>;
+using rec_tmpl_tt = ty_tmpl_t<rec_tmpl_t>;
 
 namespace detail {
 template <typename T>
@@ -49,8 +50,8 @@ template <typename T, TyListType TmplsT>
 struct recursive_tmpl_wrap {
     template <MetaTmplType... _TmplTs>
     using __impl_t = typename rec_tmpl_wrap_impl<T, _TmplTs...>::type;
-    using tmpls_type = meta_list_reverse_t<TmplsT>;
-    using type = tmpls_type::template wrapped<ty_tmpl_t<__impl_t>>;
+    using _tmpls_type = meta_list_reverse_t<TmplsT>;
+    using type = _tmpls_type::template wrapped<ty_tmpl_t<__impl_t>>;
 };
 }
 

@@ -29,15 +29,32 @@ template <typename T>
 concept PlaceholderType = is_placeholder<T>::value;
 
 namespace detail {
-template <TyListType T>
-struct sorted_placeholders {
-    using _mask_type = T::template map<ty_tmpl_t<is_placeholder>>;
-    using _plhs_type = T::template filter<_mask_type>;
-    using _values_type = _plhs_type::template co_map<transfer_value_tt, std::size_t>;
-    using type = _values_type::template unique_sort<>;
+template <TyListType OldT, TyListType NewT>
+struct placeholders_bind {
+    using _plhs_type = OldT
+        ::template filter<ty_tmpl_t<is_placeholder>>
+        ::template co_map<transfer_value_tt, std::size_t>
+        ::template unique_sort<>
+        ::template wrapped<ct_array_tt<detail::ct_std_pass_t>>;
+
+    template <std::size_t pos>
+    using _get_from_new = va_wrap_t<meta_list_get_tt<NewT>, pos>;
+
+    template <typename T>
+    struct __impl : type_t<T> {};
+    template <PlaceholderType T>
+    struct __impl<T> {
+        static constexpr auto _pos_of_new = _plhs_type::template findFirst<T::value>();
+        using type = cond_t<ct_cmp_v<CmpOp::kLT, _pos_of_new, NewT::size()>,
+            _get_from_new<_pos_of_new>, T>;
+    };
+    template <typename T>
+    using __impl_t = typename __impl<T>::type;
+
+    using type = OldT::template map<ty_tmpl_t<__impl_t>>;
 };
 }
-template <TyListType T>
-using sorted_placeholders_t = typename detail::sorted_placeholders<T>::type;
+template <TyListType OldT, TyListType NewT>
+using placeholders_bind_t = typename detail::placeholders_bind<OldT, NewT>::type;
 }
 

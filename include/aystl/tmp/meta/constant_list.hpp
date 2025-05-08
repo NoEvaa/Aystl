@@ -31,7 +31,7 @@ struct constant_list_at;
 
 template <CoListType InT, TyListType MaskT,
     CoListType OutT, std::size_t pos = 0>
-struct constant_list_filter : type_t<OutT> {};
+struct constant_list_mask_filter : type_t<OutT> {};
 
 template <CoListType, typename AlgoT> struct constant_list_apply_algo;
 template <CoListType, typename CmpT> struct constant_list_sort;
@@ -81,8 +81,10 @@ struct constant_list {
     using push_front = constant_list<value_type, _Vs..., Vs...>;
 
     template <TyListType MaskT>
-    using filter = typename _tmp_impl::constant_list_filter<
+    using mask_filter = typename _tmp_impl::constant_list_mask_filter<
         type, MaskT, constant_list<value_type>>::type;
+    template <MetaTmplType TmplT>
+    using filter = mask_filter<ty_map<TmplT>>;
 
     template <typename _AlgoT>
     using apply_algo = typename _tmp_impl::constant_list_apply_algo<type, _AlgoT>::type;

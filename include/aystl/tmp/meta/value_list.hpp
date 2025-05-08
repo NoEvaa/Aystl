@@ -19,33 +19,16 @@
 
 namespace iin {
 template <auto... Vs>
-struct value_list {
+struct value_list : detail::basic_meta_list<value_list<Vs...>> {
     using type = value_list;
 
     static constexpr index_constant<sizeof...(Vs)> size;
 
     template <MetaTmplType TmplT>
-    using wrapped = meta_wrap_t<TmplT, type>;
-
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform = meta_wrap_t<TmplT, type_list<type, _Ts...>>;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_t = typename transform<TmplT, _Ts...>::type;
-    template <MetaTmplType TmplT, typename... _Ts>
-    using transform_tt = typename transform<TmplT, _Ts...>::ttype;
-
-    template <MetaTmplType TmplT>
-    using ty_map = meta_list_map_t<type, type_list<>, TmplT>;
-    template <MetaTmplType TmplT>
-    using va_map = meta_list_map_t<type, value_list<>, TmplT>;
-    template <MetaTmplType TmplT, typename _VTp>
-    using co_map = meta_list_map_t<type, constant_list<_VTp>, TmplT>;
-    template <MetaTmplType TmplT>
-    using map = va_map<TmplT>;
+    using map = meta_list_map_t<type, value_list<>, TmplT>;
 
     template <auto... _Vs> using push_back  = value_list<Vs..., _Vs...>;
     template <auto... _Vs> using push_front = value_list<_Vs..., Vs...>;
-
 };
 }
 

@@ -56,7 +56,7 @@ struct ct_array {
             }
         }
 
-        using to_constant_list = typename make_index_seq<size()>
+        using to_constant_list = typename make_index_seq_t<size()>
             ::template co_map<va_tmpl_t<at>, element_type>;
     };
 

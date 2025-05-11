@@ -136,7 +136,7 @@ struct meta_list_at<T, pos> {
     using type = std::tuple_element_t<pos, _tuple_type>;
 };
 
-template <MetaListType T, typename DefaultT>
+template <typename T, typename DefaultT>
 struct meta_list_get {
     template <std::size_t pos>
     struct __impl : type_t<DefaultT> {};
@@ -169,7 +169,7 @@ struct meta_list_mask_filter<T, MaskT> {
 };
 template <TyListType T, TyListType MaskT>
 struct meta_list_mask_filter<T, MaskT> {
-    using _idxes_type = make_index_seq<T::size()>::template mask_filter<MaskT>;
+    using _idxes_type = make_index_seq_t<T::size()>::template mask_filter<MaskT>;
     using type = T::template slice<_idxes_type>;
 };
 
@@ -180,13 +180,13 @@ struct meta_list_reverse<T> {
 
 template <TyListType T>
 struct meta_list_reverse<T> {
-    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq_t<T::size()>>;
     using type = _idxes_type::template ty_map<va_tmpl_t<T::template at>>;
 };
 
 template <VaListType T>
 struct meta_list_reverse<T> {
-    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq_t<T::size()>>;
     using type = _idxes_type::template va_map<va_tmpl_t<T::template at>>;
 };
 
@@ -277,7 +277,8 @@ struct type_list_slice {
     template <std::size_t pos>
     using _check_pos = ct_cmp<CmpOp::kLT, pos, T::size()>;
 
-    using type = RangeT::template filter<va_tmpl_t<_check_pos>>
+    using type = RangeT
+        ::template filter<va_tmpl_t<_check_pos>>
         ::template ty_map<va_tmpl_t<T::template at>>;
 };
 
@@ -295,7 +296,7 @@ template <CoListType T>
 struct constant_list_sorted_unique {
     using _cmp_2v_ttype = ct_pos_value_cmp_tt<va_tmpl_t<T::template at>, CmpOp::kNE>;
     using _cmp_1f_ttype = ct_pos_forward_cmp_tt<_cmp_2v_ttype, T::size()>;
-    using _mask_type    = make_index_seq<T::size()>::template ty_map<_cmp_1f_ttype>;
+    using _mask_type    = make_index_seq_t<T::size()>::template ty_map<_cmp_1f_ttype>;
     using type = T::template mask_filter<_mask_type>;
 };
 }

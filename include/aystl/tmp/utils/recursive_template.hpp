@@ -19,7 +19,7 @@
 #include "aystl/tmp/functional.hpp"
 
 namespace iin {
-template <typename...> struct recursive_template_t;
+template <MetaTmplType...> struct recursive_template_t;
 
 template <MetaTmplType... TmplTs>
 using rec_tmpl_t = recursive_template_t<TmplTs...>;
@@ -56,7 +56,7 @@ struct recursive_tmpl_wrap {
 }
 
 template <MetaTmplType... TmplTs>
-struct recursive_template_t<TmplTs...> {
+struct recursive_template_t {
     using tmpls_type = type_list<TmplTs...>;
 
     template <MetaListType _Tp>

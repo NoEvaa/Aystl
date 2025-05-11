@@ -94,7 +94,7 @@ consteval auto ct_str_to_char_seq() noexcept {
     using char_type = typename _type::value_type;
     return [&]<auto... Is>(index_seq<Is...>) {
         return char_seq<char_type, std::get<Is>(_s.value)...>{};
-    }(make_index_seq<_s.size()>{});
+    }(make_index_seq_t<_s.size()>{});
 }
 }
 template <ct_str _s>

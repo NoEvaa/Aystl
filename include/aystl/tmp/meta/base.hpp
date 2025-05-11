@@ -23,7 +23,7 @@ namespace iin {
 namespace _tmp_impl {
 template <MetaListType, typename...> struct meta_list_push_back;
 template <MetaListType, std::size_t> struct meta_list_at;
-template <MetaListType, typename DefaultT> struct meta_list_get;
+template <typename, typename DefaultT> struct meta_list_get;
 template <MetaListType, TyListType MaskT> struct meta_list_mask_filter;
 template <MetaListType> struct meta_list_reverse;
 
@@ -31,7 +31,7 @@ template <MetaListType InT, MetaListType OutT,
     MetaTmplType TmplT, typename... TmplArgs>
 struct meta_list_map;
 }
-template <MetaListType T, typename DefaultT = null_t>
+template <typename T, typename DefaultT = null_t>
 using meta_list_get_tt = typename _tmp_impl::meta_list_get<T, DefaultT>::ttype;
 
 template <MetaListType T>

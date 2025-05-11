@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/functional.hpp"
-#include "aystl/tmp/utils/placeholder.hpp"
+#include "aystl/tmp.hpp"
 
 using namespace iin;
 
@@ -119,8 +117,8 @@ TEST_CASE("type list replace") {
     CHECK(std::is_same_v<_test_list_1::replace<double, float>, type_list<int, float, int, char>>);
     CHECK(std::is_same_v<_test_list_1::replace<int, bool>, type_list<bool, double, bool, char>>);
 
-    CHECK(std::is_same_v<type_list<plh_t<1>, plh_t<3>, plh_t<1>>::replace<plh_t<1>, int>,
-          type_list<int, plh_t<3>, int>>);
+    CHECK(std::is_same_v<type_list<int, char, int>::replace<int, bool>,
+          type_list<bool, char, bool>>);
 }
 
 TEST_CASE("type list filter") {

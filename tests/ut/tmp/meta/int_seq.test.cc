@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/tmp/meta.hpp"
+#include "aystl/tmp.hpp"
 
 using namespace iin;
 
@@ -27,6 +27,6 @@ TEST_CASE("int seq") {
 }
 
 TEST_CASE("make_index_seq") {
-    CHECK(std::is_same_v<make_index_seq<3>, index_seq<0, 1, 2>>);
+    CHECK(std::is_same_v<make_index_seq_t<3>, index_seq<0, 1, 2>>);
 }
 

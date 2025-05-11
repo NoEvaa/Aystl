@@ -28,6 +28,12 @@ using is_placeholder = is_value_spec_of<T, placeholder_t>;
 template <typename T>
 concept PlaceholderType = is_placeholder<T>::value;
 
+template <std::size_t... Is>
+using plh_t_list = type_list<plh_t<Is>...>;
+
+template <std::size_t N>
+using make_plh_seq_t = make_index_seq_t<N>::template ty_map<va_tmpl_t<plh_t>>;
+
 namespace detail {
 template <TyListType OldT, TyListType NewT>
 struct placeholders_bind {

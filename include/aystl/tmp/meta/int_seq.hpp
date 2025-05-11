@@ -20,7 +20,7 @@
 
 namespace iin {
 template<size_t N>
-using make_index_seq = replace_co_tmpl_wrapper_t<
+using make_index_seq_t = replace_co_tmpl_wrapper_t<
     std::make_index_sequence<N>, int_seq>;
 }
 

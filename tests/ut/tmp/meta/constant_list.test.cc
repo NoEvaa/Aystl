@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/functional.hpp"
+#include "aystl/tmp.hpp"
 
 using namespace iin;
 

@@ -31,7 +31,8 @@ using type_list_cat_t = typename _tmp_impl::type_list_cat<Ts...>::type;
 
 template <typename... Ts>
 struct type_list : detail::basic_meta_list<type_list<Ts...>> {
-    using type = type_list;
+    using type       = type_list;
+    using empty_type = type_list<>;
 
     static constexpr index_constant<sizeof...(Ts)> size;
 

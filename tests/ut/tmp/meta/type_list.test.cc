@@ -42,11 +42,16 @@ TEST_CASE("type list push front & back") {
     CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
 }
 
-TEST_CASE("type list at") {
+TEST_CASE("type list at & get") {
     using _test_list_1 = type_list<int, double, char const &>;
     CHECK(std::is_same_v<_test_list_1::at<0>, int>);
     CHECK(std::is_same_v<_test_list_1::at<1>, double>);
     CHECK(std::is_same_v<_test_list_1::at<2>, char const &>);
+
+    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
+    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
+    CHECK(std::is_same_v<_test_list_1::get<3>, null_t>);
+    CHECK(std::is_same_v<_test_list_1::get<10, void>, void>);
 }
 
 TEST_CASE("type list wrapped & map") {

@@ -33,6 +33,7 @@ template<typename T, T... Vs>
 struct constant_list : detail::basic_meta_list<constant_list<T, Vs...>> {
     using type       = constant_list;
     using value_type = T;
+    using empty_type = constant_list<value_type>;
 
     static constexpr index_constant<sizeof...(Vs)> size;
 

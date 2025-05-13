@@ -36,11 +36,15 @@ using meta_wrap_t = typename _tmp_impl::meta_wrap<TmplT, T>::type;
 
 template <template <typename...> class Tmpl>
 struct template_t {
+    using type = template_t;
+
     template <typename... _Ts>
     struct __tmpl_pkg : type_t<Tmpl<_Ts...>> {};
 
+    template <MetaListType _ArgsT>
+    using wrap = meta_wrap_t<type, _ArgsT>;
     template <typename... _Ts>
-    using wrap = typename __tmpl_pkg<_Ts...>::type;
+    using xwrap = typename __tmpl_pkg<_Ts...>::type;
 
     template <typename _Tp>
     using is_wrapped_to = is_spec_of<_Tp, Tmpl>;
@@ -48,11 +52,15 @@ struct template_t {
 
 template <template <auto...> class Tmpl>
 struct value_template_t {
+    using type = value_template_t;
+
     template <auto... _Vs>
     struct __tmpl_pkg : type_t<Tmpl<_Vs...>> {};
 
+    template <MetaListType _ArgsT>
+    using wrap = meta_wrap_t<type, _ArgsT>;
     template <auto... _Vs>
-    using wrap = typename __tmpl_pkg<_Vs...>::type;
+    using xwrap = typename __tmpl_pkg<_Vs...>::type;
 
     template <typename _Tp>
     using is_wrapped_to = is_value_spec_of<_Tp, Tmpl>;
@@ -60,11 +68,15 @@ struct value_template_t {
 
 template <template <typename T, T...> class Tmpl>
 struct constant_template_t {
+    using type = constant_template_t;
+
     template <typename _Tp, _Tp... _Vs>
     struct __tmpl_pkg : type_t<Tmpl<_Tp, _Vs...>> {};
 
+    template <MetaListType _ArgsT>
+    using wrap = meta_wrap_t<type, _ArgsT>;
     template <typename _Tp, _Tp... _Vs>
-    using wrap = typename __tmpl_pkg<_Tp, _Vs...>::type;
+    using xwrap = typename __tmpl_pkg<_Tp, _Vs...>::type;
 
     template <typename _Tp>
     using is_wrapped_to = is_constant_spec_of<_Tp, Tmpl>;

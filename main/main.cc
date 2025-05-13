@@ -65,8 +65,8 @@ int main()
     using uuu4 = meta_wrap_t<uuu3, type_list<value_t<1>, value_t<2>, value_t<3>>>;
     std::cout << getTypeName<uuu4>() << std::endl;
 
-    using ttt1 = rec_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, uuu1, ty_list_tt>;
-    using ttt2 = rec_tmpl_t<ty_list_tt, ttt1>;
+    using ttt1 = compose_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, uuu1, ty_list_tt>;
+    using ttt2 = compose_tmpl_t<ty_list_tt, ttt1>;
     using ttt3 = meta_wrap_t<ttt2, type_list<value_t<1>, value_t<2>, value_t<3>>>;
     std::cout << getTypeName<ttt3>() << std::endl;
 

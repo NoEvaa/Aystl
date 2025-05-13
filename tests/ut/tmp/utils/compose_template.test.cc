@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include "aystl/tmp/utils/type_iterator.hpp"
+#include "testlib.h"
 #include "aystl/tmp/utils/compose_template.hpp"
-#include "aystl/tmp/utils/currying_template.hpp"
-#include "aystl/tmp/utils/ct_string.hpp"
 
-#include "aystl/tmp/utils/memory.hpp"
-#include "aystl/tmp/utils/optional.hpp"
+using namespace iin;
+
+TEST_CASE("compose_template_t") {
+}
 

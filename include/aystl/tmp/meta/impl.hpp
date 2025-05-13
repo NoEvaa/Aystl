@@ -30,40 +30,40 @@ namespace iin {
 namespace _tmp_impl {
 template <TyTmplType T, typename... Ts>
 struct ty_wrap<T, Ts...> {
-    using type = T::template wrap<Ts...>;
+    using type = T::template xwrap<Ts...>;
 };
 template <VaTmplType T, typename... Ts>
 requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, Ts...> {
-    using type = T::template wrap<Ts::value...>;
+    using type = T::template xwrap<Ts::value...>;
 };
 /*template <CoTmplType T, typename VT, typename... Ts>
 requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, VT, Ts...> {
-    using type = typename T::template wrap<
+    using type = typename T::template xwrap<
         VT, static_cast<VT>(Ts::value)...>;
 };*/
 
 template <VaTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = T::template wrap<Vs...>;
+    using type = T::template xwrap<Vs...>;
 };
 template <TyTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = T::template wrap<value_t<Vs>...>;
+    using type = T::template xwrap<value_t<Vs>...>;
 };
 
 template <CoTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<VT, Vs...>;
+    using type = T::template xwrap<VT, Vs...>;
 };
 template <VaTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<Vs...>;
+    using type = T::template xwrap<Vs...>;
 };
 template <TyTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<constant_t<VT, Vs>...>;
+    using type = T::template xwrap<constant_t<VT, Vs>...>;
 };
 
 template <MetaTmplType TmplT, MetaListType T>
@@ -85,15 +85,15 @@ struct meta_wrap<TmplT, constant_list<VT, Vs...>> {
 
 template <typename T, TyTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 template <typename T, VaTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_va_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_va_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 template <typename T, CoTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_co_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_co_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 
 template <typename T, typename... Ts>

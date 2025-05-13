@@ -59,6 +59,11 @@ struct placeholders_bind {
 
     using type = OldT::template map<ty_tmpl_t<__impl_t>>;
 };
+
+template <TyListType OldT, TyListType NewT>
+requires ct_cmp_v<CmpOp::kEQ, OldT::size(), 0>
+    || ct_cmp_v<CmpOp::kEQ, NewT::size(), 0>
+struct placeholders_bind<OldT, NewT> : type_t<OldT> {};
 }
 template <TyListType OldT, TyListType NewT>
 using placeholders_bind_t = typename detail::placeholders_bind<OldT, NewT>::type;

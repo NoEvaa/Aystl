@@ -20,7 +20,6 @@
 #include <string_view>
 #include <algorithm>
 
-#include "aystl/tmp/meta.hpp"
 #include "aystl/tmp/utils/char_seq.hpp"
 
 namespace iin {

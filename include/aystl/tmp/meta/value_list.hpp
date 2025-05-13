@@ -20,7 +20,8 @@
 namespace iin {
 template <auto... Vs>
 struct value_list : detail::basic_meta_list<value_list<Vs...>> {
-    using type = value_list;
+    using type       = value_list;
+    using empty_type = value_list<>;
 
     static constexpr index_constant<sizeof...(Vs)> size;
 

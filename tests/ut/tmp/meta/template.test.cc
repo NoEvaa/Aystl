@@ -36,25 +36,38 @@ using TmplC2 = TmplC1<T, Vs...>;
 }
 
 TEST_CASE("template_t") {
-    CHECK(std::is_same_v<ty_tmpl_t<type_t>::wrap<int>, type_t<int>>);
-    CHECK(std::is_same_v<ty_tmpl_t<type_list>::wrap<int, int, double>, type_list<int, int, double>>);
-    CHECK(std::is_same_v<va_tmpl_t<value_list>::wrap<1, 3, 5>, value_list<1, 3, 5>>);
-    CHECK(std::is_same_v<co_tmpl_t<constant_list>::wrap<int, 1, 3, 5>, constant_list<int, 1, 3, 5>>);
+    CHECK(std::is_same_v<ty_tmpl_t<type_t>::xwrap<int>, type_t<int>>);
+    CHECK(std::is_same_v<ty_tmpl_t<type_list>::xwrap<int, int, double>, type_list<int, int, double>>);
+    CHECK(std::is_same_v<va_tmpl_t<value_list>::xwrap<1, 3, 5>, value_list<1, 3, 5>>);
+    CHECK(std::is_same_v<co_tmpl_t<constant_list>::xwrap<int, 1, 3, 5>, constant_list<int, 1, 3, 5>>);
 
     CHECK(!TyTmplType<int>);
     CHECK(TyTmplType<ty_tmpl_t<type_t>>);
     CHECK(!TyTmplType<va_tmpl_t<value_t>>);
     CHECK(!TyTmplType<co_tmpl_t<constant_t>>);
+    CHECK(MetaTmplType<ty_tmpl_t<type_t>>);
+    CHECK(MetaPrimTmplType<ty_tmpl_t<type_t>>);
 
     CHECK(!CoTmplType<int>);
     CHECK(CoTmplType<co_tmpl_t<constant_t>>);
     CHECK(!CoTmplType<va_tmpl_t<value_t>>);
     CHECK(!CoTmplType<ty_tmpl_t<type_t>>);
+    CHECK(MetaTmplType<co_tmpl_t<constant_t>>);
+    CHECK(MetaPrimTmplType<co_tmpl_t<constant_t>>);
 
     CHECK(!VaTmplType<int>);
     CHECK(VaTmplType<va_tmpl_t<value_t>>);
     CHECK(!VaTmplType<co_tmpl_t<constant_t>>);
     CHECK(!VaTmplType<ty_tmpl_t<type_t>>);
+    CHECK(MetaTmplType<va_tmpl_t<value_t>>);
+    CHECK(MetaPrimTmplType<va_tmpl_t<value_t>>);
+
+    CHECK(ty_tmpl_t<type_t>::is_wrapped_to<type_t<int>>::value);
+    CHECK(!ty_tmpl_t<type_t>::is_wrapped_to<int>::value);
+    CHECK(va_tmpl_t<value_t>::is_wrapped_to<value_t<1>>::value);
+    CHECK(!va_tmpl_t<value_t>::is_wrapped_to<int>::value);
+    CHECK(co_tmpl_t<constant_t>::is_wrapped_to<constant_t<int, 1>>::value);
+    CHECK(!co_tmpl_t<constant_t>::is_wrapped_to<int>::value);
 }
 
 TEST_CASE("template_t wrap") {

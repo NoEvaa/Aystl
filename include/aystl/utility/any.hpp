@@ -23,8 +23,7 @@
 #include <utility>
 
 #include "aystl/global/common.hpp"
-#include "aystl/tmp/type_traits.hpp"
-#include "aystl/tmp/meta.hpp"
+#include "aystl/tmp.hpp"
 #include "aystl/core/arch/allocator.hpp"
 #include "aystl/core/arch/compare.hpp"
 #include "aystl/core/arch/copy.hpp"

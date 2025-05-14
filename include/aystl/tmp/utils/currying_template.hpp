@@ -36,11 +36,15 @@ concept CurryingTmplType = MetaTmplType<T> && detail::is_currying_tmpl<T>::value
 
 template <MetaTmplType TmplT, TyListType ArgsT>
 struct currying_template_t {
+    using type = currying_template_t;
+
     using tmpl_type = TmplT;
     using args_type = ArgsT;
 
-    template <TyListType _Tp>
-    using wrap = meta_wrap_t<tmpl_type, placeholders_bind_t<args_type, _Tp>>; 
+    template <TyListType _ArgsT = type_list<>>
+    using wrap = meta_wrap_t<tmpl_type, placeholders_bind_t<args_type, _ArgsT>>; 
+    template <typename... _ArgTs>
+    using xwrap = wrap<type_list<_ArgTs...>>; 
 
     template <typename>
     using is_wrapped_to = bool_constant<false>;
@@ -50,8 +54,10 @@ struct currying_template_t {
     template <TyListType _ArgsT>
     using change_args = currying_tmpl_t<tmpl_type, _ArgsT>;
 
-    template <TyListType _TmplArgs>
-    using bind = change_args<placeholders_bind_t<args_type, _TmplArgs>>;
+    template <TyListType _ArgsT>
+    using bind = change_args<placeholders_bind_t<args_type, _ArgsT>>;
+    template <typename... _ArgTs>
+    using xbind = bind<type_list<_ArgTs...>>; 
 };
 }
 

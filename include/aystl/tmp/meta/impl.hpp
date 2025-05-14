@@ -30,40 +30,40 @@ namespace iin {
 namespace _tmp_impl {
 template <TyTmplType T, typename... Ts>
 struct ty_wrap<T, Ts...> {
-    using type = T::template wrap<Ts...>;
+    using type = T::template xwrap<Ts...>;
 };
 template <VaTmplType T, typename... Ts>
 requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, Ts...> {
-    using type = T::template wrap<Ts::value...>;
+    using type = T::template xwrap<Ts::value...>;
 };
 /*template <CoTmplType T, typename VT, typename... Ts>
 requires is_all_of_v<bool_constant<ValueTType<Ts>>...>
 struct ty_wrap<T, VT, Ts...> {
-    using type = typename T::template wrap<
+    using type = typename T::template xwrap<
         VT, static_cast<VT>(Ts::value)...>;
 };*/
 
 template <VaTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = T::template wrap<Vs...>;
+    using type = T::template xwrap<Vs...>;
 };
 template <TyTmplType T, auto... Vs>
 struct va_wrap<T, Vs...> {
-    using type = T::template wrap<value_t<Vs>...>;
+    using type = T::template xwrap<value_t<Vs>...>;
 };
 
 template <CoTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<VT, Vs...>;
+    using type = T::template xwrap<VT, Vs...>;
 };
 template <VaTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<Vs...>;
+    using type = T::template xwrap<Vs...>;
 };
 template <TyTmplType T, typename VT, VT... Vs>
 struct co_wrap<T, VT, Vs...> {
-    using type = T::template wrap<constant_t<VT, Vs>...>;
+    using type = T::template xwrap<constant_t<VT, Vs>...>;
 };
 
 template <MetaTmplType TmplT, MetaListType T>
@@ -85,15 +85,15 @@ struct meta_wrap<TmplT, constant_list<VT, Vs...>> {
 
 template <typename T, TyTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 template <typename T, VaTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_va_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_va_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 template <typename T, CoTmplType TmplT>
 struct meta_rewrapped<T, TmplT> {
-    using type = replace_co_tmpl_wrapper_t<T, TmplT::template wrap>;
+    using type = replace_co_tmpl_wrapper_t<T, TmplT::template xwrap>;
 };
 
 template <typename T, typename... Ts>
@@ -113,16 +113,16 @@ struct meta_rewrap<T, constant_list<VT, Vs...>> {
 namespace _tmp_impl {
 template <TyListType T, typename... _Ts>
 struct meta_list_push_back<T, _Ts...> {
-    using type = T::template push_back<_Ts...>;
+    using type = T::template xpush_back<_Ts...>;
 };
 template <VaListType T, ValueTType... _Ts>
 struct meta_list_push_back<T, _Ts...> {
-    using type = T::template push_back<_Ts::value...>;
+    using type = T::template xpush_back<_Ts::value...>;
 };
 template <CoListType T, ValueTType... _Ts>
 struct meta_list_push_back<T, _Ts...> {
     using value_type = typename T::value_type;
-    using type = T::template push_back<static_cast<value_type>(_Ts::value)...>;
+    using type = T::template xpush_back<static_cast<value_type>(_Ts::value)...>;
 };
 
 template <MetaListType T, std::size_t pos>
@@ -136,7 +136,7 @@ struct meta_list_at<T, pos> {
     using type = std::tuple_element_t<pos, _tuple_type>;
 };
 
-template <MetaListType T, typename DefaultT>
+template <typename T, typename DefaultT>
 struct meta_list_get {
     template <std::size_t pos>
     struct __impl : type_t<DefaultT> {};
@@ -158,7 +158,7 @@ struct meta_list_mask_filter<T, MaskT> {
     struct __impl<OutT, pos> {
         using _elem_type  = T::template at<pos>;
         using _mask_type  = MaskT::template at<pos>;
-        using _t_out_type = OutT::template push_back<_elem_type::value>;
+        using _t_out_type = OutT::template xpush_back<_elem_type::value>;
         using _f_out_type = OutT;
         using _out_type   = cond_t<_mask_type::value, _t_out_type, _f_out_type>;
 
@@ -169,7 +169,7 @@ struct meta_list_mask_filter<T, MaskT> {
 };
 template <TyListType T, TyListType MaskT>
 struct meta_list_mask_filter<T, MaskT> {
-    using _idxes_type = make_index_seq<T::size()>::template mask_filter<MaskT>;
+    using _idxes_type = make_index_seq_t<T::size()>::template mask_filter<MaskT>;
     using type = T::template slice<_idxes_type>;
 };
 
@@ -180,13 +180,13 @@ struct meta_list_reverse<T> {
 
 template <TyListType T>
 struct meta_list_reverse<T> {
-    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq_t<T::size()>>;
     using type = _idxes_type::template ty_map<va_tmpl_t<T::template at>>;
 };
 
 template <VaListType T>
 struct meta_list_reverse<T> {
-    using _idxes_type = meta_list_reverse_t<make_index_seq<T::size()>>;
+    using _idxes_type = meta_list_reverse_t<make_index_seq_t<T::size()>>;
     using type = _idxes_type::template va_map<va_tmpl_t<T::template at>>;
 };
 
@@ -200,12 +200,12 @@ struct meta_list_map<type_list<Ts...>, OutT, TmplT, TmplArgs...> {
     template <typename _Tp>
     using _wrap_tmpl = ty_wrap_t<TmplT, _Tp, TmplArgs...>;
 
-    using type = typename meta_list_push_back<OutT, _wrap_tmpl<Ts>...>::type;
+    using type = OutT::template push_back<_wrap_tmpl<Ts>...>;
 };
 template <typename... Ts, MetaListType OutT, VaTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Ts), 0>
 struct meta_list_map<type_list<Ts...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<OutT, ty_wrap_t<TmplT, Ts>...>::type;
+    using type = OutT::template push_back<ty_wrap_t<TmplT, Ts>...>;
 };
 template <typename... Ts, MetaListType OutT, CoTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Ts), 0>
@@ -214,14 +214,13 @@ struct meta_list_map<type_list<Ts...>, OutT, TmplT> {
     using _wrap_tmpl = co_wrap_t<TmplT,
         typename value_t<_Tp::value>::value_type, _Tp::value>;
 
-    using type = typename meta_list_push_back<OutT, _wrap_tmpl<Ts>...>::type;
+    using type = OutT::template push_back<_wrap_tmpl<Ts>...>;
 };
 
 template <auto... Vs, MetaListType OutT, VaTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
 struct meta_list_map<value_list<Vs...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<
-        OutT, va_wrap_t<TmplT, Vs>...>::type;
+    using type = OutT::template push_back<va_wrap_t<TmplT, Vs>...>;
 };
 template <auto... Vs, MetaListType OutT, CoTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
@@ -230,45 +229,42 @@ struct meta_list_map<value_list<Vs...>, OutT, TmplT> {
     using _wrap_tmpl = co_wrap_t<TmplT,
         typename value_t<__v>::value_type, __v>;
 
-    using type = typename meta_list_push_back<OutT, _wrap_tmpl<Vs>...>::type;
+    using type = OutT::template push_back<_wrap_tmpl<Vs>...>;
 };
 template <auto... Vs, MetaListType OutT, TyTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
 struct meta_list_map<value_list<Vs...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<
-        OutT, ty_wrap_t<TmplT, value_t<Vs>>...>::type;
+    using type = OutT::template push_back<ty_wrap_t<TmplT, value_t<Vs>>...>;
 };
 
 template <typename VT, VT... Vs, MetaListType OutT, CoTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
 struct meta_list_map<constant_list<VT, Vs...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<
-        OutT, co_wrap_t<TmplT, VT, Vs>...>::type;
+    using type = OutT::template push_back<co_wrap_t<TmplT, VT, Vs>...>;
 };
 template <typename VT, VT... Vs, MetaListType OutT, VaTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
 struct meta_list_map<constant_list<VT, Vs...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<
-        OutT, va_wrap_t<TmplT, Vs>...>::type;
+    using type = OutT::template push_back<va_wrap_t<TmplT, Vs>...>;
 };
 template <typename VT, VT... Vs, MetaListType OutT, TyTmplType TmplT>
 requires CtCmp<CmpOp::kGT, sizeof...(Vs), 0>
 struct meta_list_map<constant_list<VT, Vs...>, OutT, TmplT> {
-    using type = typename meta_list_push_back<
-        OutT, ty_wrap_t<TmplT, constant_t<VT, Vs>>...>::type;
+    using type = OutT::template push_back<
+        ty_wrap_t<TmplT, constant_t<VT, Vs>>...>;
 };
 }
 
 namespace _tmp_impl {
 template <TyListType T1, TyListType T2, TyListType... Ts>
 struct type_list_cat<T1, T2, Ts...> {
-    using _first_type = T2::template wrapped<ty_tmpl_t<T1::template push_back>>;
+    using _first_type = T2::template wrapped<ty_tmpl_t<T1::template xpush_back>>;
     using type = typename type_list_cat<_first_type, Ts...>::type;
 };
 
 template <CoListType T1, CoListType T2, CoListType... Ts>
 struct constant_list_cat<T1, T2, Ts...> {
-    using _first_type = T2::template wrapped<va_tmpl_t<T1::template push_back>>;
+    using _first_type = T2::template wrapped<va_tmpl_t<T1::template xpush_back>>;
     using type = typename constant_list_cat<_first_type, Ts...>::type;
 };
 
@@ -277,7 +273,8 @@ struct type_list_slice {
     template <std::size_t pos>
     using _check_pos = ct_cmp<CmpOp::kLT, pos, T::size()>;
 
-    using type = RangeT::template filter<va_tmpl_t<_check_pos>>
+    using type = RangeT
+        ::template filter<va_tmpl_t<_check_pos>>
         ::template ty_map<va_tmpl_t<T::template at>>;
 };
 
@@ -295,7 +292,7 @@ template <CoListType T>
 struct constant_list_sorted_unique {
     using _cmp_2v_ttype = ct_pos_value_cmp_tt<va_tmpl_t<T::template at>, CmpOp::kNE>;
     using _cmp_1f_ttype = ct_pos_forward_cmp_tt<_cmp_2v_ttype, T::size()>;
-    using _mask_type    = make_index_seq<T::size()>::template ty_map<_cmp_1f_ttype>;
+    using _mask_type    = make_index_seq_t<T::size()>::template ty_map<_cmp_1f_ttype>;
     using type = T::template mask_filter<_mask_type>;
 };
 }

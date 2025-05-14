@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "aystl/utility/hash.hpp"
 #include "aystl/utility/any.hpp"
 #include "aystl/utility/function.hpp"
 

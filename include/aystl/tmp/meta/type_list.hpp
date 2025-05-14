@@ -31,7 +31,8 @@ using type_list_cat_t = typename _tmp_impl::type_list_cat<Ts...>::type;
 
 template <typename... Ts>
 struct type_list : detail::basic_meta_list<type_list<Ts...>> {
-    using type = type_list;
+    using type       = type_list;
+    using empty_type = type_list<>;
 
     static constexpr index_constant<sizeof...(Ts)> size;
 
@@ -41,8 +42,8 @@ struct type_list : detail::basic_meta_list<type_list<Ts...>> {
     template <TyListType... _Ts>
     using concat = type_list_cat_t<type, _Ts...>;
 
-    template <typename... _Ts> using push_back  = type_list<Ts..., _Ts...>;
-    template <typename... _Ts> using push_front = type_list<_Ts..., Ts...>;
+    template <typename... _Ts> using xpush_back  = type_list<Ts..., _Ts...>;
+    template <typename... _Ts> using xpush_front = type_list<_Ts..., Ts...>;
 
     template <IntSeqType RangeT>
     using slice = typename _tmp_impl::type_list_slice<type, RangeT>::type;

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/functional.hpp"
-#include "aystl/tmp/utils/placeholder.hpp"
+#include "aystl/tmp.hpp"
 
 using namespace iin;
 
@@ -40,15 +38,20 @@ TEST_CASE("type list concat") {
 TEST_CASE("type list push front & back") {
     using _test_list_1 = type_list<float, double>;
 
-    CHECK(std::is_same_v<_test_list_1::push_front<int, char>, type_list<int, char, float, double>>);
-    CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
+    CHECK(std::is_same_v<_test_list_1::xpush_front<int, char>, type_list<int, char, float, double>>);
+    CHECK(std::is_same_v<_test_list_1::xpush_back<int, char>, type_list<float, double, int, char>>);
 }
 
-TEST_CASE("type list at") {
+TEST_CASE("type list at & get") {
     using _test_list_1 = type_list<int, double, char const &>;
     CHECK(std::is_same_v<_test_list_1::at<0>, int>);
     CHECK(std::is_same_v<_test_list_1::at<1>, double>);
     CHECK(std::is_same_v<_test_list_1::at<2>, char const &>);
+
+    CHECK(std::is_same_v<_test_list_1::get<0>, int>);
+    CHECK(std::is_same_v<_test_list_1::get<2>, char const &>);
+    CHECK(std::is_same_v<_test_list_1::get<3>, null_t>);
+    CHECK(std::is_same_v<_test_list_1::get<10, void>, void>);
 }
 
 TEST_CASE("type list wrapped & map") {
@@ -119,8 +122,8 @@ TEST_CASE("type list replace") {
     CHECK(std::is_same_v<_test_list_1::replace<double, float>, type_list<int, float, int, char>>);
     CHECK(std::is_same_v<_test_list_1::replace<int, bool>, type_list<bool, double, bool, char>>);
 
-    CHECK(std::is_same_v<type_list<plh_t<1>, plh_t<3>, plh_t<1>>::replace<plh_t<1>, int>,
-          type_list<int, plh_t<3>, int>>);
+    CHECK(std::is_same_v<type_list<int, char, int>::replace<int, bool>,
+          type_list<bool, char, bool>>);
 }
 
 TEST_CASE("type list filter") {

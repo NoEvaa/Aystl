@@ -19,4 +19,5 @@
 #include "aystl/core/math/limits.hpp"
 #include "aystl/core/math/enum_utils.hpp"
 #include "aystl/core/math/bit_utils.hpp"
+#include "aystl/core/math/hash.hpp"
 

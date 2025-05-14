@@ -18,7 +18,7 @@
 #include "aystl/tmp/meta.hpp"
 
 namespace iin {
-template <MetaListType T>
+template <typename T>
 struct type_iterator {
     template <std::size_t pos>
     struct __impl {
@@ -26,10 +26,10 @@ struct type_iterator {
 
         using list_type = T;
         using iter_type = __impl;
-        using type      = va_wrap_t<meta_list_get_tt<T>, pos>;
+        using type = list_type::template get<pos>;
 
         using is_begin = ct_cmp<CmpOp::kEQ, pos, 0>;
-        using is_end   = ct_cmp<CmpOp::kGE, pos, T::size()>;
+        using is_end   = ct_cmp<CmpOp::kGE, pos, list_type::size()>;
 
         template <MetaTmplType _TmplT>
         using wrapped = meta_wrap_t<_TmplT, type_list<type>>;

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 #include "testlib.h"
-#include "aystl/tmp/meta.hpp"
-#include "aystl/tmp/functional.hpp"
+#include "aystl/tmp.hpp"
 
 using namespace iin;
 
@@ -59,10 +58,15 @@ TEST_CASE("constant list wrapped & map") {
     CHECK(std::is_same_v<test_seq_1::va_map<va_tmpl_t<_test_pow>>, value_list<1, 4, 9>>);
 }
 
-TEST_CASE("constant list at") {
+TEST_CASE("constant list at & get") {
     CHECK(std::is_same_v<test_seq_2::at<0>, constant_t<int, 7>>);
     CHECK(std::is_same_v<test_seq_2::at<1>, constant_t<int, 8>>);
     CHECK(std::is_same_v<test_seq_2::at<2>, constant_t<int, 9>>);
+    
+    CHECK(std::is_same_v<test_seq_2::get<0>, constant_t<int, 7>>);
+    CHECK(std::is_same_v<test_seq_2::get<2>, constant_t<int, 9>>);
+    CHECK(std::is_same_v<test_seq_2::get<3>, null_t>);
+    CHECK(std::is_same_v<test_seq_2::get<10>, null_t>);
 }
 
 TEST_CASE("constant list concat") {
@@ -93,6 +97,13 @@ TEST_CASE("constant list filter") {
 
     CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, true, true>>, constant_list<int, 1, 2, 3>>);
     CHECK(std::is_same_v<_test_list_1::mask_filter<value_t_list<true, true, false, true>>, constant_list<int, 1, 2>>);
+}
+
+TEST_CASE("constant apply algo") {
+    using _test_seq_1 = constant_list<int, 3, 1, 5, 7>;
+
+    CHECK(std::is_same_v<_test_seq_1::apply_algo<detail::ct_std_reverse_t>, constant_list<int, 7, 5, 1, 3>>);
+    CHECK(std::is_same_v<_test_seq_1::apply_algo<detail::ct_std_sort_t<std::less<>>>, constant_list<int, 1, 3, 5, 7>>);
 }
 
 TEST_CASE("constant list sort") {

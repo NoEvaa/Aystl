@@ -28,8 +28,8 @@ struct value_list : detail::basic_meta_list<value_list<Vs...>> {
     template <MetaTmplType TmplT>
     using map = meta_list_map_t<type, value_list<>, TmplT>;
 
-    template <auto... _Vs> using push_back  = value_list<Vs..., _Vs...>;
-    template <auto... _Vs> using push_front = value_list<_Vs..., Vs...>;
+    template <auto... _Vs> using xpush_back  = value_list<Vs..., _Vs...>;
+    template <auto... _Vs> using xpush_front = value_list<_Vs..., Vs...>;
 };
 }
 

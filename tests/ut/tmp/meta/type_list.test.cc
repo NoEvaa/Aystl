@@ -38,8 +38,8 @@ TEST_CASE("type list concat") {
 TEST_CASE("type list push front & back") {
     using _test_list_1 = type_list<float, double>;
 
-    CHECK(std::is_same_v<_test_list_1::push_front<int, char>, type_list<int, char, float, double>>);
-    CHECK(std::is_same_v<_test_list_1::push_back<int, char>, type_list<float, double, int, char>>);
+    CHECK(std::is_same_v<_test_list_1::xpush_front<int, char>, type_list<int, char, float, double>>);
+    CHECK(std::is_same_v<_test_list_1::xpush_back<int, char>, type_list<float, double, int, char>>);
 }
 
 TEST_CASE("type list at & get") {

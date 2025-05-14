@@ -52,24 +52,12 @@ struct abc_de;
 template <typename...>
 struct abc_fg;
 
+template <typename...> struct TestC1 {};
 int main()
 {
-    using xxx1 = type_list<plh_t<0>, int, plh_t<5>, plh_t<1>, char, plh_t<2>, plh_t<1>>;
-    using xxx2 = type_list<bool, double, plh_t<10>>;
-
-    using uuu1 = currying_tmpl_t<ty_tmpl_t<abc_de>, xxx1>;
-    using uuu2 = meta_wrap_t<uuu1, xxx2>;
+    using uuu1 = value_list<1, 2, 3>;
+    using uuu2 = meta_wrap_t<compose_tmpl_t<ty_tmpl_t<TestC1>>, uuu1>;
     std::cout << getTypeName<uuu2>() << std::endl;
-
-    using uuu3 = uuu1::bind<xxx2>;
-    using uuu4 = meta_wrap_t<uuu3, type_list<value_t<1>, value_t<2>, value_t<3>>>;
-    std::cout << getTypeName<uuu4>() << std::endl;
-
-    using ttt1 = compose_tmpl_t<ty_tmpl_t<abc_fg>, ty_list_tt, uuu1, ty_list_tt>;
-    using ttt2 = compose_tmpl_t<ty_list_tt, ttt1>;
-    using ttt3 = meta_wrap_t<ttt2, type_list<value_t<1>, value_t<2>, value_t<3>>>;
-    std::cout << getTypeName<ttt3>() << std::endl;
-
     return 0;
 
     #if 0

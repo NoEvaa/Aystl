@@ -70,6 +70,9 @@ struct basic_meta_list {
     template <std::size_t pos, typename DefaultT = null_t>
     using get = va_wrap_t<meta_list_get_tt<type, DefaultT>, pos>;
 
+    template <typename... _Ts>
+    using push_back = typename _tmp_impl::meta_list_push_back<type, _Ts...>::type;
+
     template <TyListType MaskT>
     using mask_filter = typename _tmp_impl::meta_list_mask_filter<type, MaskT>::type;
     template <MetaTmplType TmplT>
